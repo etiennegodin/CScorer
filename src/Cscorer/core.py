@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 import logging
 import yaml
 
-class ProjectConfig:
+@dataclass
+class PipelineData:
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     
