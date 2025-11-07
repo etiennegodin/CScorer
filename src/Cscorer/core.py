@@ -4,6 +4,16 @@ from dataclasses import dataclass, field
 import logging
 import yaml
 import time
+from enum import Enum
+
+class StepStatus(str, Enum):
+    init = "init"    
+    requested = "requested" 
+    ready = "ready"
+    completed = "completed"
+    pending = 'pending'
+    failed = "failed"
+
 
 @dataclass
 class PipelineData:
@@ -16,7 +26,9 @@ class PipelineData:
         self.set("init", time.time())
         self._export_storage()
         
-    
+    def update_step_status(self,step:str, status: StepStatus):
+        self.step_status[step] = status
+
     def get(self, key:str):
         return self.storage.get(key)
     
