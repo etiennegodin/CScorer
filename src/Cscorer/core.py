@@ -13,7 +13,7 @@ class PipelineData:
     logger: logging.Logger = logging.Logger
     
     def __post_init__(self):
-        self.set("time", time.time())
+        self.set("init", time.time())
         self._export_storage()
     
     def get(self, key:str):

@@ -23,20 +23,32 @@ def main():
     if not args.file:
         if not args.dev:
             raise UserWarning("Missing config file")
-        config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
+        config_path = Path(__file__).parent.parent.parent / "work/dev/configs/config.yaml"
         
     else:
         config_path = args.file
     
     config = read_config(config_path)
     
-    run_folder = Path(config_path).parent
+    run_folder = Path(config_path).parent.parent
     data_folder = run_folder / 'data'
+    config_folder = run_folder / 'configs'
+    
     config['run_folder'] = run_folder
-    config['data_folder'] = run_folder
+    config['data_folder'] = data_folder
+    config['config_folder'] = config_folder
 
-    if not 'pipe_data.yaml' in os.listdir(data_folder):
+    if not (data_folder / 'pipe_data.yaml').exists():
         data = PipelineData(config = config)
+
+    if config['gbif'] and not (config_folder / 'gbif_config.yaml').exists():
+        raise RuntimeError('Missing')
+    
+    #asyncio.run(get_data(data))
+
+    
+    
+    
 
     
     #asyncio.run(get_data(data))
