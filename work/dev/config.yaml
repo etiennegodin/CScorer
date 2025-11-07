@@ -1,0 +1,82 @@
+BASIS_OF_RECORD: HUMAN_OBSERVATION
+BOUNDS:
+- -73.591232
+- -73.583851
+- 45.513204
+- 45.517895
+GEOMETRY: POLYGON((-73.591232 45.513204, -73.591232 45.517895, -73.583851 45.517895,
+  -73.583851 45.513204, -73.591232 45.513204))
+TAXON_KEY: 7707728
+crs: EPSG:4326
+dag:
+  create_grid:
+    outputs:
+    - grid
+  get_gbif_data:
+    depends_on:
+    - get_obs_count
+    outputs:
+    - raw_gbif_data
+    - gbif_data
+  get_obs_count:
+    outputs:
+    - obs_count
+  get_osm_data:
+    outputs:
+    - osm_data
+  process_spatial_index:
+    depends_on:
+    - create_grid
+    - get_gbif_data
+    outputs:
+    - spatial_index
+  process_spatial_joins:
+    depends_on:
+    - process_spatial_index
+    - get_osm_data
+    outputs:
+    - joined_data
+db_path: /home/manat/projects/BioCity/work/dev/data.duckdb
+gbif_columns:
+- gbifID
+- occurrenceID
+- kingdom
+- phylum
+- class
+- order
+- family
+- genus
+- species
+- taxonRank
+- scientificName
+- eventDate
+- day
+- month
+- year
+- taxonKey
+- basisOfRecord
+- license
+- recordedBy
+- publishingOrgKey
+- coordinateUncertaintyInMeters
+- decimalLatitude
+- decimalLongitude
+- countryCode
+- stateProvince
+grid_size: 250
+osm_queries:
+- leisure:
+  - parks
+  - nature_reserve
+- natural: wood
+- boundary: census
+osm_tags_input:
+- parks
+- natural
+- census
+park_size_filter: 3500
+query_id: dev_2025-11-05
+query_name: dev
+root_folder: /home/manat/projects/BioCity
+run_folder: /home/manat/projects/BioCity/work/dev
+search_limit: 30000

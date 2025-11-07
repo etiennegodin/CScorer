@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+src/CScorer.egg-info/PKG-INFO
+src/CScorer.egg-info/SOURCES.txt
+src/CScorer.egg-info/dependency_links.txt
+src/CScorer.egg-info/entry_points.txt
+src/CScorer.egg-info/requires.txt
+src/CScorer.egg-info/top_level.txt
+src/Cscorer/core.py
+src/Cscorer/main.py
+src/Cscorer/data/__init__.py
+src/Cscorer/data/base.py
+src/Cscorer/data/env.py
+src/Cscorer/data/gbif.py
+src/Cscorer/data/inat.py
+src/Cscorer/data/query.py
