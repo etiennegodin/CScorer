@@ -15,6 +15,7 @@ class PipelineData:
     def __post_init__(self):
         self.set("init", time.time())
         self._export_storage()
+        
     
     def get(self, key:str):
         return self.storage.get(key)
@@ -23,6 +24,9 @@ class PipelineData:
         self.storage[key] = value
         self._export_storage()
     
+    def set_config(self, key:str, value: Any):
+        self.config[key] = value
+        
     def _export_storage(self):
         try:
             data_folder = self.config.get('data_folder')
