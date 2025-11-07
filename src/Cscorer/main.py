@@ -1,9 +1,11 @@
-from Cscorer.data.factory import get_data
-from Cscorer.core import read_config, PipelineData
+from .data.factory import create_query
+from .core import read_config, PipelineData
+from .data.main import get_data
 from pathlib import Path
 import argparse
 import subprocess
-
+import asyncio
+import os
 def main():
     
     parser = argparse.ArgumentParser(
@@ -29,7 +31,15 @@ def main():
     config = read_config(config_path)
     
     run_folder = Path(config_path).parent
+    data_folder = run_folder / 'data'
     config['run_folder'] = run_folder
+    config['data_folder'] = run_folder
+
+    if not 'pipe_data.yaml' in os.listdir(data_folder):
+        data = PipelineData(config = config)
+
+    
+    #asyncio.run(get_data(data))
     
     
 

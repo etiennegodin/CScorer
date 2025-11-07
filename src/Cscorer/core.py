@@ -3,6 +3,7 @@ from pathlib import Path
 from dataclasses import dataclass, field
 import logging
 import yaml
+import time
 
 @dataclass
 class PipelineData:
@@ -10,6 +11,11 @@ class PipelineData:
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
     logger: logging.Logger = logging.Logger
+    
+    def __post_init__(self):
+        self.set("time", time.time())
+        self._export_storage()
+    
     def get(self, key:str):
         return self.storage.get(key)
     
@@ -19,9 +25,9 @@ class PipelineData:
     
     def _export_storage(self):
         try:
-            run_folder = self.config.get('run_folder')
-            if run_folder:
-                write_config(self.storage, Path(run_folder) / 'pipe_data.yaml')
+            data_folder = self.config.get('data_folder')
+            if data_folder:
+                write_config(self.storage, Path(data_folder) / 'pipe_data.yaml')
                 return True
         except Exception:
             # do not raise from storage persistence

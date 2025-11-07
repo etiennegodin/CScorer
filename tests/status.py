@@ -1,7 +1,5 @@
 from enum import Enum
 
-
-
 class QueryStatus(str, Enum):
     init = 0    
     requested = 1
