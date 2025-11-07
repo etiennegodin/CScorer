@@ -8,7 +8,8 @@ import yaml
 class PipelineData:
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
-    
+    step_status: Dict[str, Any] = field(default_factory=dict)
+    logger: logging.Logger = logging.Logger
     def get(self, key:str):
         return self.storage.get(key)
     

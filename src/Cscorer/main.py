@@ -21,5 +21,20 @@ def main():
     if not args.file:
         if not args.dev:
             raise UserWarning("Missing config file")
-        config = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        print(config)
+        config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
+        
+    else:
+        config_path = args.file
+    
+    config = read_config(config_path)
+    
+    run_folder = Path(config_path).parent
+    config['run_folder'] = run_folder
+    
+    
+
+    
+    
+    
+    
+    
