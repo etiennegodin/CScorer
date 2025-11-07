@@ -1,0 +1,123 @@
+carry_configs:
+  - search_limit
+  - crs
+  - gbif_columns
+  - dag
+
+dag:
+  get_obs_count:
+    outputs:
+    - obs_count
+  create_grid:
+    outputs:
+    - grid
+  get_osm_data:
+    outputs:
+    - osm_data
+  get_gbif_data:
+    depends_on:
+    - get_obs_count
+    outputs:
+    - raw_gbif_data
+    - gbif_data
+  process_spatial_index:
+    depends_on:
+    - create_grid
+    - get_gbif_data
+    outputs:
+    - spatial_index
+  process_spatial_joins:
+    depends_on:
+    - process_spatial_index
+    - get_osm_data
+    outputs:
+    - joined_data
+  
+search_limit: 30000
+crs: EPSG:4326
+
+taxon_key_mapping:
+  Vascular Plants: 7707728
+  Birds: 2591091
+  test: 3173317
+
+gbif:
+  query_name:
+    label: Query Name
+    type: text
+    default: dev
+  TAXON_KEY:
+    label: Select Taxa
+    type: selectbox
+    options:
+      - Vascular Plants
+      - Birds
+      - test
+    default: Vascular Plants
+  BASIS_OF_RECORD:
+    type: selectbox
+    label: Basis of Record
+    options:
+      - HUMAN_OBSERVATION
+      - OBSERVATION
+      - MACHINE_OBSERVATION
+    default: HUMAN_OBSERVATION
+osm:
+  grid_size:
+    label: Grid Size (meters)
+    type: number
+    default: 250
+  park_size_filter:
+    label: Park Size Filter (square meters)
+    type: number
+    default: 3500
+  osm_tags_input:
+    type: multiselect
+    label: OSM Features
+    options:
+      - parks
+      - natural
+      - census
+    default: 
+      - parks
+      - natural
+      - census   
+
+osm_tags_mapping:
+    parks:
+      leisure: 
+      - parks
+      - nature_reserve
+    natural:
+      natural: 
+        wood
+    census:
+      boundary: 
+        census  
+
+gbif_columns: 
+  - gbifID
+  - occurrenceID
+  - kingdom
+  - phylum
+  - class
+  - order
+  - family
+  - genus
+  - species
+  - taxonRank
+  - scientificName
+  - eventDate
+  - day
+  - month
+  - year
+  - taxonKey
+  - basisOfRecord
+  - license
+  - recordedBy
+  - publishingOrgKey
+  - coordinateUncertaintyInMeters
+  - decimalLatitude
+  - decimalLongitude
+  - countryCode
+  - stateProvince
