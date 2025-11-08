@@ -1,6 +1,7 @@
 from .data.factory import create_query
 from .core import read_config, write_config, PipelineData, StepStatus
 from .data.main import get_data
+from .utils.debug import launch_debugger
 from pathlib import Path
 import argparse
 import subprocess
@@ -21,6 +22,10 @@ def main():
     parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
 
     args = parser.parse_args()
+    
+    if args.debug:
+        launch_debugger()
+    
     
     if not args.file:
         if not args.dev:
@@ -52,7 +57,7 @@ def main():
 
             
 
-    #asyncio.run(get_data(data))
+    asyncio.run(get_data(data))
 
     
     
