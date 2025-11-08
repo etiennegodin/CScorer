@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--file", "-f",help = 'Config File')
     parser.add_argument("--dev", "-d", action= 'store_true', help = 'Run dev')
     parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
+    parser.add_argument("--force", action= 'store_true', help = 'Force re-run')
 
     args = parser.parse_args()
     
@@ -33,8 +34,7 @@ def main():
             raise UserWarning("Missing config file")
         #dev branch
         config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        if (config_path.parent / 'data').exists():
-            shutil.rmtree(str(config_path.parent / 'data'))
+
     else:
         config_path = args.file
     
@@ -43,6 +43,10 @@ def main():
     run_folder = Path(config_path).parent
     data_folder = (run_folder / 'data')
     pipe_folder = (data_folder / 'pipeline')
+    
+    if args.force:
+        if (config_path.parent / 'data').exists():
+        shutil.rmtree(str(config_path.parent / 'data'))
     
     data_folder.mkdir(exist_ok= True)
     pipe_folder.mkdir(exist_ok= True)

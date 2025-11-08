@@ -91,7 +91,7 @@ class GbifQuery(BaseQuery):
             if time.time() - start > timeout_seconds:
                 raise TimeoutError("Timed out waiting for GBIF download.")
             
-            asyncio.sleep(poll_interval)
+            time.sleep(poll_interval)
 
     async def _download_and_unpack(self, data:PipelineData, dest_dir: str):
         """
