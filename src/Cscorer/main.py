@@ -8,6 +8,7 @@ import subprocess
 import asyncio
 from pprint import pprint
 import logging
+import shutil
 
 def main():
     
@@ -30,8 +31,10 @@ def main():
     if not args.file:
         if not args.dev:
             raise UserWarning("Missing config file")
+        #dev branch
         config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        
+        if (config_path.parent / 'data').exists():
+            shutil.rmtree(str(config_path.parent / 'data'))
     else:
         config_path = args.file
     
@@ -62,7 +65,7 @@ def main():
             raise Exception(e)
 
             
-
+    logging.info('Running')
     asyncio.run(get_data(data))
 
     

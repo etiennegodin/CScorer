@@ -39,10 +39,7 @@ class GbifQuery(BaseQuery):
             if key == 'LIMIT':
                 continue
             if key == 'GEOMETRY':
-                #predicate.add_geometry(value)
-                continue
-            if key == 'BOUNDS':
-                predicate.add_bounds(value)
+                predicate.add_geometry(value)
                 continue
             predicate.add_field(key, value)
         return predicate.to_dict()   
@@ -62,7 +59,8 @@ class GbifQuery(BaseQuery):
             logging.info(f'Gbif query returned : {response[0]}')
         except Exception as e:
             logger.error(e)
-            
+            raise RuntimeError(e)
+
         if response:   
             data.set('gbif_download_key', response[0])
             
@@ -82,7 +80,7 @@ class GbifQuery(BaseQuery):
 
         while True:
             meta = occ.download_meta(key=download_key)
-            data.logger.info(meta)
+            data.logger.debug(meta)
             status = meta.get("status")
             logger.info(f"GBIF status for {download_key}: {status}")
             if status and status.upper() in ("SUCCEEDED", "COMPLETED", "FINISHED"):
@@ -137,25 +135,9 @@ class GbifPredicate():
         return self
     
     def add_geometry(self, value, type = 'within'):
-        expr = {"type": type, "value":value}
+        expr = {"type": type, "geometry":value}
         self.predicates.append(expr)
         return self
-    
-    def add_bounds(self,value:list):
-        for i, v in enumerate(value):
-            if i % 2 == 0 :
-                type = 'greaterThanOrEquals'
-            else:
-                type = 'lessThanOrEquals'
-            
-            if i <= 2:
-                key = 'DECIMAL_LONGITUDE'
-            else:
-                key = 'DECIMAL_LATITUDE'
-                
-            expr = {"type": type, 'key': key, "value":v}
-            self.predicates.append(expr)
-        return self  
     
     def build(self):
         if not self.predicates:
