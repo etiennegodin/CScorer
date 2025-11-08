@@ -20,34 +20,47 @@ class PipelineData:
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
-    logger: logging.Logger = logging.Logger
+    logger: logging.Logger = logging
     
     def __post_init__(self):
+        self.logger.info("Pipeline data post_init")
         self.set("init", time.time())
-        self._export_storage()
+        self.update_step_status('init', StepStatus.init)
+        self._export()
         
     def update_step_status(self,step:str, status: StepStatus):
         self.step_status[step] = status
+        self._export()
 
     def get(self, key:str):
         return self.storage.get(key)
     
     def set(self, key:str, value: Any):
         self.storage[key] = value
-        self._export_storage()
+        self._export()
     
     def set_config(self, key:str, value: Any):
         self.config[key] = value
-        
-    def _export_storage(self):
+        self._export
+            
+    def _export(self):
+        self.logger.info("_export")
+
         try:
             data_folder = self.config.get('data_folder')
-            if data_folder:
+            if data_folder is not None:
+                write_config(self.step_status, Path(data_folder) / 'pipe_config.yaml')
+                write_config(self.step_status, Path(data_folder) / 'pipe_steps.yaml')
                 write_config(self.storage, Path(data_folder) / 'pipe_data.yaml')
                 return True
-        except Exception:
+            else:
+                self.logger.error("No data folder found in PipelineData")
+                raise ValueError("No data folder found in PipelineData")
+            
+        except Exception as e:
             # do not raise from storage persistence
-            logging.getLogger(__name__).exception("Failed to persist pipeline storage") 
+            self.logger.error(f"Failed to persist pipeline storage : {e}") 
+            
             return False
         
 def read_config(path:Path):
@@ -60,11 +73,18 @@ def write_config(config:dict, path:Path):
     path = to_Path(path)
     try:
         file=open(path,"w")
-        yaml.dump(config,file)
-        file.close()
-        
+        yaml.safe_dump(config,file)
+        file.close() 
     except Exception as e:
-        raise e
+        try:
+            safe_dict = {}
+            for key,value in config.items():
+                safe_dict[key] = value._value_
+            file=open(path,"w")
+            yaml.safe_dump(safe_dict,file)
+            file.close() 
+        except Exception as e:
+            raise RuntimeError(e)
     
     return path
 
