@@ -12,4 +12,5 @@ async def get_data(data:PipelineData):
         gbif_config = data.config['gbif']
         config = data.get('gbif_query_config')
         gbif_query = create_query('gbif', gbif_config)
+        print(gbif_query.predicate)
         gbif_data = await gbif_query.run(data)
