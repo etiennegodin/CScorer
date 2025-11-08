@@ -39,19 +39,25 @@ def main():
     
     run_folder = Path(config_path).parent
     data_folder = (run_folder / 'data')
+    pipe_folder = (data_folder / 'pipeline')
     
+    data_folder.mkdir(exist_ok= True)
+    pipe_folder.mkdir(exist_ok= True)
+
     config["run_folder"] = str(run_folder)
     config["data_folder"] = str(data_folder)
-
+    config["pipeline_folder"] = str(pipe_folder)
     
     #New instance if totally new run 
-    if not (data_folder / 'pipe_data.yaml').exists():
+    if not (pipe_folder / 'pipe_data.yaml').exists():
         logging.info("No pipe data found, creating new instance from scratch")
         data = PipelineData(config = config)
     else:
         #Read from disk 
         try:
-            data = (PipelineData(config= config, storage = read_config(data_folder / 'pipe_data.yaml'), step_status= read_config(data_folder / 'pipe_steps.yaml')))
+            data = (PipelineData(config= config, storage = read_config(pipe_folder / 'pipe_data.yaml'), step_status= read_config(pipe_folder / 'pipe_steps.yaml')))
+            logging.info("Previous pipe data found, creating new instance from data on disk")
+
         except Exception as e:
             raise Exception(e)
 

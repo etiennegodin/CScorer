@@ -55,14 +55,12 @@ class PipelineData:
         self._export
             
     def _export(self):
-        self.logger.info("_export")
-
         try:
             data_folder = self.config.get('data_folder')
             if data_folder is not None:
-                write_config(self.config, Path(data_folder) / 'pipe_config.yaml')
-                write_config(self.step_status, Path(data_folder) / 'pipe_steps.yaml')
-                write_config(self.storage, Path(data_folder) / 'pipe_data.yaml')
+                write_config(self.config, Path(data_folder) / 'pipeline' / 'pipe_config.yaml')
+                write_config(self.step_status, Path(data_folder) / 'pipeline' / 'pipe_steps.yaml')
+                write_config(self.storage, Path(data_folder) / 'pipeline' / 'pipe_data.yaml')
                 return True
             else:
                 self.logger.error("No data folder found in PipelineData")
