@@ -5,7 +5,8 @@ from pathlib import Path
 import argparse
 import subprocess
 import asyncio
-
+from pprint import pprint
+import logging
 
 def main():
     
@@ -32,18 +33,27 @@ def main():
     config = read_config(config_path)
     
     run_folder = Path(config_path).parent
-    data_folder = run_folder / 'data'
-    config_folder = run_folder / 'configs'
-
-    if not (data_folder / 'pipe_data.yaml').exists():
-        data = PipelineData(config = config)
-
-    data = (PipelineData(config= config, storage = read_config(data_folder / 'pipe_data.yaml')))
+    data_folder = (run_folder / 'data')
     
-    data.set_config("run_folder", run_folder)
-    data.set_config("data_folder", run_folder)
+    config["run_folder"] = run_folder
+    config["data_folder"] = data_folder
 
-    asyncio.run(get_data(data))
+    
+    #New instance if totally new run 
+    if not (data_folder / 'pipe_data.yaml').exists():
+        logging.info("No pipe data found, creating new instance from scratch")
+        data = PipelineData(config = config)
+    else:
+        #Read from disk 
+        try:
+            data = (PipelineData(config= config, storage = read_config(data_folder / 'pipe_data.yaml'), step_status= read_config(data_folder / 'pipe_steps.yaml')))
+        except Exception as e:
+            raise Exception(e)
+
+        
+    #pprint(data.__dict__)
+
+    #asyncio.run(get_data(data))
 
     
     
