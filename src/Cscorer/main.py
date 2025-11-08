@@ -1,5 +1,5 @@
 from .data.factory import create_query
-from .core import read_config, PipelineData
+from .core import read_config, write_config, PipelineData, StepStatus
 from .data.main import get_data
 from pathlib import Path
 import argparse
@@ -35,8 +35,8 @@ def main():
     run_folder = Path(config_path).parent
     data_folder = (run_folder / 'data')
     
-    config["run_folder"] = run_folder
-    config["data_folder"] = data_folder
+    config["run_folder"] = str(run_folder)
+    config["data_folder"] = str(data_folder)
 
     
     #New instance if totally new run 
@@ -50,8 +50,7 @@ def main():
         except Exception as e:
             raise Exception(e)
 
-        
-    #pprint(data.__dict__)
+            
 
     #asyncio.run(get_data(data))
 
