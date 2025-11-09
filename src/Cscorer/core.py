@@ -7,8 +7,6 @@ import pandas as pd
 import geopandas as gpd
 import time
 from enum import Enum
-import duckdb
-
 
 class StepStatus(str, Enum):
     init = "init"    
@@ -28,7 +26,6 @@ def stepstatus_constructor(loader, node):
 
 @dataclass
 class PipelineData:
-    db_con: duckdb.DuckDBPyConnection
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
@@ -36,8 +33,15 @@ class PipelineData:
     
     def __post_init__(self):
         self.logger.info("Pipeline data post_init")
+        #Init print
         self.set("init", time.time())
         self.update_step_status('init', StepStatus.init)
+        
+        # Init db_connection 
+        from .utils.duckdb import _open_connection
+        db_path = f"{self.config['folders']['data_folder']}/data.duckdb"
+        self.con = _open_connection(db_path=db_path )
+        self.config['db_path'] = db_path
         # Register handlers
         self._export()
         

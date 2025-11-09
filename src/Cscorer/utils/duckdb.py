@@ -5,45 +5,7 @@ from shapely import Point, Polygon
 import geopandas as gpd
 import pandas as pd
 from ..core import to_Path, rename_col_df, convert_df_to_gdf
-
-class DuckDBConnection:
-    _instance = None
-
-    def __new__(cls, file: str = None):
-        if cls._instance is None:
-            # Create the class instance
-            cls._instance = super().__new__(cls)
-            cls._instance._conn = None
-            cls._instance._file = None
-
-        # Handle connection logic
-        if file is not None:
-            # Close old connection if switching files
-            if cls._instance._conn is not None and file != cls._instance._file:
-                logging.info('Closing duckdb connection')
-                cls._instance._conn.close()
-                cls._instance._conn = None
-
-            # Open connection if not already connected
-            if cls._instance._conn is None:
-                logging.info(f'Creating duckdb file {file}')
-                cls._instance._conn = duckdb.connect(file)
-                cls._instance._conn.execute("INSTALL spatial;")
-                cls._instance._conn.execute("LOAD spatial;")
-                cls._instance._file = file
-
-        elif cls._instance._conn is None:
-            raise ValueError("No DuckDB file specified for initial connection.")
-
-        return cls._instance
-
-    @property
-    def conn(self):
-        return self._conn
-
-    @property
-    def file(self):
-        return self._file
+from dataclasses import dataclass, field
 
 def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
@@ -52,7 +14,6 @@ def _open_connection(db_path: str):
     except Exception as e:
         logging.error(f'Error connection to duckdb {db_path} : \n ', e)
         raise IOError(f'Error connecting : {e}')
-
 
 def load_spatial_extension(con):
     try:
@@ -63,6 +24,21 @@ def load_spatial_extension(con):
         logging.error(f"Error loading spatial extension : {e}")
         return False
 
+def register_file(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
+    
+    query = f"""CREATE OR REPLACE TABLE  {schema}.{table} AS
+                SELECT *,
+                ST_Point(decimalLongitude, decimalLatitude) AS geom,
+                FROM '{file_path}'
+                """
+    try:
+        con.execute(query)
+        return True
+
+    except Exception as e:
+        logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
+        return False
+    
 def assign_table_alias(columns: list = None, alias :str = None):
     query = """"""
     for col in columns:
