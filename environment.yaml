@@ -1,4 +1,4 @@
-name: CScorerEnv
+name: RScorerEnv
 channels:
   - conda-forge
   - defaults

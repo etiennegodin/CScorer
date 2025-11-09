@@ -10,7 +10,10 @@ from dataclasses import dataclass, field
 def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
     try:
-        return duckdb.connect(database=db_path)
+        con = duckdb.connect(database=db_path)
+        if load_spatial_extension(con):
+            return con
+        
     except Exception as e:
         logging.error(f'Error connection to duckdb {db_path} : \n ', e)
         raise IOError(f'Error connecting : {e}')
@@ -24,20 +27,24 @@ def load_spatial_extension(con):
         logging.error(f"Error loading spatial extension : {e}")
         return False
 
-def register_file(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
+def import_csv(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
+    
+    create_schema(con, schema=schema)
     
     query = f"""CREATE OR REPLACE TABLE  {schema}.{table} AS
                 SELECT *,
                 ST_Point(decimalLongitude, decimalLatitude) AS geom,
-                FROM '{file_path}'
+                FROM read_csv('{file_path}')
                 """
+
     try:
         con.execute(query)
-        return True
+        logging.info(f'Registered {file_path} to {schema}.{table}')
+        return f"{schema}.{table}"
 
     except Exception as e:
         logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
-        return False
+        return None
     
 def assign_table_alias(columns: list = None, alias :str = None):
     query = """"""
