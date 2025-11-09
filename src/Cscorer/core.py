@@ -14,7 +14,6 @@ class StepStatus(str, Enum):
     pending = 'pending'
     ready = "ready"
     local = 'local'
-    registered = 'registered'
     completed = "completed"
     failed = "failed"
 

@@ -1,9 +1,7 @@
-from Cscorer.data.factory import create_query
-from Cscorer.core import read_config
-from pathlib import Path
+from pygbif import occurrences as occ
+from pprint import pprint
 
-path = Path(__file__).parent / "gbif_query.yaml"
-config = read_config(path)
-query = create_query('gbif', config)
-print(query.predicate)
-query.run()
+response = occ.search(taxonKey= 7707728, datasetKey="2fd02649-fc08-4957-9ac5-2830e072c097", country= "CA", limit= 2)
+
+pprint(response['results'])
+
