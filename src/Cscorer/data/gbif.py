@@ -27,8 +27,8 @@ class GbifQuery(BaseQuery):
         ready_key = await self._poll_gbif_until_ready(data)
         data.update_step_status(step, StepStatus.ready)
 
-        gbif_raw_data = await self._download_and_unpack(data, data.config['data_folder'])
-        data.update_step_status(step, StepStatus.completed)
+        gbif_raw_data = await self._download_and_unpack(data, data.config['folders']['data_folder'])
+        data.update_step_status(step, StepStatus.local)
         
         return gbif_raw_data
             

@@ -11,9 +11,11 @@ from enum import Enum
 class StepStatus(str, Enum):
     init = "init"    
     requested = "requested" 
-    ready = "ready"
-    completed = "completed"
     pending = 'pending'
+    ready = "ready"
+    local = 'local'
+    registered = 'registered'
+    completed = "completed"
     failed = "failed"
 
 # Custom YAML handlers
@@ -62,7 +64,7 @@ class PipelineData:
             
     def _export(self):
         try:
-            data_folder = self.config.get('data_folder')
+            data_folder = self.config['folders'].get('data_folder')
             if data_folder is not None:
                 write_config(self.config, Path(data_folder) / 'pipeline' / 'pipe_config.yaml')
                 write_config(self.step_status, Path(data_folder) / 'pipeline' / 'pipe_steps.yaml')
