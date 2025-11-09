@@ -1,10 +1,14 @@
 from typing import Callable, List, Dict, Any, Optional
+from shapely import Point
 from pathlib import Path
 from dataclasses import dataclass, field
 import logging
-import yaml
+import pandas as pd 
+import geopandas as gpd
 import time
 from enum import Enum
+import duckdb
+
 
 class StepStatus(str, Enum):
     init = "init"    
@@ -22,11 +26,9 @@ def stepstatus_constructor(loader, node):
     value = loader.construct_scalar(node)
     return StepStatus(value)
 
-
-
-
 @dataclass
 class PipelineData:
+    db_con: duckdb.DuckDBPyConnection
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
@@ -99,4 +101,15 @@ def to_Path(file_path: str):
         return file_path
     if not isinstance(file_path, Path):
         return Path(file_path)
+
+def convert_df_to_gdf(df : pd.DataFrame, lat_col : str = 'decimalLatitude', long_col : str = 'decimalLongitude', crs = 4326, verbose = False):
+    return gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df["decimalLongitude"], df["decimalLatitude"])] , crs = 4326 )
+
+def rename_col_df(df:pd.DataFrame|gpd.GeoDataFrame, old:str = None, new:str = None):
+    #Replace ":" with "_" in columns
+    cols = df.columns.to_list()
+    for col in cols:
+        if old in col:
+            df.rename(columns={col : str(col).replace(old,new)}, inplace= True)
+    return df
     
