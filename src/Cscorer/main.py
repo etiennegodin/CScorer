@@ -1,6 +1,6 @@
 from .data.factory import create_query
 from .core import read_config, write_config, PipelineData
-from .data.get_data import get_gbif
+from .data.get_data import get_citizen_data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -64,12 +64,11 @@ def main():
     #New instance if totally new run (or forced)
     if not data_folder.exists():
         logging.info("No pipe data found, creating new instance from scratch")
-        data = PipelineData(config = config)
-        
-        # Create folders 
+                # Create folders 
         data_folder.mkdir(exist_ok= True)
         pipe_folder.mkdir(exist_ok= True)
-        
+        data = PipelineData(config = config)
+            
     else:
         #Read from disk 
         try:
@@ -84,7 +83,7 @@ def main():
 
 
             
-    asyncio.run(get_gbif(data))
+    asyncio.run(get_citizen_data(data))
     
     #asyncio.run(get_data(data))
     

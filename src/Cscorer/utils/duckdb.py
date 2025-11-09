@@ -27,7 +27,7 @@ def load_spatial_extension(con):
         logging.error(f"Error loading spatial extension : {e}")
         return False
 
-def import_csv(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
+def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
     
     create_schema(con, schema=schema)
     

@@ -13,22 +13,19 @@ class GbifQuery(BaseQuery):
         self.config = config
         self.predicate = self._predicate_builder(self.config)
 
-    async def run(self, data:PipelineData):
+    async def run(self, data:PipelineData, step_name:str):
         logger = data.logger
-        step = 'gbif_query'
-        if "gbif_query" not in data.step_status.keys():
-            data.update_step_status(step, StepStatus.init)
 
         if "gbif_download_key" not in data.storage.keys():
             if self.predicate:
                 download_key = await self._submit_request(data)
-                data.update_step_status(step, StepStatus.requested)
+                data.update_step_status(step_name, StepStatus.requested)
 
         ready_key = await self._poll_gbif_until_ready(data)
-        data.update_step_status(step, StepStatus.ready)
+        data.update_step_status(step_name, StepStatus.ready)
 
         gbif_raw_data = await self._download_and_unpack(data, data.config['folders']['data_folder'])
-        data.update_step_status(step, StepStatus.local)
+        data.update_step_status(step_name, StepStatus.local)
         
         return gbif_raw_data
             
@@ -41,8 +38,11 @@ class GbifQuery(BaseQuery):
             if key == 'GEOMETRY':
                 predicate.add_geometry(value)
                 continue
+            if key == 'YEAR':
+                predicate.add_field(key,value, type = 'greaterThan') # custom for year 
+                continue
             predicate.add_field(key, value)
-        return predicate.to_dict()   
+        return predicate
     
     async def _submit_request(self, data:PipelineData):  
         logger = data.logger
@@ -50,7 +50,8 @@ class GbifQuery(BaseQuery):
         env_path = Path(__file__).parent.parent.parent.parent / ".env"
         load_dotenv(env_path)
         try:
-            response = occ.download(self.predicate,
+            query = self.predicate.to_dict() # build 
+            response = occ.download(query,
                     format="SIMPLE_CSV",
                     user= str(os.getenv("GBIF_USERNAME")),
                     pwd=str(os.getenv("GBIF_PASSWORD")),
@@ -125,12 +126,14 @@ class GbifPredicate():
         if type not in ('and', 'or'):
             raise ValueError("Mode must be 'and' or 'or'")
         self.type = type
-        self.predicates = [
-            {'type': 'isNotNull', 'parameter': 'YEAR'}
-        ]
-        
+        self.predicates = []
     def add_field(self, key :str, value:str, type :str = 'equals'):
-        expr = {"type": type, "key": key, "value":value}
+        if isinstance(value, list):
+            # Requires type to be "in" for list 
+            expr = {"type": 'in', "key": key, "value":value}
+        else:
+            expr = {"type": type, "key": key, "value":value}
+
         self.predicates.append(expr)
         return self
     
@@ -143,6 +146,7 @@ class GbifPredicate():
         if not self.predicates:
             return {}
         else:
+            self.predicates.append({'type': 'isNotNull', 'parameter': 'YEAR'}) # Add year flag 
             return {
                     "type" : self.type,
                     "predicates" : self.predicates
