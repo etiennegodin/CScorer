@@ -127,6 +127,7 @@ class GbifPredicate():
             raise ValueError("Mode must be 'and' or 'or'")
         self.type = type
         self.predicates = []
+        
     def add_field(self, key :str, value:str, type :str = 'equals'):
         if isinstance(value, list):
             # Requires type to be "in" for list 
@@ -147,6 +148,9 @@ class GbifPredicate():
             return {}
         else:
             self.predicates.append({'type': 'isNotNull', 'parameter': 'YEAR'}) # Add year flag 
+            self.predicates.append({'type': 'equals', 'key' : "HAS_COORDINATE", "value" :  'True'}) # Add coords flag 
+
+
             return {
                     "type" : self.type,
                     "predicates" : self.predicates

@@ -37,10 +37,13 @@ async def get_expert_data(data:PipelineData):
         data.update_step_status(step_name, StepStatus.init)
         #Retrieve base configs 
         gbif_config = data.config['gbif']
-        #Add specific expert data configs
         
         #Create query
         gbif_query = create_query('gbif', gbif_config)
+        
+        #Add specific expert data configs
+        gbif_query.predicate.add_field(key ='DATASET_KEY', value = [])
+
         #Run the request to gbif
         gbif_data = await gbif_query.run(data, step_name)
         #Commit received data to db
