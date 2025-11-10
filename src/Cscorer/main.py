@@ -1,6 +1,6 @@
 from .data.factory import create_query
 from .core import read_config, write_config, PipelineData
-from .data.get_data import get_citizen_data
+from .data.get_data import get_all_data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -83,11 +83,8 @@ def main():
 
 
             
-    asyncio.run(get_citizen_data(data))
-    
-    #asyncio.run(get_data(data))
-    
-    
+    #asyncio.run(get_citizen_data(data))
+    asyncio.run(get_all_data(data)) 
 
     
     

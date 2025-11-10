@@ -5,6 +5,13 @@ from .factory import create_query
 from pathlib import Path
 import asyncio
 
+async def get_all_data(data:PipelineData):
+    async with asyncio.TaskGroup() as tg:
+        cs_data = tg.create_task(get_citizen_data(data))
+        expert_data = tg.create_task(get_expert_data(data))
+    
+    return cs_data, expert_data
+
 async def get_citizen_data(data:PipelineData):
     step_name = 'get_citizen_data'
     # GBIF QUERY
@@ -15,12 +22,10 @@ async def get_citizen_data(data:PipelineData):
         gbif_config = data.config['gbif']
         #Create query
         gbif_query = create_query('gbif', gbif_config)
-        gbif_query.predicate.add_field('BASIS_OF_RECORD', 'HUMAN_OBSERVATION')
+        gbif_query.predicate.add_field(key = 'BASIS_OF_RECORD', value = 'HUMAN_OBSERVATION')
 
-        #gbif_query.predicate['predicates'].append({'test'})
-        print(gbif_query.predicate)
-
-        return
+        print('cs_query')
+        return True
         #Run the request to gbif
         gbif_data = await gbif_query.run(data, step_name)
         #Commit received data to db
@@ -38,12 +43,20 @@ async def get_expert_data(data:PipelineData):
         #Retrieve base configs 
         gbif_config = data.config['gbif']
         
+        #Get expert datasets keys from config
+        datasets = data.config['datasets']
+        dataset_keys = []
+        for data in datasets.values():
+            dataset_keys.append(data['key'])
         #Create query
         gbif_query = create_query('gbif', gbif_config)
         
         #Add specific expert data configs
-        gbif_query.predicate.add_field(key ='DATASET_KEY', value = [])
-
+        gbif_query.predicate.add_field(key ='DATASET_KEY', value = dataset_keys)
+        
+        print('expert query')
+        return True
+        
         #Run the request to gbif
         gbif_data = await gbif_query.run(data, step_name)
         #Commit received data to db
