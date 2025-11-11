@@ -22,18 +22,24 @@ class GbifQuery(BaseQuery):
 
     async def run(self, data:PipelineData, step_name:str):
         logger = data.logger
-
+        # Set dict for step outputs 
+        
         if "gbif_download_key" not in data.storage.keys():
             if self.predicate:
                 download_key = await self._submit_request(data)
+                data.set(f"{step_name}_key", download_key)
+                logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
                 data.update_step_status(step_name, StepStatus.requested)
 
-        ready_key = await self._poll_gbif_until_ready(data)
-        data.update_step_status(step_name, StepStatus.ready)
+        if data.step_status[f'{step_name}'] == StepStatus.requested:
+            ready_key = await self._poll_gbif_until_ready(download_key, logger= data.logger)
+            data.update_step_status(step_name, StepStatus.ready)
 
-        gbif_raw_data = await self._download_and_unpack(data, data.config['folders']['data_folder'])
-        data.update_step_status(step_name, StepStatus.local)
-        
+        if data.step_status[f'{step_name}'] == StepStatus.ready:
+            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['data_folder'], logger= data.logger)
+            data.update_step_status(step_name, StepStatus.local)
+            data.set(f"{step_name}_data", gbif_raw_data)
+
         return gbif_raw_data
     
     async def _submit_request(self, data:PipelineData):  
@@ -44,21 +50,19 @@ class GbifQuery(BaseQuery):
         try:
             query = self.predicate.to_dict() # build 
             #threaded as returns tuples 
-            response = await asyncio.to_thread(occ.download(query,
+            response = await asyncio.to_thread(lambda: occ.download(query,
                     format="SIMPLE_CSV",
                     user= str(os.getenv("GBIF_USERNAME")),
                     pwd=str(os.getenv("GBIF_PASSWORD")),
                     email=str(os.getenv("GBIF_EMAIL"))))
             
-            logger.info(f"Gbif request made. Key : {response[0]}")
         except Exception as e:
             logger.error(f"Error running gbif request: {e}")
             raise RuntimeError(e)
-
         if response:   
-            data.set('gbif_download_key', response[0])
+            return response[0]
     
-    async def _poll_gbif_until_ready(self, data: PipelineData, poll_interval: int = 30, timeout_seconds: int = 60*60):
+    async def _poll_gbif_until_ready(self, download_key:str, logger = logging.Logger, poll_interval: int = 30, timeout_seconds: int = 60*60, ):
         
         """
         Poll GBIF for the download status. Uses occ.download_meta or occ.download_get to inspect.
@@ -66,13 +70,11 @@ class GbifQuery(BaseQuery):
         """
         import time
         import asyncio
-        download_key = data.get("gbif_download_key")
-        logger = data.logger
         start = time.time()
 
         while True:
-            meta = await occ.download_meta(key=download_key)
-            data.logger.debug(meta)
+            meta =  await asyncio.to_thread(lambda: occ.download_meta(key=download_key))
+            logger.debug(meta)
             status = meta.get("status")
             logger.info(f"GBIF status for {download_key}: {status}")
             if status and status.upper() in ("SUCCEEDED", "COMPLETED", "FINISHED"):
@@ -85,18 +87,16 @@ class GbifQuery(BaseQuery):
             
             time.sleep(poll_interval)
 
-    async def _download_and_unpack(self, data:PipelineData, dest_dir: str):
+    async def _download_and_unpack(self, download_key:str, dest_dir: str, logger = logging.Logger):
         """
         Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
         pygbif.occurrence.download_get can write the file locally.
         """
-        logger = data.logger
-        download_key = data.get("gbif_download_key")
  
         os.makedirs(dest_dir, exist_ok=True)
         logger.info(f"Downloading GBIF data for {download_key} to {dest_dir}...")
         # This returns file path or bytes depending on client; example below writes to path
-        response = await occ.download_get(download_key, path=dest_dir)
+        response = await asyncio.to_thread(lambda: occ.download_get(download_key, path=dest_dir))
         zip_path = response['path']# implementation detail from pygbif
         logger.info(f"Downloaded to {zip_path}")
         # Unpack (if needed) - example uses unzip via python
@@ -108,7 +108,6 @@ class GbifQuery(BaseQuery):
         
         # Save data path
         output = f"{dest_dir}/{response['key']}.csv"
-        data.set('gbif_raw_data', output)
         os.remove(zip_path)
         return output
     
@@ -155,9 +154,8 @@ class GbifPredicate():
         if not self.predicates:
             return {}
         else:
-            self.predicates.append({'type': 'isNotNull', 'parameter': 'YEAR'}) # Add year flag 
-            self.predicates.append({'type': 'equals', 'key' : "HAS_COORDINATE", "value" :  'True'}) # Add coords flag 
-
+            self.predicates.append({'type': 'equals', 'key' : "HAS_COORDINATE", "value" :  'true'}) # Add coords flag 
+            self.predicates.append({'type': 'equals', 'key' : "OCCURRENCE_STATUS", "value" :  'present'}) # Add coords flag 
 
             return {
                     "type" : self.type,
