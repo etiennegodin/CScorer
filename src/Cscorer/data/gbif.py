@@ -8,9 +8,6 @@ from enum import Enum
 import asyncio
 
 
-class GbifClient:
-    #wrapper for gbif api functions ( submit, download, etc,  query as input )
-    pass
 
 
 class GbifQuery(BaseQuery):
@@ -21,8 +18,7 @@ class GbifQuery(BaseQuery):
         self.config = config
         self.predicate = self._predicate_builder(self.config)
         
-    async def run(self, data
-                  :PipelineData):
+    async def run(self, data:PipelineData):
         logger = data.logger
         step_name = self.name
         # Set dict for step outputs 
@@ -43,8 +39,9 @@ class GbifQuery(BaseQuery):
 
         if data.step_status[f'{step_name}'] == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['data_folder'], logger= data.logger)
-            data.update_step_status(step_name, StepStatus.local)
             data.storage[step_name]['raw_data'] = gbif_raw_data
+            data.update_step_status(step_name, StepStatus.local)
+            data.update()
 
         return gbif_raw_data
     
