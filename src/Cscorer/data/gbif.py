@@ -15,21 +15,27 @@ class GbifClient:
 
 class GbifQuery(BaseQuery):
 
-    def __init__(self, config:dict):
+    def __init__(self, name:str, config:dict):
         super().__init__()
+        self.name = name
         self.config = config
         self.predicate = self._predicate_builder(self.config)
-
-    async def run(self, data:PipelineData, step_name:str):
+        
+    async def run(self, data
+                  :PipelineData):
         logger = data.logger
+        step_name = self.name
         # Set dict for step outputs 
         
-        if "gbif_download_key" not in data.storage.keys():
-            if self.predicate:
+        if "key" not in data.storage[step_name].keys():
+            if data.step_status[f'{step_name}'] == StepStatus.init:
                 download_key = await self._submit_request(data)
-                data.set(f"{step_name}_key", download_key)
+                data.storage[step_name]['key'] = download_key
                 logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
                 data.update_step_status(step_name, StepStatus.requested)
+        else:
+            download_key = data.storage[step_name]['key']
+            data.update_step_status(step_name, StepStatus.requested)
 
         if data.step_status[f'{step_name}'] == StepStatus.requested:
             ready_key = await self._poll_gbif_until_ready(download_key, logger= data.logger)
@@ -38,7 +44,7 @@ class GbifQuery(BaseQuery):
         if data.step_status[f'{step_name}'] == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['data_folder'], logger= data.logger)
             data.update_step_status(step_name, StepStatus.local)
-            data.set(f"{step_name}_data", gbif_raw_data)
+            data.storage[step_name]['raw_data'] = gbif_raw_data
 
         return gbif_raw_data
     
