@@ -6,6 +6,17 @@ class iNatQuery(BaseQuery):
         pass
         
 
+async def get_occurenceIDs(con):
+    query = """
+            SELECT occurrenceID,
+            FROM gbif_raw.citizen
+            WHERE institutionCode = iNaturalist;
+    """
+    
+    occurenceURLs = con.execute(query).df()['occurrenceID']
+    occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
+    return occurenceIDs
+
 token = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo0NDE1NDY3LCJleHAiOjE3NjI5ODI1ODl9.bEPjem-1nSLeViU0lDyYBJ9UFnR2w2VXqvfVikhp8OADBmoj4Hm8fZpAkFJ--BcLezW5o0NL3wdTfqU5pOxSqA"
 
 import requests
@@ -14,6 +25,8 @@ import time
 async def inat_main(data):
     con = data.con 
     
+    occurenceIDs = await get_occurenceIDs(con)
+    occurenceIDs = occurenceIDs[:5]
     # You'll need to be authenticated
     headers = {
         'Authorization': f'Bearer {token}',  # Get from iNaturalist account
@@ -22,7 +35,7 @@ async def inat_main(data):
 
     # Create export with your observation IDs
     data = {
-        'id': ','.join(map(str, your_observation_ids)),  # comma-separated list
+        'id': ','.join(map(str, occurenceIDs)),  # comma-separated list
         # Or use other filters instead of specific IDs:
         # 'taxon_id': 12345,
         # 'place_id': 67890,
