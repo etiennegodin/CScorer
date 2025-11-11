@@ -53,8 +53,7 @@ class PipelineData:
     def get(self, key:str):
         return self.storage.get(key)
     
-    def update(self, key:str, value: Any):
-        self.storage[key].update(value)
+    def update(self):
         self._export()
     
     def set(self, key:str, value: Any):
