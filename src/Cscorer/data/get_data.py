@@ -5,6 +5,8 @@ from .factory import create_query
 from pathlib import Path
 import asyncio
 import time
+import aiohttp
+
 
 async def get_gbif_data(data:PipelineData):
 
@@ -42,7 +44,7 @@ async def get_gbif_data(data:PipelineData):
         
     # Commit local .csv to db 
     cs_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'citizen' )
-    expert_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'expert' )
+    expert_table = await import_csv_to_db(data.con, expert_data, schema= 'gbif_raw', table= 'expert' )
 
     # Flag as completed
     if cs_table:
@@ -50,7 +52,19 @@ async def get_gbif_data(data:PipelineData):
 
     if expert_table:
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
+        
+        
+async def get_inaturalist_data(data:PipelineData):
+    con = data.con
+    observer_list = con.execute()
     
+
+    pass
+
+async def get_environmental_data(data:PipelineData):
+    step_name = 'get_environmental_data'
+
+    pass
 
 async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
@@ -76,17 +90,6 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
         data.update_step_status(step_name, StepStatus.init)
         
     return query
-
-
-async def get_inaturalist_metadata(data:PipelineData):
-    step_name = 'get_inaturalist_metadata'
-
-    pass
-
-async def get_environmental_data(data:PipelineData):
-    step_name = 'get_environmental_data'
-
-    pass
 
 
 
