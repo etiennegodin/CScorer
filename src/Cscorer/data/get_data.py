@@ -13,11 +13,16 @@ async def get_all_data(data:PipelineData):
     
     print(cs_query)
     print(expert_query)
+    
+    
+    print(cs_query.predicate)
+    print("\n"*10)
+    print(expert_query.predicate)
 
     async with asyncio.TaskGroup() as tg:
         cs_data = tg.create_task(cs_query.run(data, "get_citizen_data"))
-        expert_data = tg.create_task(expert_query.run(data, "get_expert_data"))
-        
+        #expert_data = tg.create_task(expert_query.run(data, "get_expert_data"))
+    print("@"*100, "RESULTS")
     print(cs_data.result())
     quit()
     
@@ -41,8 +46,7 @@ async def get_citizen_data(data:PipelineData):
         #Create query
         cs_query = create_query('gbif', gbif_config)
         cs_query.predicate.add_field(key = 'BASIS_OF_RECORD', value = 'HUMAN_OBSERVATION')
-        print(cs_query.predicate)
-        quit()
+        #print(cs_query.predicate)
         return cs_query
         #Run the request to gbif
         cs_data = asyncio.create_task(gbif_query.run(data, step_name))
