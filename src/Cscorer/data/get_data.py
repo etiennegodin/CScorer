@@ -23,8 +23,8 @@ async def get_gbif_data(data:PipelineData):
     expert_predicates = {"DATASET_KEY" : dataset_keys }
 
     # Create queries 
-    cs_query = await create_gbif_query(data, name= 'citizen', predicates= cs_predicates)
-    expert_query = await create_gbif_query(data, name= 'expert', predicates= expert_predicates)
+    cs_query = await _create_gbif_query(data, name= 'citizen', predicates= cs_predicates)
+    expert_query = await _create_gbif_query(data, name= 'expert', predicates= expert_predicates)
     
     #Lauch async concurrent queries 
     async with asyncio.TaskGroup() as tg:
@@ -50,9 +50,9 @@ async def get_gbif_data(data:PipelineData):
 
     if expert_table:
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
-        
+    
 
-async def create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
+async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
     gbif_config = data.config['gbif']
     
@@ -76,7 +76,7 @@ async def create_gbif_query(data:PipelineData, name:str, predicates:dict = None)
         data.update_step_status(step_name, StepStatus.init)
         
     return query
-    
+
 
 async def get_inaturalist_metadata(data:PipelineData):
     step_name = 'get_inaturalist_metadata'

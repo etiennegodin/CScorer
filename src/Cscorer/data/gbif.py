@@ -1,14 +1,12 @@
 import os
+import asyncio
+import time
+from enum import Enum
+import logging
 from pathlib import Path
-from .base import BaseQuery
 from pygbif import occurrences as occ
 from ..core import PipelineData, StepStatus
-import logging
-from enum import Enum
-import asyncio
-
-
-
+from .base import BaseQuery
 
 class GbifQuery(BaseQuery):
 
