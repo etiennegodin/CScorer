@@ -1,4 +1,9 @@
 from .base import BaseQuery
+from pprint import pprint
+import requests
+import time
+
+
 
 class iNatQuery(BaseQuery):
 
@@ -10,23 +15,24 @@ async def get_occurenceIDs(con):
     query = """
             SELECT occurrenceID,
             FROM gbif_raw.citizen
-            WHERE institutionCode = iNaturalist;
+            WHERE institutionCode = 'iNaturalist';
     """
     
     occurenceURLs = con.execute(query).df()['occurrenceID']
-    occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
-    return occurenceIDs
+    #occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
+    
+    return occurenceURLs.to_list()
 
 token = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo0NDE1NDY3LCJleHAiOjE3NjI5ODI1ODl9.bEPjem-1nSLeViU0lDyYBJ9UFnR2w2VXqvfVikhp8OADBmoj4Hm8fZpAkFJ--BcLezW5o0NL3wdTfqU5pOxSqA"
 
-import requests
-import time
+
 
 async def inat_main(data):
     con = data.con 
     
     occurenceIDs = await get_occurenceIDs(con)
-    occurenceIDs = occurenceIDs[:5]
+    occurenceIDs = occurenceIDs[:100]
+    print(occurenceIDs)
     # You'll need to be authenticated
     headers = {
         'Authorization': f'Bearer {token}',  # Get from iNaturalist account
@@ -49,6 +55,6 @@ async def inat_main(data):
         headers=headers,
         json=data
     )
-
-    export_id = response.json()['id']
-    print(f"Export created: {export_id}")
+    pprint(response)
+    #export_id = response.json()['id']
+    #print(f"Export created: {export_id}")
