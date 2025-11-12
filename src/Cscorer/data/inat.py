@@ -1,17 +1,57 @@
 from .base import BaseQuery
-from pprint import pprint
-import requests
-import time
-
+from shapely import wkt
+from ..core import PipelineData, StepStatus
 
 
 class iNatQuery(BaseQuery):
 
-    def run(self, config:dict):
-        pass
+    def __init__(self, name:str):
+        super().__init__()
+        self.name = name
+
+    async def run(self, data:PipelineData):
+        import webbrowser
+
+        
+        
+        query = await self._build_query()
+        #build query
+        query = "has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01"
+        url = f"https://www.inaturalist.org/observations/export?{query}"
+        
+        webbrowser.open(url)
+
+
+        
+        
+        
+    
+    
         
 
-async def get_occurenceIDs(con):
+
+    async def _build_query(self):
+        pass
+    
+
+
+    def _get_bounds(config):
+        geo = config['gbif']['GEOMETRY']
+        geom = wkt.loads(geo)
+        minx, miny, maxx, maxy = geom.bounds
+
+        # South-West and North-East
+        lat_so, lon_so = miny, minx
+        lat_ne, lon_ne = maxy, maxx
+
+        print(lat_so, lon_so )
+        print(lat_ne, lon_ne)
+        
+    
+    
+    
+
+async def _get_occurenceIDs(con):
     query = """
             SELECT occurrenceID,
             FROM gbif_raw.citizen
@@ -22,39 +62,3 @@ async def get_occurenceIDs(con):
     #occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
     
     return occurenceURLs.to_list()
-
-token = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo0NDE1NDY3LCJleHAiOjE3NjI5ODI1ODl9.bEPjem-1nSLeViU0lDyYBJ9UFnR2w2VXqvfVikhp8OADBmoj4Hm8fZpAkFJ--BcLezW5o0NL3wdTfqU5pOxSqA"
-
-
-
-async def inat_main(data):
-    con = data.con 
-    
-    occurenceIDs = await get_occurenceIDs(con)
-    occurenceIDs = occurenceIDs[:100]
-    print(occurenceIDs)
-    # You'll need to be authenticated
-    headers = {
-        'Authorization': f'Bearer {token}',  # Get from iNaturalist account
-        'Content-Type': 'application/json'
-    }
-
-    # Create export with your observation IDs
-    data = {
-        'id': ','.join(map(str, occurenceIDs)),  # comma-separated list
-        # Or use other filters instead of specific IDs:
-        # 'taxon_id': 12345,
-        # 'place_id': 67890,
-        # 'user_id': 'username',
-        # 'd1': '2024-01-01',  # date range
-        # 'd2': '2024-12-31'
-    }
-
-    response = requests.post(
-        'https://api.inaturalist.org/v1/observation_exports',
-        headers=headers,
-        json=data
-    )
-    pprint(response)
-    #export_id = response.json()['id']
-    #print(f"Export created: {export_id}")

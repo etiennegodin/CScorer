@@ -55,9 +55,17 @@ async def get_gbif_data(data:PipelineData):
         
         
 async def get_inaturalist_data(data:PipelineData):
+    step_name = "get_inaturalist_data"
     con = data.con
-    observer_list = con.execute()
+
+    # Create query 
+    inat_query = create_query('inat', name = step_name)
     
+    #Init step
+    data.init_new_step(step_name)
+    
+    #Return url for 
+    url = inat_query.run()    
 
     pass
 
@@ -82,12 +90,8 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
     for key, value in predicates.items():
         query.predicate.add_field(key = key, value = value)
     
-    #Set StepStatus        
-    
-    if not step_name in data.storage.keys():
-        data.logger.info(f"First time running {step_name}, creating storage and step status")
-        data.set(step_name,  {'init' : time.time()})
-        data.update_step_status(step_name, StepStatus.init)
+    #Init step
+    data.init_new_step(step_name)
         
     return query
 
