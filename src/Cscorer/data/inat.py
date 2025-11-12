@@ -48,11 +48,12 @@ class iNatQuery(BaseQuery):
 
                     file_index = await ask_file_input(len(files), lines)
                     new_files.append(files[file_index])
-
+            inat_tables = []
             for f in files:
                 inat_table = await import_csv_to_db(data.con,f,'inat','occurences', override= False)
-
-            if inat_table:
+                inat_tables.append(inat_table)
+                
+            if inat_tables == len(files):
                 data.update_step_status(step_name, StepStatus.completed)
 
     async def _build_query(self):
