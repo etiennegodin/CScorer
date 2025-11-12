@@ -27,16 +27,23 @@ def load_spatial_extension(con):
         logging.error(f"Error loading spatial extension : {e}")
         return False
 
-async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str):
-    
-    create_schema(con, schema=schema)
-    
-    query = f"""CREATE OR REPLACE TABLE  {schema}.{table} AS
-                SELECT *,
-                ST_Point(decimalLongitude, decimalLatitude) AS geom,
-                FROM read_csv('{file_path}')
-                """
+async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str, override:bool = True, geo:bool = False):
 
+    if (override) or (f"{schema}.{table}" not in get_all_tables(con)):
+        create_schema(con, schema=schema)
+        query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
+        """
+
+    else:
+        query = f"""INSERT INTO {schema}.{table}
+        """
+        
+    query += f"""SELECT *,
+                    {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
+                    FROM read_csv('{file_path}')
+                    """
+    print(query)
+    
     try:
         con.execute(query)
         logging.info(f'Registered {file_path} to {schema}.{table}')
@@ -80,6 +87,20 @@ def create_schema(con, schema:str=None):
     except Exception as e:
         logging.error(f'Error creating schema {schema} : \n', e)
         return False
+    
+def create_table(con, table:str, schema:str = 'main'):
+    try:
+        con.execute(f"CREATE TABLE IF NOT EXISTS {schema}.{table}")
+        return True
+
+    except Exception as e:
+        logging.error(f'Error creating table {schema}.{table} : \n', e)
+        return False
+
+def get_all_tables(con)-> list[str]:
+    tables = con.query("""SELECT table_schema, table_name
+                FROM information_schema.tables;""").to_df().apply(lambda x: f"{x['table_schema']}.{x['table_name']}", axis = 1).to_list()
+    return tables
 
 def register_df(con, view_name:str, df:pd.DataFrame):
     try:

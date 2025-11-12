@@ -43,8 +43,8 @@ async def get_gbif_data(data:PipelineData):
     else: expert_data = data.storage[f"{expert_query.name}"]["raw_data"]
         
     # Commit local .csv to db 
-    cs_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'citizen' )
-    expert_table = await import_csv_to_db(data.con, expert_data, schema= 'gbif_raw', table= 'expert' )
+    cs_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'citizen', geo = True)
+    expert_table = await import_csv_to_db(data.con, expert_data, schema= 'gbif_raw', table= 'expert', geo = True )
 
     # Flag as completed
     if cs_table:
@@ -65,7 +65,7 @@ async def get_inaturalist_data(data:PipelineData):
     data.init_new_step(step_name)
     
     #Return url for 
-    url = inat_query.run()    
+    url = await inat_query.run(data)    
 
     pass
 
