@@ -1,7 +1,40 @@
-#COMMON SETTINGS FOR GBIF QUERIES
 gbif:
-  GEOMETRY: POLYGON((-73.590474 45.515225, -73.587554 45.513902, -73.585494 45.516187,
-    -73.590302 45.517751, -73.590474 45.515225))
-  HAS_COORDINATE: true
+  COUNTRY: CA
+  GEOMETRY: POLYGON((-73.509156 45.524824, -74.519611 45.014526, -71.669469 45.014526, -70.203212 46.296853,-71.032444 46.821866, -71.444314 46.686379, -73.086303 46.045787, -73.509156 45.524824))
   TAXON_KEY: 7707728
-  YEAR: 2000
+  YEAR: 2010
+  GADM_GID: CAN.11_1
+
+inat:
+  - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
+  - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
+
+datasets:
+  Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
+    key: 2fd02649-fc08-4957-9ac5-2830e072c097
+    subtype: SPECIMEN
+    title: Herbier Louis-Marie (QFA) - Collection de plantes vasculaires
+    type: OCCURRENCE
+  "Herbier du Qu\xE9bec (QUE) - Collection de plantes vasculaires":
+    key: c4a5efee-4c61-45d8-bd7a-6275b2388308
+    subtype: SPECIMEN
+    title: "Herbier du Qu\xE9bec (QUE) - Collection de plantes vasculaires"
+    type: OCCURRENCE
+  "Jardin botanique de Montr\xE9al (JBM)":
+    key: 7a7244fc-13b9-43ee-93c9-0d5c4457a86a
+    title: "Jardin botanique de Montr\xE9al (JBM)"
+    type: OCCURRENCE
+  Marie-Victorin Herbarium (MT) - Plantes vasculaires:
+    key: 0348540a-e644-4496-89d3-c257da9ad776
+    subtype: SPECIMEN
+    title: Marie-Victorin Herbarium (MT) - Plantes vasculaires
+    type: OCCURRENCE
+  National Collection of Vascular Plants (DAO):
+    key: 10cf770a-282a-41dd-9e19-83b7c894b956
+    title: National Collection of Vascular Plants (DAO)
+    type: OCCURRENCE
+  "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)":
+    key: 1e837919-112c-40ad-abb9-5ca74b044742
+    subtype: SPECIMEN
+    title: "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)"
+    type: OCCURRENCE

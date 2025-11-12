@@ -4,7 +4,7 @@ from ..core import PipelineData
 
 class BaseQuery(ABC):
     @abstractmethod
-    def run(self, data:PipelineData, step_name:str):
+    async def run(self, data:PipelineData):
         """Execute the module and return its output"""
         pass
 
