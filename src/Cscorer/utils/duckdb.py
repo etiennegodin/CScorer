@@ -41,9 +41,7 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:
     query += f"""SELECT *,
                     {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
                     FROM read_csv('{file_path}')
-                    """
-    print(query)
-    
+                    """    
     try:
         con.execute(query)
         logging.info(f'Registered {file_path} to {schema}.{table}')
