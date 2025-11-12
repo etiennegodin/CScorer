@@ -1,35 +1,116 @@
 import os
+import asyncio
+import logging
 from pathlib import Path
-from .base import BaseQuery
 from pygbif import occurrences as occ
 from ..core import PipelineData, StepStatus
-import logging
-from enum import Enum
+from .inat import BaseQuery
 
 class GbifQuery(BaseQuery):
 
-    def __init__(self, config:dict):
+    def __init__(self, name:str, config:dict):
         super().__init__()
+        self.name = name
         self.config = config
         self.predicate = self._predicate_builder(self.config)
-
-    async def run(self, data:PipelineData, step_name:str):
+        
+    async def run(self, data:PipelineData):
         logger = data.logger
-
-        if "gbif_download_key" not in data.storage.keys():
-            if self.predicate:
+        step_name = self.name
+        # Set dict for step outputs 
+        
+        if "key" not in data.storage[step_name].keys():
+            if data.step_status[f'{step_name}'] == StepStatus.init:
                 download_key = await self._submit_request(data)
+                data.storage[step_name]['key'] = download_key
+                logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
                 data.update_step_status(step_name, StepStatus.requested)
+        else:
+            download_key = data.storage[step_name]['key']
+            data.update_step_status(step_name, StepStatus.requested)
 
-        ready_key = await self._poll_gbif_until_ready(data)
-        data.update_step_status(step_name, StepStatus.ready)
+        if data.step_status[f'{step_name}'] == StepStatus.requested:
+            ready_key = await self._poll_gbif_until_ready(download_key, logger= data.logger)
+            data.update_step_status(step_name, StepStatus.ready)
 
-        gbif_raw_data = await self._download_and_unpack(data, data.config['folders']['data_folder'])
-        data.update_step_status(step_name, StepStatus.local)
-        
+        if data.step_status[f'{step_name}'] == StepStatus.ready:
+            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['data_folder'], logger= data.logger)
+            data.storage[step_name]['raw_data'] = gbif_raw_data
+            data.update_step_status(step_name, StepStatus.local)
+            data.update()
+
         return gbif_raw_data
+    
+    async def _submit_request(self, data:PipelineData):  
+        logger = data.logger
+        from dotenv import load_dotenv
+        env_path = Path(__file__).parent.parent.parent.parent / ".env"
+        load_dotenv(env_path)
+        try:
+            query = self.predicate.to_dict() # build 
+            #threaded as returns tuples 
+            response = await asyncio.to_thread(lambda: occ.download(query,
+                    format="SIMPLE_CSV",
+                    user= str(os.getenv("GBIF_USERNAME")),
+                    pwd=str(os.getenv("GBIF_PASSWORD")),
+                    email=str(os.getenv("GBIF_EMAIL"))))
             
+        except Exception as e:
+            logger.error(f"Error running gbif request: {e}")
+            raise RuntimeError(e)
+        if response:   
+            return response[0]
+    
+    async def _poll_gbif_until_ready(self, download_key:str, logger = logging.Logger, poll_interval: int = 30, timeout_seconds: int = 60*60, ):
         
+        """
+        Poll GBIF for the download status. Uses occ.download_meta or occ.download_get to inspect.
+        We return once status == 'SUCCEEDED' and the download URL/identifier is available.
+        """
+        import time
+        import asyncio
+        start = time.time()
+
+        while True:
+            meta =  await asyncio.to_thread(lambda: occ.download_meta(key=download_key))
+            logger.debug(meta)
+            status = meta.get("status")
+            logger.info(f"GBIF status for {download_key}: {status}")
+            if status and status.upper() in ("SUCCEEDED", "COMPLETED", "FINISHED"):
+                logger.info("GBIF download ready.")
+                return download_key
+            if status and status.upper() in ("KILLED", "FAILED", "ERROR"):
+                raise RuntimeError(f"GBIF download failed: {meta}")
+            if time.time() - start > timeout_seconds:
+                raise TimeoutError("Timed out waiting for GBIF download.")
+            
+            time.sleep(poll_interval)
+
+    async def _download_and_unpack(self, download_key:str, dest_dir: str, logger = logging.Logger):
+        """
+        Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
+        pygbif.occurrence.download_get can write the file locally.
+        """
+ 
+        os.makedirs(dest_dir, exist_ok=True)
+        logger.info(f"Downloading GBIF data for {download_key} to {dest_dir}...")
+        # This returns file path or bytes depending on client; example below writes to path
+        response = await asyncio.to_thread(lambda: occ.download_get(download_key, path=dest_dir))
+        zip_path = response['path']# implementation detail from pygbif
+        logger.info(f"Downloaded to {zip_path}")
+        # Unpack (if needed) - example uses unzip via python
+        import zipfile
+        if zipfile.is_zipfile(zip_path):
+            with zipfile.ZipFile(zip_path, 'r') as z:
+                z.extractall(dest_dir)
+            logger.info("Unpacked ZIP.")
+        
+        # Save data path
+        output = f"{dest_dir}/{response['key']}.csv"
+        os.remove(zip_path)
+        return output
+    
+    
     def _predicate_builder(self,config:dict):
         predicate = GbifPredicate()
         for key, value in config.items():
@@ -44,93 +125,19 @@ class GbifQuery(BaseQuery):
             predicate.add_field(key, value)
         return predicate
     
-    async def _submit_request(self, data:PipelineData):  
-        logger = data.logger
-        from dotenv import load_dotenv
-        env_path = Path(__file__).parent.parent.parent.parent / ".env"
-        load_dotenv(env_path)
-        try:
-            query = self.predicate.to_dict() # build 
-            response = occ.download(query,
-                    format="SIMPLE_CSV",
-                    user= str(os.getenv("GBIF_USERNAME")),
-                    pwd=str(os.getenv("GBIF_PASSWORD")),
-                    email=str(os.getenv("GBIF_EMAIL"))
-            )   
-            logging.info(f'Gbif query returned : {response[0]}')
-        except Exception as e:
-            logger.error(e)
-            raise RuntimeError(e)
-
-        if response:   
-            data.set('gbif_download_key', response[0])
-            
-        return response[0]
     
-    async def _poll_gbif_until_ready(self, data: PipelineData, poll_interval: int = 60, timeout_seconds: int = 60*60):
-        
-        """
-        Poll GBIF for the download status. Uses occ.download_meta or occ.download_get to inspect.
-        We return once status == 'SUCCEEDED' and the download URL/identifier is available.
-        """
-        import time
-        import asyncio
-        download_key = data.get("gbif_download_key")
-        logger = data.logger
-        start = time.time()
-
-        while True:
-            meta = occ.download_meta(key=download_key)
-            data.logger.debug(meta)
-            status = meta.get("status")
-            logger.info(f"GBIF status for {download_key}: {status}")
-            if status and status.upper() in ("SUCCEEDED", "COMPLETED", "FINISHED"):
-                logger.info("GBIF download ready.")
-                return download_key
-            if status and status.upper() in ("KILLED", "FAILED", "ERROR"):
-                raise RuntimeError(f"GBIF download failed: {meta}")
-            if time.time() - start > timeout_seconds:
-                raise TimeoutError("Timed out waiting for GBIF download.")
-            
-            time.sleep(poll_interval)
-
-    async def _download_and_unpack(self, data:PipelineData, dest_dir: str):
-        """
-        Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
-        pygbif.occurrence.download_get can write the file locally.
-        """
-        logger = data.logger
-        download_key = data.get("gbif_download_key")
- 
-        os.makedirs(dest_dir, exist_ok=True)
-        logger.info(f"Downloading GBIF data for {download_key} to {dest_dir}...")
-        # This returns file path or bytes depending on client; example below writes to path
-        response = occ.download_get(download_key, path=dest_dir)
-        zip_path = response['path']# implementation detail from pygbif
-        logger.info(f"Downloaded to {zip_path}")
-        # Unpack (if needed) - example uses unzip via python
-        import zipfile
-        if zipfile.is_zipfile(zip_path):
-            with zipfile.ZipFile(zip_path, 'r') as z:
-                z.extractall(dest_dir)
-            logger.info("Unpacked ZIP.")
-        
-        # Save data path
-        output = f"{dest_dir}/{response['key']}.csv"
-        data.set('gbif_raw_data', output)
-        os.remove(zip_path)
-        return output
-
 class GbifPredicate():
+    
     def __init__(self, type = 'and'):
         if type not in ('and', 'or'):
             raise ValueError("Mode must be 'and' or 'or'")
         self.type = type
         self.predicates = []
+        
     def add_field(self, key :str, value:str, type :str = 'equals'):
         if isinstance(value, list):
             # Requires type to be "in" for list 
-            expr = {"type": 'in', "key": key, "value":value}
+            expr = {"type": 'in', "key": key, "values":value}
         else:
             expr = {"type": type, "key": key, "value":value}
 
@@ -146,7 +153,9 @@ class GbifPredicate():
         if not self.predicates:
             return {}
         else:
-            self.predicates.append({'type': 'isNotNull', 'parameter': 'YEAR'}) # Add year flag 
+            self.predicates.append({'type': 'equals', 'key' : "HAS_COORDINATE", "value" :  'true'}) # Add coords flag 
+            self.predicates.append({'type': 'equals', 'key' : "OCCURRENCE_STATUS", "value" :  'present'}) # Add coords flag 
+
             return {
                     "type" : self.type,
                     "predicates" : self.predicates

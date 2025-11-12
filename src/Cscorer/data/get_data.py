@@ -4,54 +4,68 @@ from ..utils.duckdb import import_csv_to_db
 from .factory import create_query
 from pathlib import Path
 import asyncio
+import time
+import aiohttp
 
-async def get_citizen_data(data:PipelineData):
-    step_name = 'get_citizen_data'
-    # GBIF QUERY
-    if step_name not in data.step_status.keys() or data.step_status[f'{step_name}'] != StepStatus.completed:
-        # Init step status
-        data.update_step_status(step_name, StepStatus.init)
-        #Retrieve base configs 
-        gbif_config = data.config['gbif']
-        #Create query
-        gbif_query = create_query('gbif', gbif_config)
-        gbif_query.predicate.add_field('BASIS_OF_RECORD', 'HUMAN_OBSERVATION')
 
-        #gbif_query.predicate['predicates'].append({'test'})
-        print(gbif_query.predicate)
+async def get_gbif_data(data:PipelineData):
 
-        return
-        #Run the request to gbif
-        gbif_data = await gbif_query.run(data, step_name)
-        #Commit received data to db
-        gbif_table = import_csv_to_db(data.con, gbif_data, schema= 'gbif_raw', table= 'citizen' )
-        #Set step completed
-        if gbif_table:
-             data.step_status['gbif_query'] != StepStatus.completed
-        
-async def get_expert_data(data:PipelineData):
-    step_name = 'get_expert_data'
+    #Temp assignement for async tasks 
+    cs_data_task = None
+    expert_data_task = None
     
-    if step_name not in data.step_status.keys() or data.step_status[f'{step_name}'] != StepStatus.completed:
-        # Init step status
-        data.update_step_status(step_name, StepStatus.init)
-        #Retrieve base configs 
-        gbif_config = data.config['gbif']
-        #Add specific expert data configs
-        
-        #Create query
-        gbif_query = create_query('gbif', gbif_config)
-        #Run the request to gbif
-        gbif_data = await gbif_query.run(data, step_name)
-        #Commit received data to db
-        gbif_table = import_csv_to_db(data.con, gbif_data, schema= 'gbif_raw', table= 'expert' )
-        #Set step completed
-        if gbif_table:
-             data.step_status['gbif_query'] != StepStatus.completed
+    #Prep citizen specific predicates
+    cs_predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
     
+    #Prep expert specific predicates
+    datasets = data.config['datasets']
+    dataset_keys = []
+    for dataset in datasets.values():
+        dataset_keys.append(dataset['key'])
+    expert_predicates = {"DATASET_KEY" : dataset_keys }
 
-async def get_inaturalist_metadata(data:PipelineData):
-    step_name = 'get_inaturalist_metadata'
+    # Create queries 
+    cs_query = await _create_gbif_query(data, name= 'citizen', predicates= cs_predicates)
+    expert_query = await _create_gbif_query(data, name= 'expert', predicates= expert_predicates)
+    
+    #Lauch async concurrent queries 
+    async with asyncio.TaskGroup() as tg:
+        if not data.step_status[f"{cs_query.name}"] == StepStatus.local:
+            cs_data_task = tg.create_task(cs_query.run(data))
+
+        if not data.step_status[f"{expert_query.name}"] == StepStatus.local:
+            expert_data_task = tg.create_task(expert_query.run(data))
+
+    #Read data from async tasks or from storage 
+    if cs_data_task is not None:cs_data = cs_data_task.result()
+    else: cs_data = data.storage[f"{cs_query.name}"]["raw_data"]
+    if expert_data_task is not None:expert_data = expert_data_task.result()
+    else: expert_data = data.storage[f"{expert_query.name}"]["raw_data"]
+        
+    # Commit local .csv to db 
+    cs_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'citizen', geo = True)
+    expert_table = await import_csv_to_db(data.con, expert_data, schema= 'gbif_raw', table= 'expert', geo = True )
+
+    # Flag as completed
+    if cs_table:
+        data.step_status[f'{cs_query.name}'] = StepStatus.completed    
+
+    if expert_table:
+        data.step_status[f'{expert_query.name}'] = StepStatus.completed    
+        
+        
+async def get_inaturalist_data(data:PipelineData):
+    step_name = "get_inaturalist_data"
+    con = data.con
+
+    # Create query 
+    inat_query = create_query('inat', name = step_name)
+    
+    #Init step
+    data.init_new_step(step_name)
+    
+    #Return url for 
+    url = await inat_query.run(data)    
 
     pass
 
@@ -59,3 +73,27 @@ async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
     pass
+
+async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
+    step_name = f"gbif_query_{name}"
+    gbif_config = data.config['gbif']
+    
+    if not isinstance(predicates, (dict, None)):
+        raise ValueError("Pedicates must be dict")
+    
+    data.logger.info(f"Creating new instance of {step_name}")
+
+    # Create query
+    query = create_query('gbif', name = step_name, config = gbif_config)
+    
+    #Add additonnal predicates
+    for key, value in predicates.items():
+        query.predicate.add_field(key = key, value = value)
+    
+    #Init step
+    data.init_new_step(step_name)
+        
+    return query
+
+
+

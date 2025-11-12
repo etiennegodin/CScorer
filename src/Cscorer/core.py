@@ -46,12 +46,21 @@ class PipelineData:
         # Register handlers
         self._export()
         
+    def init_new_step(self, step_name:str):
+        if not step_name in self.storage.keys():
+            self.logger.info(f"First time running {step_name}, creating storage and step status")
+            self.set(step_name,  {'init' : time.time()})
+            self.update_step_status(step_name, StepStatus.init)
+            
     def update_step_status(self,step:str, status: StepStatus):
         self.step_status[step] = status
         self._export()
 
     def get(self, key:str):
         return self.storage.get(key)
+    
+    def update(self):
+        self._export()
     
     def set(self, key:str, value: Any):
         self.storage[key] = value
