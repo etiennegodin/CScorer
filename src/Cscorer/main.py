@@ -1,7 +1,6 @@
 from .data.factory import create_query
 from .core import read_config, write_config, PipelineData
-from .data.get_data import get_gbif_data
-from .data.inat import inat_main
+from .data.get_data import get_gbif_data, get_inaturalist_data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -84,7 +83,7 @@ def main():
 
 
             
-    asyncio.run(inat_main(data))
+    asyncio.run(get_inaturalist_data(data))
     #asyncio.run(get_gbif_data(data)) 
 
     
