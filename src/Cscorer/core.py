@@ -30,27 +30,37 @@ class PipelineData:
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
-    logger: logging.Logger = logging
+    logger: logging.Logger = None
     
     def __post_init__(self):
+
+        #Init logger if empty
+        if self.logger is None:
+            self.logger = logging
+            self.logger.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+        
         self.logger.info("Pipeline data post_init")
+        
         #Init print
         self.set("init", time.time())
         self.update_step_status('init', StepStatus.init)
         
+
         # Init db_connection 
         from .utils.duckdb import _open_connection
-        db_path = f"{self.config['folders']['data_folder']}/data.duckdb"
-        self.con = _open_connection(db_path=db_path )
-        self.config['db_path'] = db_path
+        self.con = _open_connection(db_path=self.config['db_path'] )
         # Register handlers
         self._export()
         
-    def init_new_step(self, step_name:str):
+    def init_new_step(self, step_name:str)-> bool:
+
         if not step_name in self.storage.keys():
             self.logger.info(f"First time running {step_name}, creating storage and step status")
             self.set(step_name,  {'init' : time.time()})
             self.update_step_status(step_name, StepStatus.init)
+            return True
+        
+        return False
             
     def update_step_status(self,step:str, status: StepStatus):
         self.step_status[step] = status
@@ -72,15 +82,15 @@ class PipelineData:
             
     def _export(self):
         try:
-            data_folder = self.config['folders'].get('data_folder')
-            if data_folder is not None:
-                write_config(self.config, Path(data_folder) / 'pipeline' / 'pipe_config.yaml')
-                write_config(self.step_status, Path(data_folder) / 'pipeline' / 'pipe_steps.yaml')
-                write_config(self.storage, Path(data_folder) / 'pipeline' / 'pipe_data.yaml')
+            pipeline_folder = self.config['folders'].get('pipeline_folder')
+            if pipeline_folder is not None:
+                write_config(self.config, Path(pipeline_folder) / 'pipe_config.yaml')
+                write_config(self.step_status, Path(pipeline_folder) / 'pipe_steps.yaml')
+                write_config(self.storage, Path(pipeline_folder) / 'pipe_data.yaml')
                 return True
             else:
-                self.logger.error("No data folder found in PipelineData")
-                raise ValueError("No data folder found in PipelineData")
+                self.logger.error("No pipeline folder found in PipelineData")
+                raise ValueError("No pipeline folder found in PipelineData")
             
         except Exception as e:
             # do not raise from storage persistence

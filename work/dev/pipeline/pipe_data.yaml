@@ -1,0 +1,14 @@
+gbif_query_citizen:
+  init: 1762872918.0885973
+  key: 0027014-251025141854904
+  raw_data: /home/manat/projects/CScorer/work/dev/data/0027014-251025141854904.csv
+gbif_query_expert:
+  init: 1762872918.0967045
+  key: 0027013-251025141854904
+  raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
+get_inaturalist_data:
+  init: 1762914879.8214715
+  query: null
+get_inaturalist_observer_data:
+  init: 1763048478.2635362
+init: 1763060647.4738102
