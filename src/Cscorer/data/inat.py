@@ -64,13 +64,13 @@ class iNatOcc(BaseQuery):
         if data.step_status[f'{step_name}'] == StepStatus.local:
             logger.info(f"Found {len(files)} files")
             if len(files) > 1:
-                if not await ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
+                if not await self._ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
                     new_files = []
                     lines = ""
                     for idx, f in enumerate(files):
                         lines += (f"\n{idx} : {f.stem}.{f.suffix}")
 
-                    file_index = await ask_file_input(len(files), lines)
+                    file_index = await self._ask_file_input(len(files), lines)
                     new_files.append(files[file_index])
                     
             occ_tables = []
@@ -97,28 +97,28 @@ class iNatOcc(BaseQuery):
         print(lat_so, lon_so )
         print(lat_ne, lon_ne)
         
-async def ask_yes_no(msg:str):
-    values = ['y','n']
-    correct = False
-    while (not correct):
-        answer = input(msg)
-        if answer.lower() in values:
-            correct = True
-            return answer
-
-async def ask_file_input(n_inputs, lines):
-    correct = False
-    while (not correct):
-        file_index = input(f"""Please choose file from list{lines}\nAnswer: """)
-        try:
-            file_index = int(file_index)
-            if (file_index + 1) <= n_inputs:
+    async def _ask_yes_no(self, msg:str):
+        values = ['y','n']
+        correct = False
+        while (not correct):
+            answer = input(msg)
+            if answer.lower() in values:
                 correct = True
-        except:
-            print ("\033[A                             \033[A")
-            
-    return file_index
-  
+                return answer
+
+    async def _ask_file_input(self, n_inputs, lines):
+        correct = False
+        while (not correct):
+            file_index = input(f"""Please choose file from list{lines}\nAnswer: """)
+            try:
+                file_index = int(file_index)
+                if (file_index + 1) <= n_inputs:
+                    correct = True
+            except:
+                print ("\033[A                             \033[A")
+                
+        return file_index
+    
 
 async def _get_occurenceIDs(con):
     query = """
