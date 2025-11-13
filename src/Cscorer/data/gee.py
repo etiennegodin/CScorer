@@ -24,6 +24,12 @@ class GeeQuery(BaseQuery):
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
         
+    #Snippets
+    #var dataset = ee.Image('CGIAR/SRTM90_V4');
+    #var elevation = dataset.select('elevation');
+    #var slope = ee.Terrain.slope(elevation);
+    
+    
     def run(self, data:PipelineData):
         pass
         #points = self._load_occurences_points(data)
@@ -56,7 +62,7 @@ class GeeQuery(BaseQuery):
         
         print(rasters)
         
-
+    
     def _combine_rasters(self, rasters:list[Image])-> Image:
         pass
     
