@@ -3,7 +3,7 @@ from shapely import wkt
 from ..core import PipelineData, StepStatus
 from pathlib import Path
 from ..utils.duckdb import import_csv_to_db
-
+import asyncio, aiohttp, aiofiles
 
 class iNatObs(BaseQuery):
     def __init__(self, name:str):
@@ -15,7 +15,25 @@ class iNatObs(BaseQuery):
         logger = data.logger
         step_name = self.name
         
-        observers = _get_observers(con)
+        observers = await _get_observers(con)
+        print(observers[:1])
+
+        async with aiohttp.ClientSession() as session:
+            async with asyncio.TaskGroup() as tg:
+                tasks = []
+                for observer in observers:
+                    task = tg.create_task(self._get_user_data(sesion, observer))
+                    tasks.append(task)
+        
+        
+        
+        
+    async def _get_user_data(user_login):
+        url = f"https://api.inaturalist.org/v1/users/{user_login}"
+        #res = requests.get(url).json()
+        user = res["results"][0]
+        if user is not None:
+            return user
 
 class iNatOcc(BaseQuery):
 
