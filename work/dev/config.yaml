@@ -14,7 +14,10 @@ inat:
   - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
   - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
 
-datasets:
+gee_datasets:
+  - WORLDCLIM/V1/BIO
+
+gbif_datasets:
   Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
     key: 2fd02649-fc08-4957-9ac5-2830e072c097
     subtype: SPECIMEN
