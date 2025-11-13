@@ -1,4 +1,4 @@
 gbif_query_citizen: !StepStatus 'completed'
 gbif_query_expert: !StepStatus 'completed'
-get_inaturalist_observer_data: !StepStatus 'completed'
+get_inaturalist_observer_data: !StepStatus 'init'
 init: !StepStatus 'init'

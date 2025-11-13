@@ -27,10 +27,21 @@ datasets:
     subtype: SPECIMEN
     title: "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)"
     type: OCCURRENCE
-db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
+db_path: !!python/object/apply:pathlib.PosixPath
+- /
+- home
+- manat
+- projects
+- CScorer
+- work
+- dev
+- data
+- data.duckdb
 folders:
   data_folder: /home/manat/projects/CScorer/work/dev/data
-  pipeline_folder: /home/manat/projects/CScorer/work/dev/data/pipeline
+  gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
+  inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
+  pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
   run_folder: /home/manat/projects/CScorer/work/dev
 gbif:
   COUNTRY: CA
