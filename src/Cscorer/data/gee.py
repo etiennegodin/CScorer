@@ -35,17 +35,15 @@ class GeeQuery(BaseQuery):
         datasets = data.config['gee_datasets']
         image_datasets = datasets['image']
         imageCollection_datasets = datasets['imageCollection']
-
-        
         rasters = []
 
-        for image in image_datasets:
-            raster = Image(image) \
+        for img_dataset in image_datasets:
+            raster = Image(img_dataset['name']) \
                 .clip(self.aoi)
             rasters.append(raster)  
             
-        for image_col in imageCollection_datasets:
-            img_col = ImageCollection(image_col) \
+        for image_col_dataset in imageCollection_datasets:
+            img_col = ImageCollection(image_col_dataset['name']) \
                 .filterBounds(self.aoi)\
                 .filterDate(f"{self.date_min}", f"{self.date_max}") \
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))

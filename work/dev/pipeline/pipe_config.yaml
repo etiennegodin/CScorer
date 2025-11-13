@@ -44,9 +44,12 @@ gbif_datasets:
     type: OCCURRENCE
 gee_datasets:
   image:
-  - WORLDCLIM/V1/BIO
+  - description: SRTM 90m Digital Elevation Data
+    name: CGIAR/SRTM90_V4
+  - description: WorldClim Version 1 Bioclimatic Variables
+    name: WORLDCLIM/V1/BIO
   imageCollection:
-  - COPERNICUS/S2_SR
+  - COPERNICUS/S2_SR_HARMONIZED
 inat:
 - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
 - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
