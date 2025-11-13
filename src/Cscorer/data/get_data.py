@@ -120,8 +120,8 @@ async def get_inaturalist_observer_data(data:PipelineData):
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
-    pass
-
+    query = create_query('gee', data)
+    
 
 
 

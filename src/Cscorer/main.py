@@ -1,6 +1,6 @@
 from .data.factory import create_query
 from .core import read_config, write_config, PipelineData
-from .data.get_data import get_gbif_data, get_inaturalist_occurence_data, get_inaturalist_observer_data
+from .data.get_data import get_gbif_data, get_inaturalist_occurence_data, get_inaturalist_observer_data, get_environmental_data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -76,7 +76,6 @@ def init_pipeline(args)->PipelineData:
     #Read from disk 
     else:
         try:
-            logging.warning("here")
             pipe_data = (PipelineData(config= config,
                                  storage = read_config(pipe_folder / 'pipe_data.yaml'),
                                  step_status= read_config(pipe_folder / 'pipe_steps.yaml')
@@ -116,8 +115,8 @@ def main():
 
     #asyncio.run(get_gbif_data(data)) 
     #asyncio.run(get_inaturalist_occurence_data(data))
-    asyncio.run(get_inaturalist_observer_data(data))
-    #asyncio.run(get_gbif_data(data)) 
+    #asyncio.run(get_inaturalist_observer_data(data))
+    asyncio.run(get_environmental_data(data)) 
 
     
     

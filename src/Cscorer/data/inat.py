@@ -20,6 +20,11 @@ class iNatObs(BaseQuery):
         step_name = self.name
         self.queue  = Queue()
         table_name = "inat.observers"
+        
+        if data.step_status[step_name] == StepStatus.completed:
+            logger.info(f"{step_name} already completed")
+            #SKip 
+            return table_name
          
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {table_name} (id INTEGER, user_login TEXT, json JSON)")
@@ -120,12 +125,12 @@ class iNatOcc(BaseQuery):
         query = "has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01"
         url = f"https://www.inaturalist.org/observations/export?{query}"
         
-        if data.step_status[f'{step_name}'] == StepStatus.init:
+        if data.step_status[step_name] == StepStatus.init:
             webbrowser.open(url)
             data.update_step_status(step_name, StepStatus.requested)
             input(f"Please save requested csv file to target directory and relaunch \n -Target dir: {inat_folder}")
             
-        if data.step_status[f'{step_name}'] == StepStatus.requested:
+        if data.step_status[step_name] == StepStatus.requested:
             logger.info(" Trying to find csv to merge in db from inat data folder")
             try:
                 files = list(inat_folder.glob('**/*.csv')) 
@@ -135,9 +140,9 @@ class iNatOcc(BaseQuery):
             if not files:
                 raise ImportError(f"No export files availabe in {inat_folder} - Please relaunch with data")
             
-            data.step_status[f'{step_name}'] == StepStatus.local
+            data.step_status[step_name] == StepStatus.local
             
-        if data.step_status[f'{step_name}'] == StepStatus.local:
+        if data.step_status[step_name] == StepStatus.local:
             logger.info(f"Found {len(files)} files")
             if len(files) > 1:
                 if not await _ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
