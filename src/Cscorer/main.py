@@ -47,14 +47,21 @@ def main():
     folders = {}
     run_folder = Path(config_path).parent
     data_folder = (run_folder / 'data')
+    gbif_folder = (run_folder / 'gbif')
+    inat_folder = data_folder/ 'inat'
     pipe_folder = (data_folder / 'pipeline')
     db_path = data_folder / 'data.duckdb'
-    
+
+        
     #Set folder paths to config
     folders["run_folder"] = str(run_folder)
     folders["data_folder"] = str(data_folder)
+    folders["gbif_folder"] = str(gbif_folder)
+    folders["inat_folder"] = str(inat_folder)
     folders["pipeline_folder"] = str(pipe_folder)
+    
     config['folders'] = folders
+    config['db_path'] = db_path
     
     # Force flag to wipe data
     if args.force:
@@ -64,9 +71,10 @@ def main():
     #New instance if totally new run (or forced)
     if not data_folder.exists():
         logging.info("No pipe data found, creating new instance from scratch")
-                # Create folders 
-        data_folder.mkdir(exist_ok= True)
-        pipe_folder.mkdir(exist_ok= True)
+        # Create folders 
+        for folder in folders.items():
+            Path(folder).mkdir(exist_ok= True)
+        # Create instance 
         data = PipelineData(config = config)
             
     else:

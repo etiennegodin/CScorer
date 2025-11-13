@@ -40,13 +40,12 @@ class PipelineData:
         
         # Init db_connection 
         from .utils.duckdb import _open_connection
-        db_path = f"{self.config['folders']['data_folder']}/data.duckdb"
-        self.con = _open_connection(db_path=db_path )
-        self.config['db_path'] = db_path
+        self.con = _open_connection(db_path=self.config['db_path'] )
         # Register handlers
         self._export()
         
     def init_new_step(self, step_name:str)-> bool:
+
         if not step_name in self.storage.keys():
             self.logger.info(f"First time running {step_name}, creating storage and step status")
             self.set(step_name,  {'init' : time.time()})

@@ -10,8 +10,13 @@ class iNatObs(BaseQuery):
         super().__init__()
         self.name = name
 
-    async def run():
-        pass
+    async def run(self, data:PipelineData):
+        con = data.con
+        logger = data.logger
+        step_name = self.name
+        
+        
+        observers = _get_observers(con)
 
 class iNatOcc(BaseQuery):
 
@@ -138,8 +143,4 @@ async def _get_observers(con):
             FROM gbif_raw.citizen
             WHERE institutionCode = 'iNaturalist';
     """
-    
-    observers = con.execute(query).df()['recordedBy'].to_list()
-    #occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
-    
-    return observers
+    return con.execute(query).df()['recordedBy'].to_list()
