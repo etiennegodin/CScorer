@@ -14,7 +14,7 @@ class iNatObs(BaseQuery):
         con = data.con
         logger = data.logger
         step_name = self.name
-        
+
         
         observers = _get_observers(con)
 
@@ -28,12 +28,8 @@ class iNatOcc(BaseQuery):
         import webbrowser
         logger = data.logger
         step_name = self.name
-        
-        inat_folder = Path(data.config['folders']['data_folder']) / 'inat'
-        data.config['folders']['inat_folder'] = str(inat_folder)
-        data.update()
-        inat_folder.mkdir(exist_ok=True)
-        
+        inat_folder = data.config['folders']['inat_folder']
+
         
         if "query" not in data.storage[step_name].keys():
             raise NotImplementedError("Query builder not implemented")
@@ -51,7 +47,7 @@ class iNatOcc(BaseQuery):
         if data.step_status[f'{step_name}'] == StepStatus.init:
             webbrowser.open(url)
             data.update_step_status(step_name, StepStatus.requested)
-            input(" Please save requested csv file to .data/inat and relaunch")
+            input(f"Please save requested csv file to target directory and relaunch \n -Target dir: {inat_folder}")
             
         if data.step_status[f'{step_name}'] == StepStatus.requested:
             logger.info(" Trying to find csv to merge in db from inat data folder")
