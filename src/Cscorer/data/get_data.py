@@ -89,12 +89,12 @@ async def get_inaturalist_observer_data(data:PipelineData):
     step_name = "get_inaturalist_observer_data"
     con = data.con
     # Create query 
-    inatOcc_query = create_query('inatObs', name = step_name)
+    inatObs_query = create_query('inatObs', name = step_name)
     #Init step
     data.init_new_step(step_name)
     
     #Return url for 
-    oberver_table = await inatOcc_query.run(data)    
+    oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'])    
 
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
