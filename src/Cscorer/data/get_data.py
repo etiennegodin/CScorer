@@ -94,7 +94,7 @@ async def get_inaturalist_observer_data(data:PipelineData):
     data.init_new_step(step_name)
     
     #Return url for 
-    oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'])    
+    oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
 
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'

@@ -7,7 +7,8 @@ gbif:
   
 inat_api:
   max_calls_per_minute: 60
-  limit: Null
+  limit: 100
+  overwrite: true
 
 inat:
   - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
