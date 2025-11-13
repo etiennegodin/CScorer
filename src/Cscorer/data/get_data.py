@@ -96,8 +96,6 @@ async def get_inaturalist_observer_data(data:PipelineData):
     #Return url for 
     oberver_table = await inatOcc_query.run(data)    
 
-
-
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
