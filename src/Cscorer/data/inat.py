@@ -1,7 +1,7 @@
 from .base import BaseQuery
 from shapely import wkt
 from ..core import PipelineData, StepStatus
-from ..utils.duckdb import import_csv_to_db, create_table
+from ..utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
 from aiolimiter import AsyncLimiter
 from asyncio import Queue
@@ -13,26 +13,51 @@ class iNatObs(BaseQuery):
         super().__init__()
         self.name = name
 
-    async def run(self, data:PipelineData, limit:int = None):
+    async def run(self, data:PipelineData, limit:int = None, overwrite:bool = False):
         con = data.con
         logger = data.logger
         self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
         self.queue  = Queue()
+        table_name = "inat.observers"
          
-        # Create table in db 
+        # Create table for data
+        con.execute(f"CREATE TABLE IF NOT EXISTS  {table_name} (id INTEGER, user_login TEXT, json JSON)")
+        last_id = con.execute(f"SELECT MAX(id) FROM {table_name}").fetchone()[0] 
+
+        if overwrite and table_name in get_all_tables(con):
+            if last_id is not None:
+                if await _ask_yes_no('Found existing table data on disk, do you want to overwrite all ? (y/n)'):
+                    con.execute(f"CREATE OR REPLACE TABLE {table_name} (id INTEGER, user_login TEXT, json JSON)")
+                    last_id = None
+
+        # Create table in db s
         observers = await _get_observers(con)
         
-        #Optionnal limit
-        if limit is not None:
-            observers = observers[:limit]
+        #Start from previously saved data:
+
+        if last_id is None:
+            #Optionnal limit
+            if limit is not None:
+                observers = observers[:limit]
+            
+            self.obs_count = len(observers)
+        else:
+            logger.info(f"Last processed user : {observers[last_id]} with id : {last_id}")
+            #Optionnal limit
+            if limit is None:
+                observers = observers[last_id:]
+                self.obs_count = len(observers)
+            else:
+                observers = observers[last_id:limit+last_id]
+                self.obs_count = limit+last_id
+        
         #Store count of observers (for logger)
-        self.obs_count = len(observers)
         
         async with aiohttp.ClientSession() as session:
             writer_task = asyncio.create_task(self._write_data(con, logger))
             
-            fetchers = [asyncio.create_task(self._fetch_data(session, idx, o, logger)) for idx, o in enumerate(observers) ]
+            fetchers = [asyncio.create_task(self._fetch_data(session, idx, o, logger)) for idx, o in observers ]
             await asyncio.gather(*fetchers)
             await self.queue.join()
             await self.queue.put(None)
@@ -42,16 +67,16 @@ class iNatObs(BaseQuery):
 
         
     async def _write_data(self, con, logger):
-        queue = self.queue
         logger.info('Init writer task')
-        con.execute("CREATE OR REPLACE TABLE inat.observers (id INTEGER, user_login TEXT, json JSON)")
+        queue = self.queue
+
         while True:
             item = await queue.get()
             if item is None:
                 queue.task_done()
                 break
             idx, data = item
-            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (data["id"], data['login'],json.dumps(data)))
+            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (idx, data['login'],json.dumps(data)))
             logger.info(f"Data saved for {data['login']} ({idx+1}/{self.obs_count})")
             queue.task_done()
         con.close()
@@ -115,13 +140,13 @@ class iNatOcc(BaseQuery):
         if data.step_status[f'{step_name}'] == StepStatus.local:
             logger.info(f"Found {len(files)} files")
             if len(files) > 1:
-                if not await self._ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
+                if not await _ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
                     new_files = []
                     lines = ""
                     for idx, f in enumerate(files):
                         lines += (f"\n{idx} : {f.stem}.{f.suffix}")
 
-                    file_index = await self._ask_file_input(len(files), lines)
+                    file_index = await _ask_file_input(len(files), lines)
                     new_files.append(files[file_index])
                     
             occ_tables = []
@@ -147,28 +172,32 @@ class iNatOcc(BaseQuery):
 
         print(lat_so, lon_so )
         print(lat_ne, lon_ne)
-        
-    async def _ask_yes_no(self, msg:str):
-        values = ['y','n']
-        correct = False
-        while (not correct):
-            answer = input(msg)
-            if answer.lower() in values:
-                correct = True
-                return answer
+    
+async def _ask_yes_no(msg:str):
+    values = ['y','n']
+    correct = False
+    while (not correct):
+        answer = input(msg)
+        if answer.lower() in values:
+            correct = True
+    
+    if answer == 'y':
+        return True
+    else:
+        return False
 
-    async def _ask_file_input(self, n_inputs, lines):
-        correct = False
-        while (not correct):
-            file_index = input(f"""Please choose file from list{lines}\nAnswer: """)
-            try:
-                file_index = int(file_index)
-                if (file_index + 1) <= n_inputs:
-                    correct = True
-            except:
-                print ("\033[A                             \033[A")
-                
-        return file_index
+async def _ask_file_input(n_inputs, lines):
+    correct = False
+    while (not correct):
+        file_index = input(f"""Please choose file from list{lines}\nAnswer: """)
+        try:
+            file_index = int(file_index)
+            if (file_index + 1) <= n_inputs:
+                correct = True
+        except:
+            print ("\033[A                             \033[A")
+            
+    return file_index
     
 
 async def _get_occurenceIDs(con):
@@ -184,10 +213,15 @@ async def _get_occurenceIDs(con):
     return occurenceURLs.to_list()
 
 
-async def _get_observers(con):
+async def _get_observers(con)->list[tuple]:
     query = """
             SELECT DISTINCT recordedBy,
             FROM gbif_raw.citizen
-            WHERE institutionCode = 'iNaturalist';
+            WHERE institutionCode = 'iNaturalist'
+            ORDER BY recordedBy ASC;
     """
-    return con.execute(query).df()['recordedBy'].to_list()
+    observers = con.execute(query).df()['recordedBy'].to_list()
+    observers_tuples = []
+    for idx, obs in enumerate(observers):
+        observers_tuples.append((idx+1,obs))
+    return observers_tuples
