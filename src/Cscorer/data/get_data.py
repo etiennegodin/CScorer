@@ -83,7 +83,7 @@ async def get_inaturalist_occurence_data(data:PipelineData):
     data.init_new_step(step_name)
     
     #Return url for 
-    url = await inatOcc_query.run(data)    
+    occurence = await inatOcc_query.run(data)    
 
 async def get_inaturalist_observer_data(data:PipelineData):
     step_name = "get_inaturalist_observer_data"
