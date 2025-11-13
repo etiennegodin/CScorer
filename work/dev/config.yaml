@@ -20,7 +20,10 @@ inat:
 
 gee_datasets:
   image:
-    - WORLDCLIM/V1/BIO
+  - name: CGIAR/SRTM90_V4
+    description: SRTM 90m Digital Elevation Data
+  - name: WORLDCLIM/V1/BIO
+    description: WorldClim Version 1 Bioclimatic Variables
   imageCollection:
     - COPERNICUS/S2_SR_HARMONIZED
 
