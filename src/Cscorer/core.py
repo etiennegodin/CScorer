@@ -74,15 +74,15 @@ class PipelineData:
             
     def _export(self):
         try:
-            data_folder = self.config['folders'].get('data_folder')
-            if data_folder is not None:
-                write_config(self.config, Path(data_folder) / 'pipeline' / 'pipe_config.yaml')
-                write_config(self.step_status, Path(data_folder) / 'pipeline' / 'pipe_steps.yaml')
-                write_config(self.storage, Path(data_folder) / 'pipeline' / 'pipe_data.yaml')
+            pipeline_folder = self.config['folders'].get('pipeline_folder')
+            if pipeline_folder is not None:
+                write_config(self.config, Path(pipeline_folder) / 'pipe_config.yaml')
+                write_config(self.step_status, Path(pipeline_folder) / 'pipe_steps.yaml')
+                write_config(self.storage, Path(pipeline_folder) / 'pipe_data.yaml')
                 return True
             else:
-                self.logger.error("No data folder found in PipelineData")
-                raise ValueError("No data folder found in PipelineData")
+                self.logger.error("No pipeline folder found in PipelineData")
+                raise ValueError("No pipeline folder found in PipelineData")
             
         except Exception as e:
             # do not raise from storage persistence

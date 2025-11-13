@@ -57,17 +57,19 @@ def init_pipeline(args)->PipelineData:
             shutil.rmtree(str(pipe_folder))
 
     #New instance if totally new run (or forced)
-    if not data_folder.exists():
+    if not data_folder.exists() and not pipe_folder.exists():
         logging.info("No pipe data found, creating new instance from scratch")
         # Create folders 
         for folder in folders.items():
             Path(folder).mkdir(exist_ok= True)
         # Create instance 
         pipe_data = PipelineData(config = config)
-    
+        
+
     #Read from disk 
     else:
         try:
+            logging.warning("here")
             pipe_data = (PipelineData(config= config,
                                  storage = read_config(pipe_folder / 'pipe_data.yaml'),
                                  step_status= read_config(pipe_folder / 'pipe_steps.yaml')

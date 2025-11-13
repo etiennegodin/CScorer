@@ -14,7 +14,6 @@ class iNatObs(BaseQuery):
         con = data.con
         logger = data.logger
         step_name = self.name
-
         
         observers = _get_observers(con)
 
