@@ -1,11 +1,12 @@
 from .base import BaseQuery
 from shapely import wkt
 from ..core import PipelineData, StepStatus
-from pathlib import Path
-from ..utils.duckdb import import_csv_to_db
+from ..utils.duckdb import import_csv_to_db, create_table
 import asyncio, aiohttp, aiofiles
 from aiolimiter import AsyncLimiter
+from asyncio import Queue
 from pprint import pprint
+import json
 
 class iNatObs(BaseQuery):
     def __init__(self, name:str):
@@ -17,18 +18,38 @@ class iNatObs(BaseQuery):
         logger = data.logger
         self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
+        self.queue  = Queue()
+         
+        # Create table in db 
         
         observers = await _get_observers(con)
-        observers = observers[:10]
+        observers = observers[:2]
 
         async with aiohttp.ClientSession() as session:
             async with asyncio.TaskGroup() as tg:
-                tasks = []
+                tg.create_task(self._write_data( con, logger))
+                
                 for idx, observer in enumerate(observers):
-                    task = tg.create_task(self._process_user(session, idx, observer, logger))
-                    tasks.append(task)
+                    tg.create_task(self._fetch_data(session, idx, observer, logger))
         
-    
+        await self.queue.join()
+
+        # signal writer to exit
+        await self.queue.put(None)
+        
+    async def _write_data(self,con, logger):
+        queue = self.queue
+        logger.info('Init writer task')
+        con.execute("CREATE TABLE IF NOT EXISTS inat.observers (id INTEGER, user_login TEXT, json JSON)")
+        while True:
+            item = await queue.get()
+            if item is None:
+                break
+            
+            logger.info(f"write for {item['login']}")
+            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (item["id"], item['login'],json.dumps(item)))
+            queue.task_done()
+        con.close()
         
     async def _fetch_data(self,session, idx:int, user_login:str, logger ):
         url = f"https://api.inaturalist.org/v1/users/autocomplete/?q={user_login}"
@@ -37,21 +58,15 @@ class iNatObs(BaseQuery):
             try:
                 async with session.get(url, timeout = 10) as r:
                     r.raise_for_status()
-                    return await r.json()      
+                    logger.info(f'Data queried for {user_login}')
+                    data = await r.json()    
+                    if data:
+                        await self.queue.put(data["results"][0])
+                        
             except Exception as e:
                 logger.warning(f"[{idx}] Retry failed: {e}")
                 await asyncio.sleep(1)
 
-        
-    async def _process_user(self,session, idx:int, user_login:str, logger):
-        data = await self._fetch_data(session, idx, user_login, logger)
-        #res = requests.get(url).json()
-        if data:
-            results = data["results"][0]
-            pprint(results)
-            return results
-        
-        
 class iNatOcc(BaseQuery):
 
     def __init__(self, name:str):
