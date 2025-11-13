@@ -7,6 +7,25 @@ import asyncio
 import time
 import aiohttp
 
+### Create instances for each class of data and run their queries
+
+async def main(data:PipelineData):
+    
+    # maybe like the gbif async orchestrator with task group 
+    
+    # still need to run in order for occurence (gbif -> inat_observers) but env data can run concurrently 
+    
+    # gbif
+    #   inat observer
+    # inat occurences ( requires download file )
+    # env 
+    
+    #main orchestrator
+    #asyncio.run(get_gbif_data(data)) 
+    #asyncio.run(get_inaturalist_occurence_data(data))
+    #asyncio.run(get_inaturalist_observer_data(data))
+    #asyncio.run(get_environmental_data(data)) 
+    pass
 
 async def get_gbif_data(data:PipelineData):
 
@@ -66,21 +85,17 @@ async def get_inaturalist_occurence_data(data:PipelineData):
     #Return url for 
     url = await inatOcc_query.run(data)    
 
-    pass
-
 async def get_inaturalist_observer_data(data:PipelineData):
     step_name = "get_inaturalist_observer_data"
     con = data.con
     # Create query 
     inatOcc_query = create_query('inatObs', name = step_name)
-    
     #Init step
     data.init_new_step(step_name)
     
     #Return url for 
-    url = await inatOcc_query.run(data)    
+    oberver_table = await inatOcc_query.run(data)    
 
-    pass
 
 
 async def get_environmental_data(data:PipelineData):

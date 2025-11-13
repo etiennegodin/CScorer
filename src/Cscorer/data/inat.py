@@ -25,13 +25,18 @@ class iNatOcc(BaseQuery):
         step_name = self.name
         
         inat_folder = Path(data.config['folders']['data_folder']) / 'inat'
+        data.config['folders']['inat_folder'] = str(inat_folder)
+        data.update()
         inat_folder.mkdir(exist_ok=True)
         
+        
         if "query" not in data.storage[step_name].keys():
+            raise NotImplementedError("Query builder not implemented")
             query = await self._build_query()
             data.storage[step_name]['query'] = query
             data.update()
         else:
+            pass
             query = data.storage[step_name]['query']
             
         #Override query
@@ -67,14 +72,15 @@ class iNatOcc(BaseQuery):
                     file_index = await ask_file_input(len(files), lines)
                     new_files.append(files[file_index])
                     
-            inat_tables = []
+            occ_tables = []
             for f in files:
-                inat_table = await import_csv_to_db(data.con,f,'inat','occurences', replace= False)
-                inat_tables.append(inat_table)
+                occ_table = await import_csv_to_db(data.con,f,'inat','occurences', replace= False)
+                occ_tables.append(occ_table)
                 
-            if inat_tables == len(files):
+            if occ_tables == len(files):
                 data.update_step_status(step_name, StepStatus.completed)
-
+                return occ_tables[0] # assuming same table with appended data if multiples sources
+                
     async def _build_query(self):
         pass
 
