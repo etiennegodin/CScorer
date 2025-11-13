@@ -4,6 +4,8 @@ from ..core import PipelineData, StepStatus
 from pathlib import Path
 from ..utils.duckdb import import_csv_to_db
 import asyncio, aiohttp, aiofiles
+from aiolimiter import AsyncLimiter
+from pprint import pprint
 
 class iNatObs(BaseQuery):
     def __init__(self, name:str):
@@ -13,28 +15,43 @@ class iNatObs(BaseQuery):
     async def run(self, data:PipelineData):
         con = data.con
         logger = data.logger
+        self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
         
         observers = await _get_observers(con)
-        print(observers[:1])
+        observers = observers[:10]
 
         async with aiohttp.ClientSession() as session:
             async with asyncio.TaskGroup() as tg:
                 tasks = []
-                for observer in observers:
-                    task = tg.create_task(self._get_user_data(sesion, observer))
+                for idx, observer in enumerate(observers):
+                    task = tg.create_task(self._process_user(session, idx, observer, logger))
                     tasks.append(task)
         
+    
         
+    async def _fetch_data(self,session, idx:int, user_login:str, logger ):
+        url = f"https://api.inaturalist.org/v1/users/autocomplete/?q={user_login}"
         
-        
-    async def _get_user_data(user_login):
-        url = f"https://api.inaturalist.org/v1/users/{user_login}"
-        #res = requests.get(url).json()
-        user = res["results"][0]
-        if user is not None:
-            return user
+        async with self.limiter:
+            try:
+                async with session.get(url, timeout = 10) as r:
+                    r.raise_for_status()
+                    return await r.json()      
+            except Exception as e:
+                logger.warning(f"[{idx}] Retry failed: {e}")
+                await asyncio.sleep(1)
 
+        
+    async def _process_user(self,session, idx:int, user_login:str, logger):
+        data = await self._fetch_data(session, idx, user_login, logger)
+        #res = requests.get(url).json()
+        if data:
+            results = data["results"][0]
+            pprint(results)
+            return results
+        
+        
 class iNatOcc(BaseQuery):
 
     def __init__(self, name:str):
