@@ -13,7 +13,7 @@ class iNatObs(BaseQuery):
         super().__init__()
         self.name = name
 
-    async def run(self, data:PipelineData):
+    async def run(self, data:PipelineData, limit:int = None):
         con = data.con
         logger = data.logger
         self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
@@ -21,49 +21,51 @@ class iNatObs(BaseQuery):
         self.queue  = Queue()
          
         # Create table in db 
-        
         observers = await _get_observers(con)
-        observers = observers[:2]
-        print(observers)
-        async with aiohttp.ClientSession() as session:
-            writer_task = asyncio.create_task(self._write_data( con, logger))
-            
-            fetchers = [asyncio.create_task(self._fetch_data(session, o, logger)) for o in observers ]
-            await asyncio.gather(*fetchers)
         
+        #Optionnal limit
+        if limit is not None:
+            observers = observers[:limit]
+        #Store count of observers (for logger)
+        self.obs_count = len(observers)
+        
+        async with aiohttp.ClientSession() as session:
+            writer_task = asyncio.create_task(self._write_data(con, logger))
+            
+            fetchers = [asyncio.create_task(self._fetch_data(session, idx, o, logger)) for idx, o in enumerate(observers) ]
+            await asyncio.gather(*fetchers)
             await self.queue.join()
             await self.queue.put(None)
             await writer_task
-
-        # signal writer to exit
         
-    async def _write_data(self,con, logger):
+        data.update_step_status(step_name, StepStatus.completed)
+
+        
+    async def _write_data(self, con, logger):
         queue = self.queue
         logger.info('Init writer task')
-        con.execute("CREATE TABLE IF NOT EXISTS inat.observers (id INTEGER, user_login TEXT, json JSON)")
+        con.execute("CREATE OR REPLACE TABLE inat.observers (id INTEGER, user_login TEXT, json JSON)")
         while True:
             item = await queue.get()
-            print(item)
             if item is None:
                 queue.task_done()
                 break
-            logger.info(f"write for {item['login']}")
-            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (item["id"], item['login'],json.dumps(item)))
+            idx, data = item
+            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (data["id"], data['login'],json.dumps(data)))
+            logger.info(f"Data saved for {data['login']} ({idx+1}/{self.obs_count})")
             queue.task_done()
         con.close()
         
-    async def _fetch_data(self,session, user_login:str, logger ):
+    async def _fetch_data(self,session, idx:int, user_login:str, logger ):
         url = f"https://api.inaturalist.org/v1/users/autocomplete/?q={user_login}"
         
         async with self.limiter:
             try:
                 async with session.get(url, timeout = 10) as r:
                     r.raise_for_status()
-                    logger.info(f'Data queried for {user_login}')
                     data = await r.json()    
                     if data:
-                        await self.queue.put(data["results"][0])
-                        
+                        await self.queue.put((idx,data["results"][0]))
             except Exception as e:
                 logger.warning(f"[{user_login}] failed: {e}")
 
