@@ -30,14 +30,22 @@ class PipelineData:
     config: Dict[str, Any] = field(default_factory=dict)
     storage: Dict[str, Any] = field(default_factory=dict)
     step_status: Dict[str, Any] = field(default_factory=dict)
-    logger: logging.Logger = logging
+    logger: logging.Logger = None
     
     def __post_init__(self):
+
+        #Init logger if empty
+        if self.logger is None:
+            self.logger = logging
+            self.logger.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+        
         self.logger.info("Pipeline data post_init")
+        
         #Init print
         self.set("init", time.time())
         self.update_step_status('init', StepStatus.init)
         
+
         # Init db_connection 
         from .utils.duckdb import _open_connection
         self.con = _open_connection(db_path=self.config['db_path'] )
