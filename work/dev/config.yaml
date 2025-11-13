@@ -22,10 +22,25 @@ gee_datasets:
   image:
   - name: CGIAR/SRTM90_V4
     description: SRTM 90m Digital Elevation Data
+    link: https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4
+
   - name: WORLDCLIM/V1/BIO
     description: WorldClim Version 1 Bioclimatic Variables
+    link: https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO
+
+  - name: USGS/NLCD_RELEASES/2020_REL/NALCMS
+    description: National Land Cover Database (NLCD) 2020 North American Land Change Monitoring System (NALCMS)
+    link: https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2020_REL_NALCMS
+
   imageCollection:
-    - COPERNICUS/S2_SR_HARMONIZED
+    - name: COPERNICUS/S2_SR_HARMONIZED
+      description: Copernicus Sentinel-2 Surface Reflectance HARMONIZED
+      link: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED
+      bands: -B2
+             -B3
+             -B4
+             -B8
+    - name: prut
 
 gbif_datasets:
   Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
