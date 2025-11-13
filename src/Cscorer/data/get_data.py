@@ -71,7 +71,28 @@ async def get_gbif_data(data:PipelineData):
 
     if expert_table:
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
+
+async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
+    step_name = f"gbif_query_{name}"
+    gbif_config = data.config['gbif']
+    
+    if not isinstance(predicates, (dict, None)):
+        raise ValueError("Pedicates must be dict")
+    
+    data.logger.info(f"Creating new instance of {step_name}")
+
+    # Create query
+    query = create_query('gbif', name = step_name, config = gbif_config)
+    
+    #Add additonnal predicates
+    for key, value in predicates.items():
+        query.predicate.add_field(key = key, value = value)
+    
+    #Init step
+    data.init_new_step(step_name)
         
+    return query
+       
         
 async def get_inaturalist_occurence_data(data:PipelineData):
     step_name = "get_inaturalist_occurence_data"
@@ -101,26 +122,6 @@ async def get_environmental_data(data:PipelineData):
 
     pass
 
-async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
-    step_name = f"gbif_query_{name}"
-    gbif_config = data.config['gbif']
-    
-    if not isinstance(predicates, (dict, None)):
-        raise ValueError("Pedicates must be dict")
-    
-    data.logger.info(f"Creating new instance of {step_name}")
-
-    # Create query
-    query = create_query('gbif', name = step_name, config = gbif_config)
-    
-    #Add additonnal predicates
-    for key, value in predicates.items():
-        query.predicate.add_field(key = key, value = value)
-    
-    #Init step
-    data.init_new_step(step_name)
-        
-    return query
 
 
 
