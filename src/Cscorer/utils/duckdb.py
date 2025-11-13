@@ -27,21 +27,20 @@ def load_spatial_extension(con):
         logging.error(f"Error loading spatial extension : {e}")
         return False
 
-async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str, override:bool = True, geo:bool = False):
+async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str, replace:bool = True, geo:bool = False, delete_file: bool = False):
 
-    if (override) or (f"{schema}.{table}" not in get_all_tables(con)):
+    if (replace) or (f"{schema}.{table}" not in get_all_tables(con)):
         create_schema(con, schema=schema)
         query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
         """
-
     else:
         query = f"""INSERT INTO {schema}.{table}
         """
         
     query += f"""SELECT *,
-                    {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
-                    FROM read_csv('{file_path}')
-                    """    
+                {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
+                FROM read_csv('{file_path}')
+                """    
     try:
         con.execute(query)
         logging.info(f'Registered {file_path} to {schema}.{table}')
