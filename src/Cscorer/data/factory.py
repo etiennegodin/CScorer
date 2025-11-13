@@ -1,10 +1,11 @@
 from .env import GeeQuery
 from .gbif import GbifQuery
-from .inat import iNatQuery
+from .inat import iNatOcc, iNatObs
 
 QUERY_CLASSES = {
     "gbif": GbifQuery,
-    "inat" : iNatQuery,
+    "inatOcc" : iNatOcc,
+    "inatObs" : iNatObs,
     "env": GeeQuery
 }
 

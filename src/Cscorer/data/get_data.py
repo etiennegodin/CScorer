@@ -7,6 +7,25 @@ import asyncio
 import time
 import aiohttp
 
+### Create instances for each class of data and run their queries
+
+async def main(data:PipelineData):
+    
+    # maybe like the gbif async orchestrator with task group 
+    
+    # still need to run in order for occurence (gbif -> inat_observers) but env data can run concurrently 
+    
+    # gbif
+    #   inat observer
+    # inat occurences ( requires download file )
+    # env 
+    
+    #main orchestrator
+    #asyncio.run(get_gbif_data(data)) 
+    #asyncio.run(get_inaturalist_occurence_data(data))
+    #asyncio.run(get_inaturalist_observer_data(data))
+    #asyncio.run(get_environmental_data(data)) 
+    pass
 
 async def get_gbif_data(data:PipelineData):
 
@@ -52,27 +71,6 @@ async def get_gbif_data(data:PipelineData):
 
     if expert_table:
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
-        
-        
-async def get_inaturalist_data(data:PipelineData):
-    step_name = "get_inaturalist_data"
-    con = data.con
-
-    # Create query 
-    inat_query = create_query('inat', name = step_name)
-    
-    #Init step
-    data.init_new_step(step_name)
-    
-    #Return url for 
-    url = await inat_query.run(data)    
-
-    pass
-
-async def get_environmental_data(data:PipelineData):
-    step_name = 'get_environmental_data'
-
-    pass
 
 async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
@@ -94,6 +92,36 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
     data.init_new_step(step_name)
         
     return query
+       
+        
+async def get_inaturalist_occurence_data(data:PipelineData):
+    step_name = "get_inaturalist_occurence_data"
+    con = data.con
+    # Create query 
+    inatOcc_query = create_query('inatOcc', name = step_name)
+    
+    #Init step
+    data.init_new_step(step_name)
+    
+    #Return url for 
+    occurence = await inatOcc_query.run(data)    
+
+async def get_inaturalist_observer_data(data:PipelineData):
+    step_name = "get_inaturalist_observer_data"
+    con = data.con
+    # Create query 
+    inatObs_query = create_query('inatObs', name = step_name)
+    #Init step
+    data.init_new_step(step_name)
+    
+    #Return url for 
+    oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
+
+async def get_environmental_data(data:PipelineData):
+    step_name = 'get_environmental_data'
+
+    pass
+
 
 
 

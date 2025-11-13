@@ -34,7 +34,7 @@ class GbifQuery(BaseQuery):
             data.update_step_status(step_name, StepStatus.ready)
 
         if data.step_status[f'{step_name}'] == StepStatus.ready:
-            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['data_folder'], logger= data.logger)
+            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['gbif_folder'], logger= data.logger)
             data.storage[step_name]['raw_data'] = gbif_raw_data
             data.update_step_status(step_name, StepStatus.local)
             data.update()
