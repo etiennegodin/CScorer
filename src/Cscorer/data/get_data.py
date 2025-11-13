@@ -37,7 +37,7 @@ async def get_gbif_data(data:PipelineData):
     cs_predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
     
     #Prep expert specific predicates
-    datasets = data.config['datasets']
+    datasets = data.config['gbif_datasets']
     dataset_keys = []
     for dataset in datasets.values():
         dataset_keys.append(dataset['key'])
@@ -122,6 +122,5 @@ async def get_environmental_data(data:PipelineData):
 
     query = create_query('gee', data)
     
-
-
+    x = query.run(data)
 

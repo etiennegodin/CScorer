@@ -1,4 +1,19 @@
-datasets:
+db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
+folders:
+  data_folder: /home/manat/projects/CScorer/work/dev/data
+  gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
+  inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
+  pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
+  run_folder: /home/manat/projects/CScorer/work/dev
+gbif:
+  COUNTRY: CA
+  GADM_GID: CAN.11_1
+  GEOMETRY: POLYGON((-73.509156 45.524824, -74.519611 45.014526, -71.669469 45.014526,
+    -70.203212 46.296853,-71.032444 46.821866, -71.444314 46.686379, -73.086303 46.045787,
+    -73.509156 45.524824))
+  TAXON_KEY: 7707728
+  YEAR: 2010
+gbif_datasets:
   Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
     key: 2fd02649-fc08-4957-9ac5-2830e072c097
     subtype: SPECIMEN
@@ -27,21 +42,11 @@ datasets:
     subtype: SPECIMEN
     title: "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)"
     type: OCCURRENCE
-db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
-folders:
-  data_folder: /home/manat/projects/CScorer/work/dev/data
-  gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
-  inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
-  pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
-  run_folder: /home/manat/projects/CScorer/work/dev
-gbif:
-  COUNTRY: CA
-  GADM_GID: CAN.11_1
-  GEOMETRY: POLYGON((-73.509156 45.524824, -74.519611 45.014526, -71.669469 45.014526,
-    -70.203212 46.296853,-71.032444 46.821866, -71.444314 46.686379, -73.086303 46.045787,
-    -73.509156 45.524824))
-  TAXON_KEY: 7707728
-  YEAR: 2010
+gee_datasets:
+  image:
+  - WORLDCLIM/V1/BIO
+  imageCollection:
+  - COPERNICUS/S2_SR
 inat:
 - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
 - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
@@ -49,3 +54,6 @@ inat_api:
   limit: null
   max_calls_per_minute: 60
   overwrite: true
+time:
+  end: 2025-11-01
+  start: 2010-01-01
