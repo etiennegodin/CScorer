@@ -24,18 +24,18 @@ class iNatObs(BaseQuery):
         
         observers = await _get_observers(con)
         observers = observers[:2]
-
+        print(observers)
         async with aiohttp.ClientSession() as session:
-            async with asyncio.TaskGroup() as tg:
-                tg.create_task(self._write_data( con, logger))
-                
-                for idx, observer in enumerate(observers):
-                    tg.create_task(self._fetch_data(session, idx, observer, logger))
+            writer_task = asyncio.create_task(self._write_data( con, logger))
+            
+            fetchers = [asyncio.create_task(self._fetch_data(session, o, logger)) for o in observers ]
+            await asyncio.gather(*fetchers)
         
-        await self.queue.join()
+            await self.queue.join()
+            await self.queue.put(None)
+            await writer_task
 
         # signal writer to exit
-        await self.queue.put(None)
         
     async def _write_data(self,con, logger):
         queue = self.queue
@@ -43,15 +43,16 @@ class iNatObs(BaseQuery):
         con.execute("CREATE TABLE IF NOT EXISTS inat.observers (id INTEGER, user_login TEXT, json JSON)")
         while True:
             item = await queue.get()
+            print(item)
             if item is None:
+                queue.task_done()
                 break
-            
             logger.info(f"write for {item['login']}")
             con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (item["id"], item['login'],json.dumps(item)))
             queue.task_done()
         con.close()
         
-    async def _fetch_data(self,session, idx:int, user_login:str, logger ):
+    async def _fetch_data(self,session, user_login:str, logger ):
         url = f"https://api.inaturalist.org/v1/users/autocomplete/?q={user_login}"
         
         async with self.limiter:
@@ -64,8 +65,7 @@ class iNatObs(BaseQuery):
                         await self.queue.put(data["results"][0])
                         
             except Exception as e:
-                logger.warning(f"[{idx}] Retry failed: {e}")
-                await asyncio.sleep(1)
+                logger.warning(f"[{user_login}] failed: {e}")
 
 class iNatOcc(BaseQuery):
 
