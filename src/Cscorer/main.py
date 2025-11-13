@@ -54,7 +54,7 @@ def init_pipeline(args)->PipelineData:
     
     #Add to config dict
     config['folders'] = folders
-    config['db_path'] = db_path
+    config['db_path'] = str(db_path)
     
     # Force flag to wipe data
     if args.force:
