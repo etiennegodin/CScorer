@@ -54,20 +54,34 @@ async def get_gbif_data(data:PipelineData):
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
         
         
-async def get_inaturalist_data(data:PipelineData):
-    step_name = "get_inaturalist_data"
+async def get_inaturalist_occurence_data(data:PipelineData):
+    step_name = "get_inaturalist_occurence_data"
     con = data.con
-
     # Create query 
-    inat_query = create_query('inat', name = step_name)
+    inatOcc_query = create_query('inatOcc', name = step_name)
     
     #Init step
     data.init_new_step(step_name)
     
     #Return url for 
-    url = await inat_query.run(data)    
+    url = await inatOcc_query.run(data)    
 
     pass
+
+async def get_inaturalist_observer_data(data:PipelineData):
+    step_name = "get_inaturalist_observer_data"
+    con = data.con
+    # Create query 
+    inatOcc_query = create_query('inatObs', name = step_name)
+    
+    #Init step
+    data.init_new_step(step_name)
+    
+    #Return url for 
+    url = await inatOcc_query.run(data)    
+
+    pass
+
 
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
