@@ -1,8 +1,10 @@
 
 from .base import BaseQuery
-from shapely import wkt
 from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp
+from ..utils.core import _ask_yes_no
+
+from shapely import wkt
 import ee, geemap
 from ee.image import Image
 from ee.imagecollection import ImageCollection
@@ -11,6 +13,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import asyncio
 import subprocess 
+import time
 
 
 def init_gee():
@@ -121,25 +124,58 @@ async def _upload_file_to_gee(data, file:Path):
         #data.update_step_status(step_name, StepStatus.failed)
         raise Exception(e)
     
-async def upload_points(data:PipelineData ):
-    # Init gee
-    init_gee()
+async def _check_asset_upload(file:Path, data:PipelineData, step_name):
+    delay = 15
+    load_dotenv()
+    if not isinstance(file, Path):
+        file = to_Path(file)
+        
+    folder = str(file.parent) + "/"
+    confirmed = False
+    asset_id = f"projects/{os.getenv('GEE_PROJECT_NAME').lower()}/assets/{file.stem}"
+    command = ["earthengine",
+               f"--project={str(os.getenv('GEE_PROJECT_ID'))}",
+               "asset","info",
+               asset_id,
+               ]
+    #while not confirmed:
+    while not confirmed:
+        proc = await asyncio.create_subprocess_exec(*command,
+                                                    stdout=asyncio.subprocess.PIPE,
+                                                    stderr=asyncio.subprocess.PIPE)
+        stdout, stderr = await proc.communicate()
 
-    #Upload points to gee 
+        if proc.returncode == 0:
+            data.logger.info(f" {file.stem}{file.suffix} successfully uploaded to gee")
+            data.storage[step_name]['points'].append(asset_id)
+
+            confirmed = True
+        else:
+            data.logger.info(f"Please manually upload {file.stem}{file.suffix} to gee project - Sleeping for {delay}s")
+            data.logger.warning(stdout.decode())
+
+            await asyncio.sleep(delay)
+            
+async def upload_points(data:PipelineData ):
+
     step_name = 'upload_occurences_point_to_gee'
-    
+    output_folder = data.config['folders']['gee_folder']
+    user_upload = False
+    tables = []
+    files = []
+
     if data.step_status[step_name] == StepStatus.completed:
-        data.logger(f"{step_name} completed")
+        data.logger.info(f"{step_name} completed")
         return
     
     #Init step if not done 
     data.init_new_step(step_name=step_name)
-    
+    data.storage[step_name]['points'] = []
+
     # Create files and table lookups    
-    output_folder = data.config['folders']['gee_folder']
-    tables = []
-    files = []
     steps = [step for step in data.storage.keys() if step.startswith('gbif')]
+
+    # Create files and table lookups    
     for step in steps:
         table = data.storage[step]['db']
         tables.append(table)
@@ -148,17 +184,19 @@ async def upload_points(data:PipelineData ):
         sub_folder = Path(f"{output_folder}/{data_name}")
         sub_folder.mkdir(exist_ok= True)
         files.append(sub_folder / f"{data_name}_occurences.shp")
-    
+        
+    #Export to shp
     if data.step_status[step_name] == StepStatus.init:
         #Export table points to disk
-        exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID')) for file, table in zip(files,tables)]
+        exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID', logger = data.logger)) for file, table in zip(files,tables)]
         await asyncio.gather(*exports)
         data.update_step_status(step_name, StepStatus.local)
 
     if data.step_status[step_name] == StepStatus.local:
         #Upload these points to gee 
-        uploads = [asyncio.create_task(_upload_file_to_gee(data, file))  for file in files]
+        uploads = [asyncio.create_task(_check_asset_upload(file, data, step_name))  for file in files]
         await asyncio.gather(*uploads)
+        data.update_step_status(step_name, StepStatus.completed)
+        data.logger.info('Successfully upload all files to gee')
         
-        #data.update_step_status(step_name, StepStatus.completed)
     

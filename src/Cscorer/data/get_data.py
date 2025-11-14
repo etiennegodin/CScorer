@@ -74,7 +74,6 @@ async def get_gbif_data(data:PipelineData):
         data.storage[f"{expert_query.name}"]["db"] = expert_table
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
         
-
 async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
     gbif_config = data.config['gbif']
@@ -94,8 +93,7 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
     #Init step
     data.init_new_step(step_name)
         
-    return query
-       
+    return query   
         
 async def get_inaturalist_occurence_data(data:PipelineData):
     step_name = "get_inaturalist_occurence_data"
@@ -125,7 +123,9 @@ async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
     data.init_new_step(step_name=step_name)
+    
     points = await upload_points(data)
+    
     #query = create_query('gee', data, step_name)
     
     #x = query.run(data)
