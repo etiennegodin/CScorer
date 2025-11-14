@@ -15,6 +15,9 @@ get_inaturalist_data:
   query: null
 get_inaturalist_observer_data:
   init: 1763048478.2635362
-init: 1763152984.139409
+init: 1763156475.24343
 upload_occurences_point_to_gee:
   init: 1763144361.5152352
+  points:
+  - projects/observationscorer/assets/citizen_occurences
+  - projects/observationscorer/assets/expert_occurences

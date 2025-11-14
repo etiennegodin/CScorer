@@ -1,6 +1,7 @@
 from .base import BaseQuery
 from shapely import wkt
 from ..core import PipelineData, StepStatus
+from ..utils.core import _ask_yes_no
 from ..utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
 from aiolimiter import AsyncLimiter
@@ -180,18 +181,7 @@ class iNatOcc(BaseQuery):
         print(lat_so, lon_so )
         print(lat_ne, lon_ne)
     
-async def _ask_yes_no(msg:str):
-    values = ['y','n']
-    correct = False
-    while (not correct):
-        answer = input(msg)
-        if answer.lower() in values:
-            correct = True
-    
-    if answer == 'y':
-        return True
-    else:
-        return False
+
 
 async def _ask_file_input(n_inputs, lines):
     correct = False

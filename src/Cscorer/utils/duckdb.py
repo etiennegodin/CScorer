@@ -50,11 +50,12 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:
         logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
         return None
     
-async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:str,
+async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:str, logger,
                         schema:str = None,
                         lon_col:str = "decimalLongitude",
                         lat_col:str = 'decimalLatitude',\
-                        table_fields:list[str] = '*')-> str:
+                        table_fields:list[str] = '*',
+                        )-> str:
     
     if schema is not None:
         table_name = f"{schema}.{table_name}"
@@ -77,6 +78,7 @@ async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:
         gdf = gpd.GeoDataFrame(df.drop(columns=[lon_col, lat_col, 'geom']), geometry=gpd.points_from_xy(df[lon_col], df[lat_col]), crs=4326)
         print(gdf)
         gdf.to_file(file_path)  
+        logger.info(f"Exported shp to : {file_path}")
     except Exception as e:
         raise e
     
