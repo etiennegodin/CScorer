@@ -123,8 +123,9 @@ async def get_inaturalist_observer_data(data:PipelineData):
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
+
     points = await upload_points(data)
-    query = create_query('gee', data, step_name)
+    #query = create_query('gee', data, step_name)
     
-    x = query.run(data)
+    #x = query.run(data)
 
