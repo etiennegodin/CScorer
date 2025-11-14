@@ -4,20 +4,18 @@ from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp
 from ..utils.core import _ask_yes_no
 from ..core import to_Path
+
+import pandas as pd
 from shapely import wkt
 import ee, geemap
 from ee.image import Image
 from ee.imagecollection import ImageCollection
-from ee.featurecollection import FeatureCollection
 import os 
 from dotenv import load_dotenv 
 from pathlib import Path
 import asyncio
 import subprocess 
-import time
-
-
-
+from pprint import pprint
 class GeeQuery(BaseQuery):
 
     def __init__(self, data:PipelineData, points:str):
@@ -26,9 +24,9 @@ class GeeQuery(BaseQuery):
         self._init_gee()
         
         #Create geometry area of interest 
-        self.aoi = ee.Geometry.Polygon(self._get_coords())
+        self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
-        
+    
         #Dates
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
@@ -44,11 +42,26 @@ class GeeQuery(BaseQuery):
     #var slope = ee.Terrain.slope(elevation);
     
     async def run(self, data:PipelineData):
-        
+        logger = data.logger
+        con = data.con
+        table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
         rasters = await self._load_rasters(data)
-        multi_raster = await self._combine_rasters(rasters)
-        samples = await self._sample_occurences(multi_raster)
-        completed = await self._export_toDrive(samples)
+        multi_raster = await self._combine_rasters(rasters, logger)
+        samples = await self._sample_occurences(multi_raster,logger)
+        
+        #Formatting data from gee 
+        logger.info('Saving samples to db...')
+        samples_data = []
+        for feature in samples.getInfo()['features']:
+            data = feature['properties']
+            data['gee_id'] = feature["id"]
+            data['coordinates'] = feature['geometry']['coordinates']
+            samples_data.append(data)
+        #Samples data to df
+        df = pd.DataFrame(samples_data)
+        #Savng to db
+        con.execute(f"CREATE OR REPLACE TABLE gee.{table_name} AS SELECT * FROM df")
+        logger.info(f"Successfully saved {table_name} samples to disk")
         data.update_step_status(self.name, status= StepStatus.completed)
     
     async def _load_rasters(self,data:PipelineData)-> list[Image]:
@@ -70,23 +83,25 @@ class GeeQuery(BaseQuery):
             
             median = img_col.median().clip(self.aoi)        
             rasters.append(median)        
-    
+
+        data.logger.info(f"Loaded {len(rasters)} rasters to sample")
         return rasters 
     
-    async def _combine_rasters(self, rasters:list[Image])-> Image:    
+    async def _combine_rasters(self, rasters:list[Image], logger)-> Image:    
         multi_layer_raster = ee.Image.cat(rasters)
+        logger.info(f"Combined rasters")
         return multi_layer_raster        
         
-    async def _sample_occurences(self, raster:Image):
+    async def _sample_occurences(self, raster:Image, logger):
         samples = raster.sampleRegions(
         collection=self.points,
         scale=10,
         geometries=True   # keep original geometry in output
         )
+        logger.info(f"Sampled rasters")
         return samples
-        
     
-    async def _export_toDrive(self,samples):
+    async def _export_toDrive(self,samples, logger):
         try:
             task = ee.batch.Export.table.toDrive(
             collection=samples,
@@ -96,8 +111,8 @@ class GeeQuery(BaseQuery):
         except Exception as e:
             raise Exception(e)
         
-    def _get_coords(self)->list:
-        geo = wkt.loads(self.config['gbif']['GEOMETRY'])
+    def _get_coords(self, data)->list:
+        geo = wkt.loads(data.config['gbif']['GEOMETRY'])
         return list(geo.exterior.coords)
     
     def _init_gee(self):

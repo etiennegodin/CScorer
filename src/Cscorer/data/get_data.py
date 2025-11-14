@@ -1,6 +1,6 @@
 # Main file to get data 
 from ..core import PipelineData, read_config, StepStatus
-from ..utils.duckdb import import_csv_to_db
+from ..utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
 import asyncio
@@ -120,13 +120,18 @@ async def get_inaturalist_observer_data(data:PipelineData):
 
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
-
     data.init_new_step(step_name=step_name)
+    
+    # Get point to gee
     points_list = await upload_points(data)
+    #Create table schema on db 
+    create_schema(data.con, schema = 'gee')
+    
+    #Create list of queries (one for each set of occurences)
     gee_queries = [create_query('gee', data, points=points) for points in points_list]
     for query in gee_queries:
         if query.name == "gee_query_expert_occurences":
-            query.run(data)
+            await query.run(data)
     
     #point_samples = asyncio.create_task()
     #query = create_query('gee', data, step_name)
