@@ -67,10 +67,12 @@ async def get_gbif_data(data:PipelineData):
 
     # Flag as completed
     if cs_table:
-        data.step_status[f'{cs_query.name}'] = StepStatus.completed    
-
+        data.storage[f"{cs_query.name}"]["db"] = cs_table
+        data.step_status[f'{cs_query.name}'] = StepStatus.completed   
     if expert_table:
+        data.storage[f"{expert_query.name}"]["db"] = expert_table
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
+        
 
 async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
@@ -120,7 +122,14 @@ async def get_inaturalist_observer_data(data:PipelineData):
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
-    query = create_query('gee', data)
+    #Upload points to gee 
+    tables = []
+    steps = [step for step in data.storage.keys() if step.startswith('gbif')]
+    for step in steps:
+        tables.append(data.storage[step]['db'])
+    print(tables)
+    quit()
+    query = create_query('gee', data, step_name)
     
     x = query.run(data)
 

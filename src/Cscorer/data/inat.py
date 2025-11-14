@@ -19,21 +19,21 @@ class iNatObs(BaseQuery):
         self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
         self.queue  = Queue()
-        table_name = "inat.observers"
+        self.table_name = "inat.observers"
         
         if data.step_status[step_name] == StepStatus.completed:
             logger.info(f"{step_name} already completed")
             #SKip 
-            return table_name
+            return self.table_name
          
         # Create table for data
-        con.execute(f"CREATE TABLE IF NOT EXISTS  {table_name} (id INTEGER, user_login TEXT, json JSON)")
-        last_id = con.execute(f"SELECT MAX(id) FROM {table_name}").fetchone()[0] 
+        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id INTEGER, user_login TEXT, json JSON)")
+        last_id = con.execute(f"SELECT MAX(id) FROM {self.table_name}").fetchone()[0] 
 
-        if overwrite and table_name in get_all_tables(con):
+        if overwrite and self.table_name in get_all_tables(con):
             if last_id is not None:
                 if await _ask_yes_no('Found existing table data on disk, do you want to overwrite all ? (y/n)'):
-                    con.execute(f"CREATE OR REPLACE TABLE {table_name} (id INTEGER, user_login TEXT, json JSON)")
+                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (id INTEGER, user_login TEXT, json JSON)")
                     last_id = None
 
         # Create table in db s
@@ -68,6 +68,7 @@ class iNatObs(BaseQuery):
             await self.queue.put(None)
             await writer_task
         
+        data.storage[step_name]['db'] = self.table_name
         data.update_step_status(step_name, StepStatus.completed)
 
         
@@ -81,7 +82,7 @@ class iNatObs(BaseQuery):
                 queue.task_done()
                 break
             idx, data = item
-            con.execute("INSERT INTO inat.observers VALUES (?, ?, ?)", (idx, data['login'],json.dumps(data)))
+            con.execute(f"INSERT INTO {self.table_name} VALUES (?, ?, ?)", (idx, data['login'],json.dumps(data)))
             logger.info(f"Data saved for {data['login']} ({idx+1}/{self.obs_count})")
             queue.task_done()
         con.close()
@@ -160,6 +161,7 @@ class iNatOcc(BaseQuery):
                 occ_tables.append(occ_table)
                 
             if occ_tables == len(files):
+                data.storage[step_name]['db'] = occ_tables[0]
                 data.update_step_status(step_name, StepStatus.completed)
                 return occ_tables[0] # assuming same table with appended data if multiples sources
                 

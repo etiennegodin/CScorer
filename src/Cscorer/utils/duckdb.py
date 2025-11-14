@@ -50,6 +50,13 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:
         logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
         return None
     
+async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table:str, schema:str = None)-> bool:
+    if schema is not None:
+        table = f"{schema}.{table}"
+    
+    pass
+      
+
 def assign_table_alias(columns: list = None, alias :str = None):
     query = """"""
     for col in columns:

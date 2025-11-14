@@ -2,6 +2,7 @@ db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
 folders:
   data_folder: /home/manat/projects/CScorer/work/dev/data
   gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
+  gee_folder: /home/manat/projects/CScorer/work/dev/data/gee
   inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
   pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
   run_folder: /home/manat/projects/CScorer/work/dev
@@ -45,18 +46,47 @@ gbif_datasets:
 gee_datasets:
   image:
   - description: SRTM 90m Digital Elevation Data
+    link: https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4
     name: CGIAR/SRTM90_V4
   - description: WorldClim Version 1 Bioclimatic Variables
+    link: https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO
     name: WORLDCLIM/V1/BIO
+  - description: National Land Cover Database (NLCD) 2020 North American Land Change
+      Monitoring System (NALCMS)
+    link: https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2020_REL_NALCMS
+    name: USGS/NLCD_RELEASES/2020_REL/NALCMS
+  - description: Accessibility to Cities 2015
+    link: https://developers.google.com/earth-engine/datasets/catalog/Oxford_MAP_accessibility_to_cities_2015_v1_0
+    name: Oxford/MAP/accessibility_to_cities_2015_v1_0
+  - description: Soil Organic Carbon Content (g/kg) - USDA 6A1C Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_ORGANIC-CARBON_USDA-6A1C_M_v02
+    name: OpenLandMap/SOL/SOL_ORGANIC-CARBON_USDA-6A1C_M/v02
+  - description: Soil Water Content at 33kPa (cm3/cm3) - USDA 4B1C Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_WATERCONTENT-33KPA_USDA-4B1C_M_v01
+    name: OpenLandMap/SOL/SOL_WATERCONTENT-33KPA_USDA-4B1C_M/v01
+  - description: Soil pH in H2O - USDA 4C1A2A Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_PH-H2O_USDA-4C1A2A_M_v02
+    name: OpenLandMap/SOL/SOL_PH-H2O_USDA-4C1A2A_M/v02
   imageCollection:
-  - COPERNICUS/S2_SR_HARMONIZED
-inat:
-- has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
-- has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
+  - description: Landsat Collection 2 Tier 1 Annual EVI Composite
+    link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_EVI
+    name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_EVI
+  - description: Landsat Collection 2 Tier 1 Annual NDVI Composite
+    link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_NDVI
+    name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_NDVI
+  - description: Global Forest Change 2020 v2.0
+    link: https://developers.google.com/earth-engine/datasets/catalog/JRC_GFC2020_V2
+    name: JRC/GFC2020/V2
+  - description: Global Human Modification of Terrestrial Systems
+    link: https://developers.google.com/earth-engine/datasets/catalog/CSP_HM_GlobalHumanModification
+    name: CSP/HM/GlobalHumanModification
 inat_api:
   limit: null
   max_calls_per_minute: 60
   overwrite: true
+inat_export:
+- has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
+- has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
 time:
   end: 2025-11-01
   start: 2010-01-01
