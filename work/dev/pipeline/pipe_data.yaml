@@ -1,8 +1,10 @@
 gbif_query_citizen:
+  db: gibf_raw.citizen
   init: 1762872918.0885973
   key: 0027014-251025141854904
   raw_data: /home/manat/projects/CScorer/work/dev/data/0027014-251025141854904.csv
 gbif_query_expert:
+  db: gibf_raw.expert
   init: 1762872918.0967045
   key: 0027013-251025141854904
   raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
@@ -11,4 +13,4 @@ get_inaturalist_data:
   query: null
 get_inaturalist_observer_data:
   init: 1763048478.2635362
-init: 1763074410.16054
+init: 1763142585.3178556

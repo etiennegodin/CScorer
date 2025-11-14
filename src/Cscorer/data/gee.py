@@ -2,15 +2,18 @@
 from .base import BaseQuery
 from shapely import wkt
 from ..core import PipelineData, StepStatus
+from ..utils.duckdb import export_to_shp
 import ee, geemap
 from ee.image import Image
 from ee.imagecollection import ImageCollection
 import os 
 from dotenv import load_dotenv 
+from pathlib import Path
+import asyncio
 
 class GeeQuery(BaseQuery):
 
-    def __init__(self, data:PipelineData):
+    def __init__(self, data:PipelineData, name:str):
         super().__init__()
         # Initilaise gee 
         load_dotenv()
@@ -23,6 +26,9 @@ class GeeQuery(BaseQuery):
         self.aoi = ee.Geometry.Polygon(coords)
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
+        self.name = name
+        data.update_step_status(name, status= StepStatus.init)
+
         
     #Snippets
     #var dataset = ee.Image('CGIAR/SRTM90_V4');
@@ -32,6 +38,7 @@ class GeeQuery(BaseQuery):
     
     def run(self, data:PipelineData):
         pass
+        points_path = self._upload_points(data)
         #points = self._load_occurences_points(data)
         rasters = self._load_rasters(data)
         #multi_raster = self._combine_rasters()
@@ -54,23 +61,16 @@ class GeeQuery(BaseQuery):
                 .filterDate(f"{self.date_min}", f"{self.date_max}") \
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
             
-            median = img_col.median().clip(self.aoi)
-            ndvi = median.normalizedDifference(['B8', 'B4']).rename('NDVI')
-
-            print(type(median))
-        
-        
-        print(rasters)
-        
+            median = img_col.median().clip(self.aoi)        
+            rasters.append(median)        
     
-    def _combine_rasters(self, rasters:list[Image])-> Image:
-        pass
-    
+    def _combine_rasters(self, rasters:list[Image])-> Image:    
         multi_layer_raster = ee.Image.cat(rasters)
         return multi_layer_raster
-        samples = image.sampleRegions(points, scale=10, geometries=True)
 
     def _load_occurences_points(self,data:PipelineData):
+        
+        
         
         points = ee.FeatureCollection('path/to/your/points')     
         
@@ -88,3 +88,42 @@ class GeeQuery(BaseQuery):
         fileFormat='CSV'
     )
         task.start()
+        
+        
+async def _upload_file_to_gee(data, step_name, file, table):
+    try:
+        geemap.upload_to_ee(
+        filename=file,
+        asset_path=f"projects/{os.getenv("GEE_PROJECT")}/assets/{file.stem}",
+        overwrite=True)
+        return True 
+    except Exception as e:
+        data.logger.error(f"Error uploading occurences to gee : \n{e}")
+        data.update_step_status(step_name, StepStatus.failed)
+    
+async def upload_points(data:PipelineData ):
+    #Upload points to gee 
+    step_name = 'upload_occurences_point_to_gee'
+    data.init_new_step(step_name=step_name)
+
+    tables = []
+    files = []
+    steps = [step for step in data.storage.keys() if step.startswith('gbif')]
+    for step in steps:
+        table = data.storage[step]['db']
+        tables.append(table)
+        files.append(Path(f"{table.split(sep='.')[1]}_occurences.shp"))
+    
+    #Export table points to disk
+    exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table = table)) for file, table in zip(files,tables)]
+    await asyncio.gather(*exports)
+    data.update_step_status(step_name, StepStatus.local)
+
+    #Upload these points to gee 
+    uploads = [asyncio.create_task(_upload_file_to_gee(data, step_name, file, table))  for file, table in zip(files,tables)]
+    await asyncio.gather(*exports)
+
+    data.update_step_status(step_name, StepStatus.completed)
+    
+
+            

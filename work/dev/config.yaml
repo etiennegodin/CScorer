@@ -14,7 +14,7 @@ inat_api:
   limit: Null
   overwrite: true
 
-inat:
+inat_export:
   - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
   - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
 
@@ -32,15 +32,40 @@ gee_datasets:
     description: National Land Cover Database (NLCD) 2020 North American Land Change Monitoring System (NALCMS)
     link: https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2020_REL_NALCMS
 
+  - name: Oxford/MAP/accessibility_to_cities_2015_v1_0
+    description: Accessibility to Cities 2015
+    link: https://developers.google.com/earth-engine/datasets/catalog/Oxford_MAP_accessibility_to_cities_2015_v1_0
+
+  - name: OpenLandMap/SOL/SOL_ORGANIC-CARBON_USDA-6A1C_M/v02
+    description: Soil Organic Carbon Content (g/kg) - USDA 6A1C Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_ORGANIC-CARBON_USDA-6A1C_M_v02
+
+  - name: OpenLandMap/SOL/SOL_WATERCONTENT-33KPA_USDA-4B1C_M/v01
+    description: Soil Water Content at 33kPa (cm3/cm3) - USDA 4B1C Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_WATERCONTENT-33KPA_USDA-4B1C_M_v01
+
+  - name: OpenLandMap/SOL/SOL_PH-H2O_USDA-4C1A2A_M/v02
+    description: Soil pH in H2O - USDA 4C1A2A Method
+    link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_PH-H2O_USDA-4C1A2A_M_v02
+
+
+
   imageCollection:
-    - name: COPERNICUS/S2_SR_HARMONIZED
-      description: Copernicus Sentinel-2 Surface Reflectance HARMONIZED
-      link: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED
-      bands: -B2
-             -B3
-             -B4
-             -B8
-    - name: prut
+    - name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_EVI
+      description: Landsat Collection 2 Tier 1 Annual EVI Composite
+      link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_EVI
+
+    - name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_NDVI
+      description: Landsat Collection 2 Tier 1 Annual NDVI Composite
+      link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_NDVI
+
+    - name: JRC/GFC2020/V2
+      description: Global Forest Change 2020 v2.0
+      link: https://developers.google.com/earth-engine/datasets/catalog/JRC_GFC2020_V2
+      
+    - name: CSP/HM/GlobalHumanModification
+      description: Global Human Modification of Terrestrial Systems
+      link: https://developers.google.com/earth-engine/datasets/catalog/CSP_HM_GlobalHumanModification
 
 gbif_datasets:
   Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
