@@ -50,12 +50,22 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:
         logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
         return None
     
-async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table:str, schema:str = None)-> bool:
-    if schema is not None:
-        table = f"{schema}.{table}"
+async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:str,
+                        schema:str = None,
+                        lon_col:str = "decimalLongitutde",
+                        lat_col:str = 'decimalLatitude',\
+                        table_fields:list[str] = '*')-> str:
     
-    pass
-      
+    if schema is not None:
+        table_name = f"{schema}.{table_name}"
+
+    try:
+        df = con.execute(f"SELECT {table_fields}, ST_Point({lon_col}, {lat_col}) AS geom FROM {table_name}")
+        gpd.GeoDataFrame(geometry=gpd.points_from_xy(df.lon, df.lat), crs=4326).to_file(file_path)  
+    except Exception as e:
+        raise e
+    
+    return file_path    
 
 def assign_table_alias(columns: list = None, alias :str = None):
     query = """"""

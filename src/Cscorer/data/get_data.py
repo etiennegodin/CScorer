@@ -6,6 +6,7 @@ from pathlib import Path
 import asyncio
 import time
 import aiohttp
+from ..data.gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
@@ -122,13 +123,7 @@ async def get_inaturalist_observer_data(data:PipelineData):
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
 
-    #Upload points to gee 
-    tables = []
-    steps = [step for step in data.storage.keys() if step.startswith('gbif')]
-    for step in steps:
-        tables.append(data.storage[step]['db'])
-    print(tables)
-    quit()
+    points = await upload_points(data)
     query = create_query('gee', data, step_name)
     
     x = query.run(data)
