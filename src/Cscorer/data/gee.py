@@ -99,33 +99,39 @@ async def _upload_file_to_gee(data, step_name, file, table):
         return True 
     except Exception as e:
         data.logger.error(f"Error uploading occurences to gee : \n{e}")
+        raise RuntimeError
         data.update_step_status(step_name, StepStatus.failed)
     
 async def upload_points(data:PipelineData ):
     #Upload points to gee 
     step_name = 'upload_occurences_point_to_gee'
+    
+    if data.step_status[step_name] == StepStatus.completed:
+        data.logger(f"{step_name} completed")
+        return
+    
+    #Init step if not done 
     data.init_new_step(step_name=step_name)
-
+    
+    # Create files and table lookups    
+    output_folder = data.config['folders']['gee_folder']
     tables = []
     files = []
     steps = [step for step in data.storage.keys() if step.startswith('gbif')]
     for step in steps:
         table = data.storage[step]['db']
         tables.append(table)
-        files.append(Path(f"{table.split(sep='.')[1]}_occurences.shp"))
+        files.append(Path(f"{output_folder}/{table.split(sep='.')[1]}_occurences.shp"))
     
-    #Export table points to disk
-    exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID')) for file, table in zip(files,tables)]
-    await asyncio.gather(*exports)
-    data.update_step_status(step_name, StepStatus.local)
+    if data.step_status[step_name] == StepStatus.init:
+        #Export table points to disk
+        exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID')) for file, table in zip(files,tables)]
+        await asyncio.gather(*exports)
+        data.update_step_status(step_name, StepStatus.local)
 
-    return 
-    #Upload these points to gee 
-    uploads = [asyncio.create_task(_upload_file_to_gee(data, step_name, file, table))  for file, table in zip(files,tables)]
-    await asyncio.gather(*exports)
-
-    data.update_step_status(step_name, StepStatus.completed)
+    if data.step_status[step_name] == StepStatus.local:
+        #Upload these points to gee 
+        uploads = [asyncio.create_task(_upload_file_to_gee(data, step_name, file, table))  for file, table in zip(files,tables)]
+        await asyncio.gather(*exports)
+        data.update_step_status(step_name, StepStatus.completed)
     
-    
-
-            
