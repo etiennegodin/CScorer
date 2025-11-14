@@ -8,6 +8,7 @@ from shapely import wkt
 import ee, geemap
 from ee.image import Image
 from ee.imagecollection import ImageCollection
+from ee.featurecollection import FeatureCollection
 import os 
 from dotenv import load_dotenv 
 from pathlib import Path
@@ -16,36 +17,24 @@ import subprocess
 import time
 
 
-def init_gee():
-    load_dotenv()
-    try:
-        ee.Authenticate()
-        ee.Initialize(project=os.getenv("GEE_PROJECT_ID"))
-
-        return True
-    except Exception as e:
-        raise Exception(e)
-
 
 class GeeQuery(BaseQuery):
 
     def __init__(self, data:PipelineData, points:str):
         super().__init__()
         # Init gee 
-        init_gee()
+        self._init_gee()
         
         #Create geometry area of interest 
-        geo = wkt.loads(data.config['gbif']['GEOMETRY'])
-        coords = list(geo.exterior.coords)
-        self.aoi = ee.Geometry.Polygon(coords)
+        self.aoi = ee.Geometry.Polygon(self._get_coords())
+        self.points = ee.FeatureCollection(points)
+        
+        #Dates
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
-        self.points = points
-
-        # Create step_name
-        if not isinstance(points, Path):
-            points = to_Path(points)  
         
+        # Create step_name from name of point dataset
+        points = to_Path(points)  
         self.name = f"gee_query_{points.stem}"
         data.init_new_step(step_name=self.name)
         
@@ -54,17 +43,15 @@ class GeeQuery(BaseQuery):
     #var elevation = dataset.select('elevation');
     #var slope = ee.Terrain.slope(elevation);
     
-    
     async def run(self, data:PipelineData):
-        pass        
-
-        #points = self._load_occurences_points(data)
-        rasters = self._load_rasters(data)
-        #multi_raster = self._combine_rasters()
-        #out = self._sample_occurences(multi_raster, points)
+        
+        rasters = await self._load_rasters(data)
+        multi_raster = await self._combine_rasters(rasters)
+        samples = await self._sample_occurences(multi_raster)
+        completed = await self._export_toDrive(samples)
+        data.update_step_status(self.name, status= StepStatus.completed)
     
-    
-    def _load_rasters(self,data:PipelineData):
+    async def _load_rasters(self,data:PipelineData)-> list[Image]:
         datasets = data.config['gee_datasets']
         image_datasets = datasets['image']
         imageCollection_datasets = datasets['imageCollection']
@@ -84,30 +71,45 @@ class GeeQuery(BaseQuery):
             median = img_col.median().clip(self.aoi)        
             rasters.append(median)        
     
-    def _combine_rasters(self, rasters:list[Image])-> Image:    
-        multi_layer_raster = ee.Image.cat(rasters)
-        return multi_layer_raster
-
-    def _load_occurences_points(self,data:PipelineData):
-        
-        points = ee.FeatureCollection('path/to/your/points')     
-        
-    def _sample_occurences(self, raster, points):
+        return rasters 
     
+    async def _combine_rasters(self, rasters:list[Image])-> Image:    
+        multi_layer_raster = ee.Image.cat(rasters)
+        return multi_layer_raster        
+        
+    async def _sample_occurences(self, raster:Image):
         samples = raster.sampleRegions(
-        collection=points,
+        collection=self.points,
         scale=10,
         geometries=True   # keep original geometry in output
         )
+        return samples
         
-        task = ee.batch.Export.table.toDrive(
-        collection=samples,
-        description='raster_samples',
-        fileFormat='CSV'
-    )
-        task.start()
+    
+    async def _export_toDrive(self,samples):
+        try:
+            task = ee.batch.Export.table.toDrive(
+            collection=samples,
+            description= self.name,
+            fileFormat='CSV')
+            task.start()
+        except Exception as e:
+            raise Exception(e)
         
-        
+    def _get_coords(self)->list:
+        geo = wkt.loads(self.config['gbif']['GEOMETRY'])
+        return list(geo.exterior.coords)
+    
+    def _init_gee(self):
+        load_dotenv()
+        try:
+            ee.Authenticate()
+            ee.Initialize(project=os.getenv("GEE_PROJECT_ID"))
+            return True
+        except Exception as e:
+            raise Exception(e)
+
+
 async def _upload_file_to_gee(data, file:Path):
     if not isinstance(file, Path):
         file = to_Path(file)
@@ -152,6 +154,7 @@ async def _check_asset_upload(file:Path, data:PipelineData, step_name):
         if proc.returncode == 0:
             data.logger.info(f" {file.stem}{file.suffix} successfully uploaded to gee")
             data.storage[step_name]['points'].append(asset_id)
+            data.update()
 
             confirmed = True
         else:
