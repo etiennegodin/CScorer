@@ -48,8 +48,6 @@ gee_datasets:
     description: Soil pH in H2O - USDA 4C1A2A Method
     link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_PH-H2O_USDA-4C1A2A_M_v02
 
-
-
   imageCollection:
     - name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_EVI
       description: Landsat Collection 2 Tier 1 Annual EVI Composite
