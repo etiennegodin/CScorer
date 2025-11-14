@@ -3,7 +3,7 @@ from .base import BaseQuery
 from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp
 from ..utils.core import _ask_yes_no
-
+from ..core import to_Path
 from shapely import wkt
 import ee, geemap
 from ee.image import Image
@@ -29,7 +29,7 @@ def init_gee():
 
 class GeeQuery(BaseQuery):
 
-    def __init__(self, data:PipelineData, name:str):
+    def __init__(self, data:PipelineData, points:str):
         super().__init__()
         # Init gee 
         init_gee()
@@ -40,9 +40,14 @@ class GeeQuery(BaseQuery):
         self.aoi = ee.Geometry.Polygon(coords)
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
-        self.name = name
-        data.update_step_status(name, status= StepStatus.init)
+        self.points = points
 
+        # Create step_name
+        if not isinstance(points, Path):
+            points = to_Path(points)  
+        
+        self.name = f"gee_query_{points.stem}"
+        data.init_new_step(step_name=self.name)
         
     #Snippets
     #var dataset = ee.Image('CGIAR/SRTM90_V4');
@@ -50,13 +55,14 @@ class GeeQuery(BaseQuery):
     #var slope = ee.Terrain.slope(elevation);
     
     
-    def run(self, data:PipelineData):
-        pass
-        points_path = self._upload_points(data)
+    async def run(self, data:PipelineData):
+        pass        
+
         #points = self._load_occurences_points(data)
         rasters = self._load_rasters(data)
         #multi_raster = self._combine_rasters()
         #out = self._sample_occurences(multi_raster, points)
+    
     
     def _load_rasters(self,data:PipelineData):
         datasets = data.config['gee_datasets']
@@ -84,8 +90,6 @@ class GeeQuery(BaseQuery):
 
     def _load_occurences_points(self,data:PipelineData):
         
-        
-        
         points = ee.FeatureCollection('path/to/your/points')     
         
     def _sample_occurences(self, raster, points):
@@ -95,7 +99,7 @@ class GeeQuery(BaseQuery):
         scale=10,
         geometries=True   # keep original geometry in output
         )
-    
+        
         task = ee.batch.Export.table.toDrive(
         collection=samples,
         description='raster_samples',
@@ -166,8 +170,8 @@ async def upload_points(data:PipelineData ):
 
     if data.step_status[step_name] == StepStatus.completed:
         data.logger.info(f"{step_name} completed")
-        return
-    
+        return data.storage[step_name]['points'] 
+       
     #Init step if not done 
     data.init_new_step(step_name=step_name)
     data.storage[step_name]['points'] = []
@@ -198,5 +202,4 @@ async def upload_points(data:PipelineData ):
         await asyncio.gather(*uploads)
         data.update_step_status(step_name, StepStatus.completed)
         data.logger.info('Successfully upload all files to gee')
-        
-    
+        return data.storage[step_name]['points']

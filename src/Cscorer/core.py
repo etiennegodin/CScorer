@@ -42,8 +42,8 @@ class PipelineData:
         self.logger.info("Pipeline data post_init")
         
         #Init print
-        self.set("init", time.time())
-        self.update_step_status('init', StepStatus.init)
+        self.init_new_step(step_name='Main')
+        self.update_step_status('Main', StepStatus.init)
         
 
         # Init db_connection 
