@@ -1,7 +1,7 @@
 
 from .base import BaseQuery
 from shapely import wkt
-from ..core import PipelineData, StepStatus
+from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp
 import ee, geemap
 from ee.image import Image
@@ -10,15 +10,26 @@ import os
 from dotenv import load_dotenv 
 from pathlib import Path
 import asyncio
+import subprocess 
+
+
+def init_gee():
+    load_dotenv()
+    try:
+        ee.Authenticate()
+        ee.Initialize(project=os.getenv("GEE_PROJECT_ID"))
+
+        return True
+    except Exception as e:
+        raise Exception(e)
+
 
 class GeeQuery(BaseQuery):
 
     def __init__(self, data:PipelineData, name:str):
         super().__init__()
-        # Initilaise gee 
-        load_dotenv()
-        ee.Authenticate()
-        ee.Initialize(project=os.getenv("GEE_PROJECT"))
+        # Init gee 
+        init_gee()
         
         #Create geometry area of interest 
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])
@@ -90,19 +101,30 @@ class GeeQuery(BaseQuery):
         task.start()
         
         
-async def _upload_file_to_gee(data, step_name, file, table):
+async def _upload_file_to_gee(data, file:Path):
+    if not isinstance(file, Path):
+        file = to_Path(file)
+        
+    folder = str(file.parent) + "/"
+    command = ["earthengine",
+               f"--project={str(os.getenv('GEE_PROJECT_ID'))}",
+               "upload","table",
+               f"--asset_id=projects/{os.getenv('GEE_PROJECT_ID')}/assets/{file.stem}",
+               folder # positional arg for shp folder
+               ]
+    print(command)
     try:
-        geemap.upload_to_ee(
-        filename=file,
-        asset_path=f"projects/{os.getenv('GEE_PROJECT')}/assets/{file.stem}",
-        overwrite=True)
-        return True 
+        result = subprocess.run(command, check= True)
+        return result 
     except Exception as e:
         data.logger.error(f"Error uploading occurences to gee : \n{e}")
-        raise RuntimeError
-        data.update_step_status(step_name, StepStatus.failed)
+        #data.update_step_status(step_name, StepStatus.failed)
+        raise Exception(e)
     
 async def upload_points(data:PipelineData ):
+    # Init gee
+    init_gee()
+
     #Upload points to gee 
     step_name = 'upload_occurences_point_to_gee'
     
@@ -121,7 +143,11 @@ async def upload_points(data:PipelineData ):
     for step in steps:
         table = data.storage[step]['db']
         tables.append(table)
-        files.append(Path(f"{output_folder}/{table.split(sep='.')[1]}_occurences.shp"))
+        #Make folder 
+        data_name = table.split(sep='.')[1]
+        sub_folder = Path(f"{output_folder}/{data_name}")
+        sub_folder.mkdir(exist_ok= True)
+        files.append(sub_folder / f"{data_name}_occurences.shp")
     
     if data.step_status[step_name] == StepStatus.init:
         #Export table points to disk
@@ -131,7 +157,8 @@ async def upload_points(data:PipelineData ):
 
     if data.step_status[step_name] == StepStatus.local:
         #Upload these points to gee 
-        uploads = [asyncio.create_task(_upload_file_to_gee(data, step_name, file, table))  for file, table in zip(files,tables)]
-        await asyncio.gather(*exports)
-        data.update_step_status(step_name, StepStatus.completed)
+        uploads = [asyncio.create_task(_upload_file_to_gee(data, file))  for file in files]
+        await asyncio.gather(*uploads)
+        
+        #data.update_step_status(step_name, StepStatus.completed)
     
