@@ -4,6 +4,7 @@ from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp
 from ..utils.core import _ask_yes_no
 from ..core import to_Path
+from google.cloud import storage
 
 import pandas as pd
 from shapely import wkt
@@ -16,6 +17,9 @@ from pathlib import Path
 import asyncio
 import subprocess 
 from pprint import pprint
+
+
+
 class GeeQuery(BaseQuery):
 
     def __init__(self, data:PipelineData, points:str):
@@ -45,10 +49,22 @@ class GeeQuery(BaseQuery):
         logger = data.logger
         con = data.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
+        
+        logger.info(f'Launching sampling procees for {self.name}')
+        
+        #Main
         rasters = await self._load_rasters(data)
         multi_raster = await self._combine_rasters(rasters, logger)
         samples = await self._sample_occurences(multi_raster,logger)
         
+        
+        x = await self._export_toCloudStorage(samples)
+        return
+        
+        samples = samples.select(['id'])
+        samples_list = samples.toList(samples.size())
+        block = samples_list.slice(0,2000).getInfo()
+        return
         #Formatting data from gee 
         logger.info('Saving samples to db...')
         samples_data = []
@@ -101,15 +117,22 @@ class GeeQuery(BaseQuery):
         logger.info(f"Sampled rasters")
         return samples
     
-    async def _export_toDrive(self,samples, logger):
+    async def _export_toCloudStorage(self,samples):
         try:
-            task = ee.batch.Export.table.toDrive(
+            task = ee.batch.Export.table.toCloudStorage(
             collection=samples,
             description= self.name,
             fileFormat='CSV')
-            task.start()
+            print(task)
+            #task.start()
         except Exception as e:
             raise Exception(e)
+        
+    def download_from_gcs(bucket_name, blob_name, local_path):
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        blob.download_to_filename(local_path)
         
     def _get_coords(self, data)->list:
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])

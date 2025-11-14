@@ -130,11 +130,4 @@ async def get_environmental_data(data:PipelineData):
     #Create list of queries (one for each set of occurences)
     gee_queries = [create_query('gee', data, points=points) for points in points_list]
     for query in gee_queries:
-        if query.name == "gee_query_expert_occurences":
-            await query.run(data)
-    
-    #point_samples = asyncio.create_task()
-    #query = create_query('gee', data, step_name)
-    
-    #x = query.run(data)
-
+        await query.run(data)
