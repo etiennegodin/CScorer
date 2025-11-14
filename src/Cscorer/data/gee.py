@@ -94,7 +94,7 @@ async def _upload_file_to_gee(data, step_name, file, table):
     try:
         geemap.upload_to_ee(
         filename=file,
-        asset_path=f"projects/{os.getenv("GEE_PROJECT")}/assets/{file.stem}",
+        asset_path=f"projects/{os.getenv('GEE_PROJECT')}/assets/{file.stem}",
         overwrite=True)
         return True 
     except Exception as e:
@@ -115,15 +115,17 @@ async def upload_points(data:PipelineData ):
         files.append(Path(f"{table.split(sep='.')[1]}_occurences.shp"))
     
     #Export table points to disk
-    exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table = table)) for file, table in zip(files,tables)]
+    exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID')) for file, table in zip(files,tables)]
     await asyncio.gather(*exports)
     data.update_step_status(step_name, StepStatus.local)
 
+    return 
     #Upload these points to gee 
     uploads = [asyncio.create_task(_upload_file_to_gee(data, step_name, file, table))  for file, table in zip(files,tables)]
     await asyncio.gather(*exports)
 
     data.update_step_status(step_name, StepStatus.completed)
+    
     
 
             
