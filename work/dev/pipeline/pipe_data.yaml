@@ -8,11 +8,13 @@ gbif_query_expert:
   init: 1762872918.0967045
   key: 0027013-251025141854904
   raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
+get_environmental_data:
+  init: 1763150480.15918
 get_inaturalist_data:
   init: 1762914879.8214715
   query: null
 get_inaturalist_observer_data:
   init: 1763048478.2635362
-init: 1763150228.2147098
+init: 1763152984.139409
 upload_occurences_point_to_gee:
   init: 1763144361.5152352

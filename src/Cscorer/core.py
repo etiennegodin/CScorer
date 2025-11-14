@@ -60,6 +60,11 @@ class PipelineData:
             self.update_step_status(step_name, StepStatus.init)
             return True
         
+        if self.step_status[step_name] == StepStatus.failed:
+            #Retry
+            self.update_step_status(step_name, StepStatus.init)
+
+        
         return False
             
     def update_step_status(self,step:str, status: StepStatus):
