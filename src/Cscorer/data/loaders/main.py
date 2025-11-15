@@ -1,5 +1,5 @@
 # Main file to get data 
-from ...core import PipelineData, read_config, StepStatus
+from ...core import PipelineData, StepStatus
 from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
@@ -10,7 +10,7 @@ from .gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
-async def get_all_data(data:PipelineData):
+async def data_load_main(data:PipelineData):
     step_name = 'data_load_main'
     data.update_step_status(step_name)
     
@@ -24,14 +24,15 @@ async def get_all_data(data:PipelineData):
     # env 
     
     #main orchestrator
-    #asyncio.run(get_gbif_data(data)) 
-    #asyncio.run(get_inaturalist_occurence_data(data))
-    #asyncio.run(get_inaturalist_observer_data(data))
-    #asyncio.run(get_environmental_data(data)) 
+    #asyncio.run(data_load_gbif_main(data)) 
+    #asyncio.run(data_load_inat_occurence(data))
+    #asyncio.run(data_load_inat_observer(data))
+    #asyncio.run(data_load_gee(data)) 
     pass
 
-async def get_gbif_data(data:PipelineData):
-
+async def data_load_gbif_main(data:PipelineData):
+    step_name = "data_load_gbif_main"
+    data.init_new_step(step_name)
     #Temp assignement for async tasks 
     cs_data_task = None
     expert_data_task = None
@@ -47,8 +48,8 @@ async def get_gbif_data(data:PipelineData):
     expert_predicates = {"DATASET_KEY" : dataset_keys }
 
     # Create queries 
-    cs_query = await _create_gbif_query(data, name= 'citizen', predicates= cs_predicates)
-    expert_query = await _create_gbif_query(data, name= 'expert', predicates= expert_predicates)
+    cs_query = await _create_gbif_loader(data, name= 'citizen', predicates= cs_predicates)
+    expert_query = await _create_gbif_loader(data, name= 'expert', predicates= expert_predicates)
     
     #Lauch async concurrent queries 
     async with asyncio.TaskGroup() as tg:
@@ -76,8 +77,8 @@ async def get_gbif_data(data:PipelineData):
         data.storage[f"{expert_query.name}"]["db"] = expert_table
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
         
-async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
-    step_name = f"gbif_query_{name}"
+async def _create_gbif_loader(data:PipelineData, name:str, predicates:dict = None):
+    step_name = f"data_load_gbif_{name}"
     gbif_config = data.config['gbif']
     
     if not isinstance(predicates, (dict, None)):
@@ -97,8 +98,8 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
         
     return query   
         
-async def get_inaturalist_occurence_data(data:PipelineData):
-    step_name = "get_inaturalist_occurence_data"
+async def data_load_inat_occurence(data:PipelineData):
+    step_name = "data_load_inat_occurence"
     con = data.con
     # Create query 
     inatOcc_query = create_query('inatOcc', name = step_name)
@@ -109,8 +110,8 @@ async def get_inaturalist_occurence_data(data:PipelineData):
     #Return url for 
     occurence = await inatOcc_query.run(data)    
 
-async def get_inaturalist_observer_data(data:PipelineData):
-    step_name = "get_inaturalist_observer_data"
+async def data_load_inat_observer(data:PipelineData):
+    step_name = "data_load_inat_observer"
     con = data.con
     # Create query 
     inatObs_query = create_query('inatObs', name = step_name)
@@ -119,7 +120,7 @@ async def get_inaturalist_observer_data(data:PipelineData):
     #Return url for 
     oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
 
-async def get_environmental_data(data:PipelineData):
+async def data_load_gee(data:PipelineData):
     # Get point to gee
     points_list = await upload_points(data)
     #Create table schema on db 
