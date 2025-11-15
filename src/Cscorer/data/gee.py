@@ -32,7 +32,7 @@ class GeeQuery(BaseQuery):
         #Create geometry area of interest 
         self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
-        self.feature_count = self.points.size().getInfo()
+        self.point_count = self.points.size().getInfo()
         #Dates
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
@@ -50,20 +50,35 @@ class GeeQuery(BaseQuery):
     #var elevation = dataset.select('elevation');
     #var slope = ee.Terrain.slope(elevation);
     
-    async def run(self, data:PipelineData):
+    async def run(self, data:PipelineData, chunk_size = 5000):
         logger = data.logger
         con = data.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
         logger.info(f'Launching sampling procees for {self.name}')
 
         if data.step_status[self.name] == StepStatus.init:
-            #Main
+            
+            num_chunks = (self.point_count + chunk_size - 1) // chunk_size
+            # Convert to list for indexing
+            points_list = self.points.toList(self.point_count)
+            
+            #Main 
             rasters = await self._load_rasters(data)
             multi_raster = await self._combine_rasters(rasters, logger)
-            samples = await self._sample_occurences(multi_raster,logger)
-            sample_chunks = self._chunk_samples(samples, logger)
-            files = await self._export_toDrive(sample_chunks)
-            data.storage[self.name]['files'] = files
+            
+            tasks = []
+            for i in range(num_chunks):
+                start_idx = i * chunk_size
+                end_idx = min((i + 1) * chunk_size, self.point_count)
+                # Create chunk
+                chunk = ee.FeatureCollection(points_list.slice(start_idx, end_idx))
+                samples = await self._sample_occurences(chunk, multi_raster,logger)
+                task = await self._export_toDrive(samples, i)
+                tasks.append(tasks)
+                print(f"Started export for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
+
+            data.storage[self.name]['tasks'] = tasks
+            #sample_chunks = self._chunk_samples(samples, logger)
             logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
             data.update_step_status(self.name, status= StepStatus.requested)
             data.update()
@@ -81,9 +96,9 @@ class GeeQuery(BaseQuery):
                 table = await import_csv_to_db(data.con,path,'gee',table_name)
                 data.update_step_status(self.name, status= StepStatus.completed)
 
-    def _chunk_samples(self,fc:FeatureCollection, logger, size:int = 2500):
+    def _chunk_samples(self, fc:FeatureCollection, logger, size:int = 2500):
         chunks = []
-        for i in range(0, self.feature_count, size):
+        for i in range(0, self.point_count, size):
             chunk = fc.toList(size, i)
             chunks.append(ee.FeatureCollection(chunk))
         logger.info(f"Created {len(chunk)} chunks for {self.name}")
@@ -141,30 +156,26 @@ class GeeQuery(BaseQuery):
         logger.info(f"Combined rasters")
         return multi_layer_raster        
         
-    async def _sample_occurences(self, raster:Image, logger):
+    async def _sample_occurences(self, point_chunk, raster:Image, logger):
         samples = raster.sampleRegions(
-        collection=self.points,
+        collection=point_chunk,
         scale=30,
         geometries=True   # keep original geometry in output
         )
         logger.info(f"Sampled rasters")
         return samples
     
-    async def _export_toDrive(self,samples_chunks:list):
-        files = []
-        for i, chunk in enumerate(samples_chunks):
-            file = f"{self.name}_{i}"
-            try:
-                task = ee.batch.Export.table.toDrive(
-                collection=chunk,
-                description= file,
-                fileFormat='CSV')
-                task.start()
-                files.append(file)
-                
-            except Exception as e:
-                raise Exception(e)
-        return files
+    async def _export_toDrive(self,samples_chunks:list, idx:int):
+        file_name = f"{self.name}_{idx:03d}"
+        try:
+            task = ee.batch.Export.table.toDrive(
+            collection=samples_chunks,
+            description= file_name,
+            fileFormat='CSV')
+            task.start()
+            return task
+        except Exception as e:
+            raise Exception(e)
             
     def _get_coords(self, data)->list:
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])

@@ -11,51 +11,30 @@ gbif_query_expert:
   key: 0027013-251025141854904
   raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
 gee_query_citizen_occurences:
-  files:
-  - gee_query_citizen_occurences_0
-  - gee_query_citizen_occurences_1
-  - gee_query_citizen_occurences_2
-  - gee_query_citizen_occurences_3
-  - gee_query_citizen_occurences_4
-  - gee_query_citizen_occurences_5
-  - gee_query_citizen_occurences_6
-  - gee_query_citizen_occurences_7
-  - gee_query_citizen_occurences_8
-  - gee_query_citizen_occurences_9
-  - gee_query_citizen_occurences_10
-  - gee_query_citizen_occurences_11
-  - gee_query_citizen_occurences_12
-  - gee_query_citizen_occurences_13
-  - gee_query_citizen_occurences_14
-  - gee_query_citizen_occurences_15
-  - gee_query_citizen_occurences_16
-  - gee_query_citizen_occurences_17
-  - gee_query_citizen_occurences_18
-  - gee_query_citizen_occurences_19
-  - gee_query_citizen_occurences_20
-  - gee_query_citizen_occurences_21
-  - gee_query_citizen_occurences_22
-  - gee_query_citizen_occurences_23
-  - gee_query_citizen_occurences_24
-  - gee_query_citizen_occurences_25
-  - gee_query_citizen_occurences_26
-  - gee_query_citizen_occurences_27
-  - gee_query_citizen_occurences_28
-  - gee_query_citizen_occurences_29
-  - gee_query_citizen_occurences_30
-  - gee_query_citizen_occurences_31
-  - gee_query_citizen_occurences_32
-  - gee_query_citizen_occurences_33
-  - gee_query_citizen_occurences_34
-  - gee_query_citizen_occurences_35
-  - gee_query_citizen_occurences_36
-  - gee_query_citizen_occurences_37
-  - gee_query_citizen_occurences_38
-  - gee_query_citizen_occurences_39
-  - gee_query_citizen_occurences_40
-  - gee_query_citizen_occurences_41
-  - gee_query_citizen_occurences_42
   init: 1763157247.058232
+  tasks: &id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
+  - *id001
 gee_query_expert_occurences:
   init: 1763157247.8091726
 get_environmental_data:
