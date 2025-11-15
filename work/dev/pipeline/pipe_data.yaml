@@ -16,11 +16,6 @@ gee_query_citizen_occurences:
 gee_query_expert_occurences:
   db: gee.expert_occurences
   init: 1763157247.8091726
-get_environmental_data:
-  init: 1763150480.15918
-get_inaturalist_data:
-  init: 1762914879.8214715
-  query: null
 get_inaturalist_observer_data:
   init: 1763048478.2635362
 upload_occurences_point_to_gee:

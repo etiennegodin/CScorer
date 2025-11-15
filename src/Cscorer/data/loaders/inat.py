@@ -1,15 +1,15 @@
-from .base import BaseQuery
+from .base import BaseLoader
 from shapely import wkt
-from ..core import PipelineData, StepStatus
-from ..utils.core import _ask_yes_no
-from ..utils.duckdb import import_csv_to_db, get_all_tables
+from ...core import PipelineData, StepStatus
+from ...utils.core import _ask_yes_no
+from ...utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
 from aiolimiter import AsyncLimiter
 from asyncio import Queue
 from pprint import pprint
 import json
 
-class iNatObs(BaseQuery):
+class iNatObsLoader(BaseLoader):
     def __init__(self, name:str):
         super().__init__()
         self.name = name
@@ -101,7 +101,7 @@ class iNatObs(BaseQuery):
             except Exception as e:
                 logger.warning(f"[{user_login}] failed: {e}")
 
-class iNatOcc(BaseQuery):
+class iNatOccLoader(BaseLoader):
 
     def __init__(self, name:str):
         super().__init__()

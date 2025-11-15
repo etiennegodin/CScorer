@@ -1,16 +1,18 @@
 # Main file to get data 
-from ..core import PipelineData, read_config, StepStatus
-from ..utils.duckdb import import_csv_to_db, create_schema
+from ...core import PipelineData, read_config, StepStatus
+from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
 import asyncio
 import time
 import aiohttp
-from ..data.gee import upload_points
+from .gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
-async def main(data:PipelineData):
+async def get_all_data(data:PipelineData):
+    step_name = 'data_load_main'
+    data.update_step_status(step_name)
     
     # maybe like the gbif async orchestrator with task group 
     
@@ -114,14 +116,10 @@ async def get_inaturalist_observer_data(data:PipelineData):
     inatObs_query = create_query('inatObs', name = step_name)
     #Init step
     data.init_new_step(step_name)
-    
     #Return url for 
     oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
 
 async def get_environmental_data(data:PipelineData):
-    step_name = 'get_environmental_data'
-    data.init_new_step(step_name=step_name)
-    
     # Get point to gee
     points_list = await upload_points(data)
     #Create table schema on db 

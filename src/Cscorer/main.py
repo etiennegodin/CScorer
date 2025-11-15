@@ -1,6 +1,6 @@
-from .data.factory import create_query
+from .data.loaders.factory import create_query
 from .core import read_config, write_config, PipelineData
-from .data.get_data import get_gbif_data, get_inaturalist_occurence_data, get_inaturalist_observer_data, get_environmental_data
+from .data.main import main as data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -8,6 +8,7 @@ from pathlib import Path
 import argparse
 import subprocess
 import asyncio
+
 from pprint import pprint
 import logging
 import shutil
@@ -114,13 +115,15 @@ def main():
         launch_debugger()
     
     # Init pipeline 
-    data = init_pipeline(args)
+    pipe_data = init_pipeline(args)
     
-
-    #asyncio.run(get_gbif_data(data)) 
-    #asyncio.run(get_inaturalist_occurence_data(data))
-    #asyncio.run(get_inaturalist_observer_data(data))
-    asyncio.run(get_environmental_data(data)) 
+    if args.module == "data":
+        #if args.step == loaders 
+        data((pipe_data))
+    
+    
+    
+    # eda 
 
     
     
