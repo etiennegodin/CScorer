@@ -77,7 +77,6 @@ def init_pipeline(args)->PipelineData:
     #New instance if totally new run (or forced)
     if not (pipe_folder/'pipe.yaml').exists() :
         logging.info("No pipe data found, creating new instance from scratch")
-
         # Create instance 
         pipe_data = PipelineData(config = config)
         
@@ -116,7 +115,9 @@ def main():
         launch_debugger()
     
     # Init pipeline 
-    pipe_data = init_pipeline(args)
+    pipe = init_pipeline(args)
+    
+    print(pipe.__dict__)
     
     
     
