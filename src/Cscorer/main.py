@@ -1,5 +1,5 @@
 from .data.loaders.factory import create_query
-from .core import read_config, write_config, PipelineData
+from .core import read_config, write_config, Pipeline
 
 from .data.main import main as data
 from .utils.debug import launch_debugger
@@ -22,7 +22,7 @@ steps = ["get_gbif_data",
 
 modules = ['data', 'features', 'model']
 
-def init_pipeline(args)->PipelineData:
+def init_pipeline(args)->Pipeline:
     
     # Check if required file, else try dev mode
     if not args.file:
@@ -78,13 +78,13 @@ def init_pipeline(args)->PipelineData:
     if not (pipe_folder/'pipe.yaml').exists() :
         logging.info("No pipe data found, creating new instance from scratch")
         # Create instance 
-        pipe_data = PipelineData(config = config)
+        pipe_data = Pipeline(config = config)
         
 
     #Read from disk 
     else:
         try:
-            pipe_data = PipelineData.from_yaml_file(pipe_folder/'pipe.yaml')
+            pipe_data = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:
@@ -117,14 +117,9 @@ def main():
     # Init pipeline 
     pipe = init_pipeline(args)
     
-    print(pipe.__dict__)
     
-    
-    
-    if args.module == "data":
-        pass
-        #if args.step == loaders 
-        #data((pipe_data))
+
+    data((pipe))
     
     
     

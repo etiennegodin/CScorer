@@ -1,15 +1,14 @@
 from .loaders.main import data_load_main
 from .preprocessors.main import data_preprocess_main
 
-from ..core import PipelineData, PipelineModule
+from ..core import Pipeline, PipelineModule
 import asyncio
 
 
-def main(data:PipelineData):
-    
-    data.init_new_step(step_name)
-    
-    asyncio.run(data_load_main(data))
+def main(pipe:Pipeline):
+    data = pipe.add_module('data')
+    loader = pipe.add_step(data, 'loaders')
+    asyncio.run(data_load_main(pipe, data))
     #asyncio.run(data_preprocess_main(data))
 
     # 

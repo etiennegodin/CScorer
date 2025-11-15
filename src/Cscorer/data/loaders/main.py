@@ -1,5 +1,5 @@
 # Main file to get data 
-from ...core import PipelineData, StepStatus
+from ...core import Pipeline, PipelineStep, StepStatus
 from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
@@ -10,9 +10,7 @@ from .gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
-async def data_load_main(data:PipelineData):
-    step_name = 'data_load_main'
-    data.update_step_status(step_name)
+async def data_load_main(pipe:Pipeline, loaders:PipelineStep ):
     
     # maybe like the gbif async orchestrator with task group 
     
@@ -31,6 +29,7 @@ async def data_load_main(data:PipelineData):
     pass
 
 async def data_load_gbif_main(data:PipelineData):
+    
     step_name = "data_load_gbif_main"
     data.init_new_step(step_name)
     #Temp assignement for async tasks 

@@ -81,11 +81,12 @@ class PipelineSubstep:
     step:str
     module:str
     status: StepStatus = StepStatus.init
+    func: Callable = None
     data: Dict[str, Any] = field(default_factory=_init_data())
     config: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class PipelineData:
+class Pipeline:
     modules: Dict[str, PipelineModule] = field(default_factory=dict)
     config: Dict[str, Any] = field(default_factory=dict)
     logger: logging.Logger = None
