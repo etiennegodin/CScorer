@@ -57,7 +57,7 @@ class GeeQuery(BaseQuery):
         logger.info(f'Launching sampling procees for {self.name}')
 
         if data.step_status[self.name] == StepStatus.init:
-            
+            data.storage[self.name]['db'] = table_name
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
             points_list = self.points.toList(self.point_count)
@@ -73,29 +73,16 @@ class GeeQuery(BaseQuery):
                 # Create chunk
                 chunk = ee.FeatureCollection(points_list.slice(start_idx, end_idx))
                 samples = await self._sample_occurences(chunk, multi_raster,logger)
-                task = await self._export_toDrive(samples, i)
-                tasks.append(tasks)
-                print(f"Started export for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
+                table = await self._save_samples_to_db(con, samples, table_name, logger)
+                print(f"Savec samples for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
 
-            data.storage[self.name]['tasks'] = tasks
+
             #sample_chunks = self._chunk_samples(samples, logger)
-            logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
-            data.update_step_status(self.name, status= StepStatus.requested)
-            data.update()
+        logger.info(f"Finished getting gee data for {self.name}")
+        data.update_step_status(self.name, status= StepStatus.completed)
+        data.update()
         
-        self._get_gee_tasks()
-
-        await asyncio.sleep(30)
-        if data.step_status[self.name] == StepStatus.requested:
-            #Expected path
-            file = f"{self.name}.csv"
-            path = self.output_dir / file
-            #task = data.storage[self.name][task]
-
-            if await self._wait_download(path, logger):
-                table = await import_csv_to_db(data.con,path,'gee',table_name)
-                data.update_step_status(self.name, status= StepStatus.completed)
-
+            
     def _chunk_samples(self, fc:FeatureCollection, logger, size:int = 2500):
         chunks = []
         for i in range(0, self.point_count, size):
@@ -122,7 +109,23 @@ class GeeQuery(BaseQuery):
             logger.warning(f"{path.stem}{path.suffix} not found on retry {retry}/{retries}")
             await asyncio.sleep(delay)
             
-
+    async def _save_samples_to_db(self, con, samples, table_name:str, logger):
+        
+        samples_data = []
+        for feature in samples.getInfo()['features']:
+            data = feature['properties']
+            data['gee_id'] = feature["id"]
+            data['coordinates'] = feature['geometry']['coordinates']
+            samples_data.append(data)
+        #Samples data to df
+        df = pd.DataFrame(samples_data)
+        #Savng to db
+        con.execute(f"CREATE TABLE IF NOT EXISTS gee.{table_name} AS SELECT * FROM df")
+        logger.info(f"Successfully saved {table_name} samples to disk")
+        return table_name
+        
+        
+        
     def _create_dir(self, data):
         sampled_dir = Path(data.config['folders']['gee_folder']) / "sampled"
         sampled_dir.mkdir(exist_ok= True)
@@ -162,7 +165,6 @@ class GeeQuery(BaseQuery):
         scale=30,
         geometries=True   # keep original geometry in output
         )
-        logger.info(f"Sampled rasters")
         return samples
     
     async def _export_toDrive(self,samples_chunks:list, idx:int):
