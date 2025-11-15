@@ -1,6 +1,6 @@
 
 from .base import BaseLoader
-from ...core import PipelineData, StepStatus, to_Path
+from ...core import Pipeline, StepStatus, to_Path
 from ...utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
 from ...utils.core import _ask_yes_no
 from ...core import to_Path
@@ -18,7 +18,7 @@ from pprint import pprint
 
 class GeeLoader(BaseLoader):
 
-    def __init__(self, data:PipelineData, points:str):
+    def __init__(self, pipe:Pipeline, points:str):
         super().__init__()
         # Init gee 
         self._init_gee()
@@ -38,7 +38,7 @@ class GeeLoader(BaseLoader):
         #Create output dir:
         self.output_dir = self._create_dir(data)
     
-    async def run(self, data:PipelineData):
+    async def run(self, pipe:Pipeline):
         chunk_size = data.config['gee']['chunk_size']
         logger = data.logger
         con = data.con
@@ -121,7 +121,7 @@ class GeeLoader(BaseLoader):
         sampled_dir.mkdir(exist_ok= True)
         return sampled_dir
     
-    async def _load_rasters(self,data:PipelineData)-> list[Image]:
+    async def _load_rasters(self,pipe:Pipeline)-> list[Image]:
         datasets = data.config['gee_datasets']
         image_datasets = datasets['image']
         imageCollection_datasets = datasets['imageCollection']
@@ -171,7 +171,7 @@ class GeeLoader(BaseLoader):
             raise Exception(e)
         
     
-async def _check_asset_upload(file:Path, data:PipelineData, step_name):
+async def _check_asset_upload(file:Path, pipe:Pipeline, step_name):
     delay = 15
     load_dotenv()
     if not isinstance(file, Path):
@@ -204,7 +204,7 @@ async def _check_asset_upload(file:Path, data:PipelineData, step_name):
 
             await asyncio.sleep(delay)
             
-async def upload_points(data:PipelineData ):
+async def upload_points(pipe:Pipeline ):
 
     step_name = 'upload_occurences_point_to_gee'
     output_folder = data.config['folders']['gee_folder']

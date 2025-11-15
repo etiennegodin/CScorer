@@ -3,7 +3,7 @@ import asyncio
 import logging
 from pathlib import Path
 from pygbif import occurrences as occ
-from ...core import PipelineData, StepStatus
+from ...core import Pipeline, StepStatus
 from .inat import BaseLoader
 
 class GbifLoader(BaseLoader):
@@ -13,7 +13,7 @@ class GbifLoader(BaseLoader):
         self.config = config
         self.predicate = self._predicate_builder(self.config)
         
-    async def run(self, data:PipelineData):
+    async def run(self, pipe:Pipeline):
         logger = data.logger
         step_name = self.name
         # Set dict for step outputs 
@@ -40,7 +40,7 @@ class GbifLoader(BaseLoader):
 
         return gbif_raw_data
     
-    async def _submit_request(self, data:PipelineData):  
+    async def _submit_request(self, pipe:Pipeline):  
         logger = data.logger
         from dotenv import load_dotenv
         env_path = Path(__file__).parent.parent.parent.parent / ".env"

@@ -10,7 +10,7 @@ import time
 from enum import Enum
 import yaml
 from Cscorer.utils.yaml import yaml_serializable
-from Cscorer.core import PipelineData, PipelineModule, PipelineStep, PipelineSubstep
+from Cscorer.core import Pipeline, PipelineModule, PipelineStep, PipelineSubstep
 
 #Initiliaze data for PipelineObject
 def _init_data():
@@ -59,7 +59,7 @@ class StepStatus(str, Enum):
     failed = "failed"
 
     
-pipe = PipelineData().from_yaml_file("")
+pipe = Pipeline().from_yaml_file("")
 
 data = pipe.add_module('data')
 features = pipe.add_module('features')

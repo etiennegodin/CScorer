@@ -63,7 +63,7 @@ class PipelineModule:
     name: str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = field(default_factory=_init_data())
+    pipe: Dict[str, Any] = field(default_factory=_init_data())
 
 @yaml_serializable
 @dataclass
@@ -72,7 +72,7 @@ class PipelineStep:
     module :str
     substeps: Dict[str, PipelineSubstep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = field(default_factory=_init_data())
+    pipe: Dict[str, Any] = field(default_factory=_init_data())
 
 @yaml_serializable
 @dataclass
@@ -80,10 +80,14 @@ class PipelineSubstep:
     name: str
     step:str
     module:str
+    func: Callable
     status: StepStatus = StepStatus.init
-    func: Callable = None
-    data: Dict[str, Any] = field(default_factory=_init_data())
+    pipe: Dict[str, Any] = field(default_factory=_init_data())
     config: Dict[str, Any] = field(default_factory=dict)
+    
+    async def run(self, pipe:Pipeline):
+        #run callabale
+        pass
 
 @dataclass
 class Pipeline:
@@ -115,18 +119,22 @@ class Pipeline:
     def add_module(self, name):
         module = PipelineModule(name)
         self.modules[name] = module
+        self._export()
         return module
         
     def add_step(self, module:PipelineModule,step_name:str):
         if module.name in self.modules.keys():
             step = PipelineStep(step_name, module = module.name)
             self.modules[module.name].steps[step_name] = step
+            self._export()
             return step
 
-    def add_substep(self, step:PipelineStep,substep_name:str):
+    def add_substep(self, step:PipelineStep,substep_name:str, *args, **kwargs):
         if step.name in self.modules[step.module].steps.keys():
-            substep = PipelineSubstep(substep_name, step = step.name, module = step.module)
+            substep = PipelineSubstep(substep_name, *args, step = step.name, module = step.module, **kwargs)
             self.modules[step.module].steps[step.name].substeps[substep_name] = substep
+            self._export()
+
             return substep
     
     def _write_to_step_status(self, step_name:str, level:int):

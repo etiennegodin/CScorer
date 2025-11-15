@@ -1,7 +1,7 @@
 from .data.loaders.factory import create_query
 from .core import read_config, write_config, Pipeline
 
-from .data.main import main as data
+from .data.main import data_main
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
 
@@ -119,7 +119,7 @@ def main():
     
     
 
-    data((pipe))
+    data_main((pipe))
     
     
     
