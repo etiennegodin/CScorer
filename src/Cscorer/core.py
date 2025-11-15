@@ -57,39 +57,44 @@ class StepStatus(str, Enum):
     completed = "completed"
     failed = "failed"
 
-@yaml_serializable()
+@yaml_serializable
 @dataclass
 class PipelineModule:
     name: str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = _init_data()
+    data: Dict[str, Any] = field(default_factory=_init_data())
 
-@yaml_serializable()
+@yaml_serializable
 @dataclass
 class PipelineStep:
     name: str
     module :str
     substeps: Dict[str, PipelineSubstep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = _init_data()
+    data: Dict[str, Any] = field(default_factory=_init_data())
 
-@yaml_serializable()
+@yaml_serializable
 @dataclass
 class PipelineSubstep:
     name: str
     step:str
     module:str
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = _init_data()
+    data: Dict[str, Any] = field(default_factory=_init_data())
     config: Dict[str, Any] = field(default_factory=dict)
 
-@yaml_serializable()    
 @dataclass
 class PipelineData:
     modules: Dict[str, PipelineModule] = field(default_factory=dict)
     config: Dict[str, Any] = field(default_factory=dict)
     logger: logging.Logger = None
+    
+    @classmethod
+    def from_yaml_file(cls, path: str):
+        with open(path, "r") as f:
+            data = yaml.safe_load(f)
+        return cls(**data)
     
     def __post_init__(self):
 
@@ -99,11 +104,6 @@ class PipelineData:
             self.logger.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
         
         self.logger.info("Pipeline data post_init")
-        
-        #Init print
-        self.init_new_step(step_name='Main')
-        self.update_step_status('Main', StepStatus.init)
-        
 
         # Init db_connection 
         from .utils.duckdb import _open_connection
