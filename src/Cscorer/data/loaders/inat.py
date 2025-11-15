@@ -1,6 +1,6 @@
 from .base import BaseLoader
 from shapely import wkt
-from ...core import PipelineData, StepStatus
+from ...core import Pipeline, StepStatus
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
@@ -14,7 +14,7 @@ class iNatObsLoader(BaseLoader):
         super().__init__()
         self.name = name
 
-    async def run(self, data:PipelineData, limit:int = None, overwrite:bool = False):
+    async def run(self, pipe:Pipeline, limit:int = None, overwrite:bool = False):
         con = data.con
         logger = data.logger
         self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
@@ -40,7 +40,7 @@ class iNatObsLoader(BaseLoader):
         # Create table in db s
         observers = await _get_observers(con)
         
-        #Start from previously saved data:
+        #Start from previously saved pipe:
 
         if last_id is None:
             #Optionnal limit
@@ -96,7 +96,7 @@ class iNatObsLoader(BaseLoader):
                 async with session.get(url, timeout = 10) as r:
                     r.raise_for_status()
                     data = await r.json()    
-                    if data:
+                    if pipe:
                         await self.queue.put((idx,data["results"][0]))
             except Exception as e:
                 logger.warning(f"[{user_login}] failed: {e}")
@@ -107,7 +107,7 @@ class iNatOccLoader(BaseLoader):
         super().__init__()
         self.name = name
 
-    async def run(self, data:PipelineData):
+    async def run(self, pipe:Pipeline):
         import webbrowser
         logger = data.logger
         step_name = self.name

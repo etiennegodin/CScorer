@@ -1,5 +1,5 @@
 # Main file to get data 
-from ...core import Pipeline, PipelineStep, StepStatus
+from ...core import Pipeline, PipelineModule,PipelineStep, StepStatus
 from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
@@ -10,8 +10,9 @@ from .gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
-async def data_load_main(pipe:Pipeline, loaders:PipelineStep ):
-    
+async def loaders_main(pipe:Pipeline, module:PipelineModule):
+    step = pipe.add_step(module, 'loaders')
+
     # maybe like the gbif async orchestrator with task group 
     
     # still need to run in order for occurence (gbif -> inat_observers) but env data can run concurrently 
@@ -20,7 +21,9 @@ async def data_load_main(pipe:Pipeline, loaders:PipelineStep ):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
+    pipe.add_substep(step, "data_load_gbif_main", func = data_load_gbif_main())
     
+    print(pipe.__dict__)
     #main orchestrator
     #asyncio.run(data_load_gbif_main(data)) 
     #asyncio.run(data_load_inat_occurence(data))
@@ -28,7 +31,7 @@ async def data_load_main(pipe:Pipeline, loaders:PipelineStep ):
     #asyncio.run(data_load_gee(data)) 
     pass
 
-async def data_load_gbif_main(data:PipelineData):
+async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     
     step_name = "data_load_gbif_main"
     data.init_new_step(step_name)
@@ -76,7 +79,7 @@ async def data_load_gbif_main(data:PipelineData):
         data.storage[f"{expert_query.name}"]["db"] = expert_table
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
         
-async def _create_gbif_loader(data:PipelineData, name:str, predicates:dict = None):
+async def _create_gbif_loader(pipe:Pipeline, name:str, predicates:dict = None):
     step_name = f"data_load_gbif_{name}"
     gbif_config = data.config['gbif']
     
@@ -97,7 +100,7 @@ async def _create_gbif_loader(data:PipelineData, name:str, predicates:dict = Non
         
     return query   
         
-async def data_load_inat_occurence(data:PipelineData):
+async def data_load_inat_occurence(pipe:Pipeline):
     step_name = "data_load_inat_occurence"
     con = data.con
     # Create query 
@@ -109,7 +112,7 @@ async def data_load_inat_occurence(data:PipelineData):
     #Return url for 
     occurence = await inatOcc_query.run(data)    
 
-async def data_load_inat_observer(data:PipelineData):
+async def data_load_inat_observer(pipe:Pipeline):
     step_name = "data_load_inat_observer"
     con = data.con
     # Create query 
@@ -119,7 +122,7 @@ async def data_load_inat_observer(data:PipelineData):
     #Return url for 
     oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
 
-async def data_load_gee(data:PipelineData):
+async def data_load_gee(pipe:Pipeline):
     # Get point to gee
     points_list = await upload_points(data)
     #Create table schema on db 
