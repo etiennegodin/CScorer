@@ -26,7 +26,7 @@ class GeeQuery(BaseQuery):
         super().__init__()
         # Init gee 
         self._init_gee()
-        
+
         #Create geometry area of interest 
         self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
@@ -53,22 +53,37 @@ class GeeQuery(BaseQuery):
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
         logger.info(f'Launching sampling procees for {self.name}')
 
-        #Main
-        rasters = await self._load_rasters(data)
-        multi_raster = await self._combine_rasters(rasters, logger)
-        samples = await self._sample_occurences(multi_raster,logger)
-        file = await self._export_toDrive(samples)
-        logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
-        data.update_step_status(self.name, status= StepStatus.requested)
+        if data.step_status[self.name] == StepStatus.init:
+            #Main
+            rasters = await self._load_rasters(data)
+            multi_raster = await self._combine_rasters(rasters, logger)
+            samples = await self._sample_occurences(multi_raster,logger)
+            task = await self._export_toDrive(samples)
+            logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
+            data.update_step_status(self.name, status= StepStatus.requested)
+            data.storage[self.name]['task'] = task.status()
+            data.update()
         
-        #Expected path
-        path = self.output_dir / file
+        self._get_gee_tasks()
+    
+        if data.step_status[self.name] == StepStatus.requested:
+            #Expected path
+            file = f"{self.name}.csv"
+            path = self.output_dir / file
+            #task = data.storage[self.name][task]
 
-        if await self._wait_download(path, logger):
-            table = await import_csv_to_db(data.con,path,'gee',table_name)
+            if await self._wait_download(path, task, logger):
+                table = await import_csv_to_db(data.con,path,'gee',table_name)
+                data.update_step_status(self.name, status= StepStatus.completed)
+
+            
+    def _get_gee_tasks(self):
+        tasks = ee.data.getTaskList()
+        pprint(tasks)
 
         
-    async def _wait_download(self, path, logger, delay = 10, retries = 10):
+        
+    async def _wait_download(self, task, path, logger, delay = 10, retries = 10):
         data_downloaded = False
         retry = 0 
         while not data_downloaded:
@@ -131,7 +146,7 @@ class GeeQuery(BaseQuery):
             description= self.name,
             fileFormat='CSV')
             task.start()
-            return f"{self.name}.csv"
+            return task
         except Exception as e:
             raise Exception(e)
         
