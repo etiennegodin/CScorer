@@ -1,7 +1,7 @@
 Main: !StepStatus 'init'
 gbif_query_citizen: !StepStatus 'completed'
 gbif_query_expert: !StepStatus 'completed'
-gee_query_citizen_occurences: !StepStatus 'requested'
+gee_query_citizen_occurences: !StepStatus 'init'
 gee_query_expert_occurences: !StepStatus 'requested'
 get_environmental_data: !StepStatus 'init'
 get_inaturalist_observer_data: !StepStatus 'completed'

@@ -11,6 +11,8 @@ from shapely import wkt
 import ee, geemap
 from ee.image import Image
 from ee.imagecollection import ImageCollection
+from ee.featurecollection import FeatureCollection
+
 import os 
 from dotenv import load_dotenv 
 from pathlib import Path
@@ -30,6 +32,7 @@ class GeeQuery(BaseQuery):
         #Create geometry area of interest 
         self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
+        self.feature_count = self.points.size().getInfo()
         #Dates
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
@@ -58,32 +61,40 @@ class GeeQuery(BaseQuery):
             rasters = await self._load_rasters(data)
             multi_raster = await self._combine_rasters(rasters, logger)
             samples = await self._sample_occurences(multi_raster,logger)
-            task = await self._export_toDrive(samples)
+            sample_chunks = self._chunk_samples(samples, logger)
+            files = await self._export_toDrive(sample_chunks)
+            data.storage[self.name]['files'] = files
             logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
             data.update_step_status(self.name, status= StepStatus.requested)
-            data.storage[self.name]['task'] = task.status()
             data.update()
         
         self._get_gee_tasks()
-    
+
+        await asyncio.sleep(30)
         if data.step_status[self.name] == StepStatus.requested:
             #Expected path
             file = f"{self.name}.csv"
             path = self.output_dir / file
             #task = data.storage[self.name][task]
 
-            if await self._wait_download(path, task, logger):
+            if await self._wait_download(path, logger):
                 table = await import_csv_to_db(data.con,path,'gee',table_name)
                 data.update_step_status(self.name, status= StepStatus.completed)
 
+    def _chunk_samples(self,fc:FeatureCollection, logger, size:int = 2500):
+        chunks = []
+        for i in range(0, self.feature_count, size):
+            chunk = fc.toList(size, i)
+            chunks.append(ee.FeatureCollection(chunk))
+        logger.info(f"Created {len(chunk)} chunks for {self.name}")
+        return chunks
             
     def _get_gee_tasks(self):
         tasks = ee.data.getTaskList()
         pprint(tasks)
-
         
         
-    async def _wait_download(self, task, path, logger, delay = 10, retries = 10):
+    async def _wait_download(self, path, logger, delay = 10, retries = 10):
         data_downloaded = False
         retry = 0 
         while not data_downloaded:
@@ -133,23 +144,28 @@ class GeeQuery(BaseQuery):
     async def _sample_occurences(self, raster:Image, logger):
         samples = raster.sampleRegions(
         collection=self.points,
-        scale=10,
+        scale=30,
         geometries=True   # keep original geometry in output
         )
         logger.info(f"Sampled rasters")
         return samples
     
-    async def _export_toDrive(self,samples):
-        try:
-            task = ee.batch.Export.table.toDrive(
-            collection=samples,
-            description= self.name,
-            fileFormat='CSV')
-            task.start()
-            return task
-        except Exception as e:
-            raise Exception(e)
-        
+    async def _export_toDrive(self,samples_chunks:list):
+        files = []
+        for i, chunk in enumerate(samples_chunks):
+            file = f"{self.name}_{i}"
+            try:
+                task = ee.batch.Export.table.toDrive(
+                collection=chunk,
+                description= file,
+                fileFormat='CSV')
+                task.start()
+                files.append(file)
+                
+            except Exception as e:
+                raise Exception(e)
+        return files
+            
     def _get_coords(self, data)->list:
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])
         return list(geo.exterior.coords)
