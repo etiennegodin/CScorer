@@ -8,6 +8,28 @@ import geopandas as gpd
 import time
 from enum import Enum
 
+@dataclass
+class PipelineSubstep:
+    substep: str
+
+@dataclass
+class PipelineStep:
+    step: list[PipelineStep] = field(default_factory=list)
+    def add_substep(self,substep_name):
+        self.substep = PipelineSubstep(substep= substep_name)
+
+@dataclass
+class PipelineModule:
+    module: str
+    steps: list[PipelineStep] = field(default_factory=list)
+    substeps: list[PipelineSubstep] = field(default_factory=list)
+
+    def add_step(self, step_name:str):
+        self.steps.append(PipelineStep(step = step_name))
+    def add_substep(self,substep_name:str):
+        self.step.add_substep(substep_name)
+        
+
 class StepStatus(str, Enum):
     init = "init"    
     requested = "requested" 
@@ -81,32 +103,52 @@ class PipelineData:
     
     def _write_to_step_status(self, step_name:str, level:int):
         step_splits = step_name.split(sep="_", maxsplit=3)
-        module = step_splits[0]
-        step = step_splits[1]
-        substep = step_splits[2]
+        try:module = step_splits[0]
+        except:module = None
+        try:step = step_splits[1]
+        except: step = None
+        try:substep = step_splits[2]
+        except:substep = None
+        
         if module is None:
             raise ValueError('Module not provided for step name. Please user {module}_{step}_{substep}')
         if step is None:
             if module not in self.storage.keys():
                 self.logger.info(f"First time running module {module}, creating storage and step status")
                 self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
+                return True
         if substep is None:
             if step not in self.storage[module].keys():
-                self.logger.info(f"First time running step {step}, creating storage and step status")
+                self.logger.info(f"First time running step {module}_{step}, creating storage and step status")
                 self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
+                return True
                     
-        if not step_name in self.storage.keys():
+        if not substep in self.storage[module][step].keys():
+            self.logger.info(f"First time running substep {module}_{step}_{substep}, creating storage and step status")
+
             self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
             self.update_step_status(step_name, StepStatus.init)
             return True
+
+        raise ValueError('Step provided not written to pipeline data.\nPlease user {module}_{step}_{substep} format')
+        return False
     
-            
+    
     def update_step_status(self,step:str, status: StepStatus):
         self.step_status[step] = status
         self._export()
 
     def get(self, key:str):
         return self.storage.get(key)
+    
+    def save_data(self, keys:str, value:Any):
+        key_splits = keys.split(sep="_", maxsplit=3)
+        module = key_splits[0]
+        step = key_splits[1]
+        substep = key_splits[2]
+        
+        
+        
     
     def update(self):
         self._export()

@@ -29,7 +29,7 @@ def init_pipeline(args)->PipelineData:
             raise UserWarning("Missing config file")
         #dev branch
         #config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        config_path = Path(__file__).parent.parent.parent / "work/pip_test/config.yaml"
+        config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
 
     else:
         config_path = args.file
