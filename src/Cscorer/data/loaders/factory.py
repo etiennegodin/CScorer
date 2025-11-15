@@ -1,12 +1,12 @@
-from .gee import GeeQuery
-from .gbif import GbifQuery
-from .inat import iNatOcc, iNatObs
+from .gee import GeeLoader
+from .gbif import GbifLoader
+from .inat import iNatOccLoader, iNatObsLoader
 
 QUERY_CLASSES = {
-    "gbif": GbifQuery,
-    "inatOcc" : iNatOcc,
-    "inatObs" : iNatObs,
-    "gee": GeeQuery
+    "gbif": GbifLoader,
+    "inatOcc" : iNatOccLoader,
+    "inatObs" : iNatObsLoader,
+    "gee": GeeLoader
 }
 
 def create_query(kind: str, *args, **kwargs):

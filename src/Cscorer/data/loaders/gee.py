@@ -1,9 +1,9 @@
 
-from .base import BaseQuery
-from ..core import PipelineData, StepStatus, to_Path
-from ..utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
-from ..utils.core import _ask_yes_no
-from ..core import to_Path
+from .base import BaseLoader
+from ...core import PipelineData, StepStatus, to_Path
+from ...utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
+from ...utils.core import _ask_yes_no
+from ...core import to_Path
 import pandas as pd
 from shapely import wkt
 import ee
@@ -16,7 +16,7 @@ from pathlib import Path
 import asyncio
 from pprint import pprint
 
-class GeeQuery(BaseQuery):
+class GeeLoader(BaseLoader):
 
     def __init__(self, data:PipelineData, points:str):
         super().__init__()

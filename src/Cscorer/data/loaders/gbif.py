@@ -3,11 +3,10 @@ import asyncio
 import logging
 from pathlib import Path
 from pygbif import occurrences as occ
-from ..core import PipelineData, StepStatus
-from .inat import BaseQuery
+from ...core import PipelineData, StepStatus
+from .inat import BaseLoader
 
-class GbifQuery(BaseQuery):
-
+class GbifLoader(BaseLoader):
     def __init__(self, name:str, config:dict):
         super().__init__()
         self.name = name
