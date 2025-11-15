@@ -4,23 +4,17 @@ from ..core import PipelineData, StepStatus, to_Path
 from ..utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
 from ..utils.core import _ask_yes_no
 from ..core import to_Path
-from google.cloud import storage
-
 import pandas as pd
 from shapely import wkt
-import ee, geemap
+import ee
 from ee.image import Image
 from ee.imagecollection import ImageCollection
 from ee.featurecollection import FeatureCollection
-
 import os 
 from dotenv import load_dotenv 
 from pathlib import Path
 import asyncio
-import subprocess 
 from pprint import pprint
-
-
 
 class GeeQuery(BaseQuery):
 
@@ -28,7 +22,6 @@ class GeeQuery(BaseQuery):
         super().__init__()
         # Init gee 
         self._init_gee()
-
         #Create geometry area of interest 
         self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
@@ -44,11 +37,6 @@ class GeeQuery(BaseQuery):
         
         #Create output dir:
         self.output_dir = self._create_dir(data)
-        
-    #Snippets
-    #var dataset = ee.Image('CGIAR/SRTM90_V4');
-    #var elevation = dataset.select('elevation');
-    #var slope = ee.Terrain.slope(elevation);
     
     async def run(self, data:PipelineData):
         chunk_size = data.config['gee']['chunk_size']
@@ -56,20 +44,18 @@ class GeeQuery(BaseQuery):
         con = data.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
         self.df = pd.DataFrame()
-                
+        #Main
         if data.step_status[self.name] == StepStatus.init:
             logger.info(f'Launching sampling procees for {self.name}')
-
             data.storage[self.name]['db'] = f"gee.{table_name}"
+            #Set chunks
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
             points_list = self.points.toList(self.point_count)
-            
-            #Main 
+            #Rasters 
             rasters = await self._load_rasters(data)
             multi_raster = await self._combine_rasters(rasters, logger)
             
-            tasks = []
             for i in range(num_chunks):
                 start_idx = i * chunk_size
                 end_idx = min((i + 1) * chunk_size, self.point_count)
@@ -77,12 +63,10 @@ class GeeQuery(BaseQuery):
                 chunk = ee.FeatureCollection(points_list.slice(start_idx, end_idx))
                 samples = await self._sample_occurences(chunk, multi_raster,logger)
                 await self._store_sample_to_df(samples)
-                print(f"Savec samples for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
+                print(f"Saved samples for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
             
             #Save final samples to db
             table = await self._save_to_db(con, table_name, logger)
-
-            #sample_chunks = self._chunk_samples(samples, logger)
             logger.info(f"Finished getting gee data for {self.name}")
             data.update_step_status(self.name, status= StepStatus.completed)
             data.update()
@@ -186,7 +170,6 @@ class GeeQuery(BaseQuery):
         except Exception as e:
             raise Exception(e)
         
-        
     
 async def _check_asset_upload(file:Path, data:PipelineData, step_name):
     delay = 15
@@ -225,12 +208,11 @@ async def upload_points(data:PipelineData ):
 
     step_name = 'upload_occurences_point_to_gee'
     output_folder = data.config['folders']['gee_folder']
-    user_upload = False
     tables = []
     files = []
 
     if data.step_status[step_name] == StepStatus.completed:
-        data.logger.info(f"{step_name} completed")
+        data.logger.info(f"Step {step_name} completed")
         return data.storage[step_name]['points'] 
        
     #Init step if not done 
