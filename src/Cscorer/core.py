@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Callable, List, Dict, Any, Optional
 from shapely import Point
 from pathlib import Path
@@ -7,8 +8,45 @@ import pandas as pd
 import geopandas as gpd
 import time
 from enum import Enum
+import yaml
+from .utils.yaml import yaml_serializable
 
-        
+#Initiliaze data for PipelineObject
+def _init_data():
+    return {'init': time.strftime("%Y-%m-%d %H:%M:%S") }
+
+# Custom YAML handlers
+def stepstatus_representer(dumper, data):
+    return dumper.represent_scalar("!StepStatus", data.value)
+
+def stepstatus_constructor(loader, node):
+    value = loader.construct_scalar(node)
+    return StepStatus(value)
+
+def read_config(path:Path):
+    import yaml
+    path = to_Path(path)
+    with open(path, 'r') as file:
+        return yaml.load(file, Loader=yaml.FullLoader)
+
+def to_Path(file_path: str):
+    if isinstance(file_path, Path):
+        return file_path
+    if not isinstance(file_path, Path):
+        return Path(file_path)
+
+def write_config(config:dict, path:Path):
+    yaml.add_representer(StepStatus, stepstatus_representer)
+    path = to_Path(path)
+    try:
+        file=open(path,"w")
+        yaml.dump(config,file)
+        file.close() 
+        print(path)
+    except Exception as e:
+        raise RuntimeError(e)
+    
+    return path
 
 class StepStatus(str, Enum):
     init = "init"    
@@ -19,19 +57,38 @@ class StepStatus(str, Enum):
     completed = "completed"
     failed = "failed"
 
-# Custom YAML handlers
-def stepstatus_representer(dumper, data):
-    return dumper.represent_scalar("!StepStatus", data.value)
+@yaml_serializable()
+@dataclass
+class PipelineModule:
+    name: str
+    steps: Dict[str, PipelineStep] = field(default_factory=dict)
+    status: StepStatus = StepStatus.init
+    data: Dict[str, Any] = _init_data()
 
-def stepstatus_constructor(loader, node):
-    value = loader.construct_scalar(node)
-    return StepStatus(value)
+@yaml_serializable()
+@dataclass
+class PipelineStep:
+    name: str
+    module :str
+    substeps: Dict[str, PipelineSubstep] = field(default_factory=dict)
+    status: StepStatus = StepStatus.init
+    data: Dict[str, Any] = _init_data()
 
+@yaml_serializable()
+@dataclass
+class PipelineSubstep:
+    name: str
+    step:str
+    module:str
+    status: StepStatus = StepStatus.init
+    data: Dict[str, Any] = _init_data()
+    config: Dict[str, Any] = field(default_factory=dict)
+
+@yaml_serializable()    
 @dataclass
 class PipelineData:
+    modules: Dict[str, PipelineModule] = field(default_factory=dict)
     config: Dict[str, Any] = field(default_factory=dict)
-    storage: Dict[str, Any] = field(default_factory=dict)
-    step_status: Dict[str, Any] = field(default_factory=dict)
     logger: logging.Logger = None
     
     def __post_init__(self):
@@ -53,28 +110,23 @@ class PipelineData:
         self.con = _open_connection(db_path=self.config['db_path'] )
         # Register handlers
         self._export()
-        
-    def init_new_module(self,module_name:str):
-        
-        self._write_to_step_status(module_name, level = 0)
-        pass
-    def init_new_substep(self,substep_name:str):
-        pass
-        
-    def init_new_step(self, step_name:str, parent_step:str=None)-> bool:
-        
-        if not step_name in self.storage.keys():
-            self.logger.info(f"First time running {step_name}, creating storage and step status")
-            self.set(step_name,  {'init' : time.time()})
-            self.update_step_status(step_name, StepStatus.init)
-            return True
-        
-        if self.step_status[step_name] == StepStatus.failed:
-            #Retry
-            self.update_step_status(step_name, StepStatus.init)
 
+    def add_module(self, name):
+        module = PipelineModule(name)
+        self.modules[name] = module
+        return module
         
-        return False
+    def add_step(self, module:PipelineModule,step_name:str):
+        if module.name in self.modules.keys():
+            step = PipelineStep(step_name, module = module.name)
+            self.modules[module.name].steps[step_name] = step
+            return step
+
+    def add_substep(self, step:PipelineStep,substep_name:str):
+        if step.name in self.modules[step.module].steps.keys():
+            substep = PipelineSubstep(substep_name, step = step.name, module = step.module)
+            self.modules[step.module].steps[step.name].substeps[substep_name] = substep
+            return substep
     
     def _write_to_step_status(self, step_name:str, level:int):
         step_splits = step_name.split(sep="_", maxsplit=3)
@@ -108,82 +160,16 @@ class PipelineData:
         raise ValueError('Step provided not written to pipeline data.\nPlease user {module}_{step}_{substep} format')
         return False
     
-    
-    def update_step_status(self,step:str, status: StepStatus):
-        self.step_status[step] = status
-        self._export()
-
-    def get(self, key:str):
-        return self.storage.get(key)
-    
-    def save_data(self, keys:str, value:Any):
-        key_splits = keys.split(sep="_", maxsplit=3)
-        module = key_splits[0]
-        step = key_splits[1]
-        substep = key_splits[2]
-        
-        
-        
-    
-    def update(self):
-        self._export()
-    
-    def set(self, key:str, value: Any):
-        self.storage[key] = value
-        self._export()
-    
-    def set_config(self, key:str, value: Any):
-        self.config[key] = value
-        self._export
-            
     def _export(self):
         try:
             pipeline_folder = self.config['folders'].get('pipeline_folder')
-            if pipeline_folder is not None:
-                write_config(self.config, Path(pipeline_folder) / 'pipe_config.yaml')
-                write_config(self.step_status, Path(pipeline_folder) / 'pipe_steps.yaml')
-                write_config(self.storage, Path(pipeline_folder) / 'pipe_data.yaml')
-                return True
-            else:
-                self.logger.error("No pipeline folder found in PipelineData")
-                raise ValueError("No pipeline folder found in PipelineData")
-            
+            write_config(self.__dict__, Path(pipeline_folder) / 'pipe.yaml')
+            return True
         except Exception as e:
             # do not raise from storage persistence
             self.logger.error(f"Failed to persist pipeline storage : {e}") 
-            
             return False
         
-def read_config(path:Path):
-    import yaml
-    yaml.add_constructor("!StepStatus", stepstatus_constructor)
-
-    path = to_Path(path)
-    with open(path, 'r') as file:
-        return yaml.load(file, Loader=yaml.FullLoader)
-    
-def write_config(config:dict, path:Path):
-    import yaml
-    yaml.add_representer(StepStatus, stepstatus_representer)
-    yaml.add_representer(StepStatus, stepstatus_representer)
-    yaml.add_representer(StepStatus, stepstatus_representer)
-    yaml.add_representer(StepStatus, stepstatus_representer)
-
-    path = to_Path(path)
-    try:
-        file=open(path,"w")
-        yaml.dump(config,file)
-        file.close() 
-    except Exception as e:
-        raise RuntimeError(e)
-    
-    return path
-
-def to_Path(file_path: str):
-    if isinstance(file_path, Path):
-        return file_path
-    if not isinstance(file_path, Path):
-        return Path(file_path)
 
 def convert_df_to_gdf(df : pd.DataFrame, lat_col : str = 'decimalLatitude', long_col : str = 'decimalLongitude', crs = 4326, verbose = False):
     return gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df["decimalLongitude"], df["decimalLatitude"])] , crs = 4326 )
