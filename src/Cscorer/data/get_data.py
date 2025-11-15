@@ -1,11 +1,12 @@
 # Main file to get data 
 from ..core import PipelineData, read_config, StepStatus
-from ..utils.duckdb import import_csv_to_db
+from ..utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
 import asyncio
 import time
 import aiohttp
+from ..data.gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
@@ -37,7 +38,7 @@ async def get_gbif_data(data:PipelineData):
     cs_predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
     
     #Prep expert specific predicates
-    datasets = data.config['datasets']
+    datasets = data.config['gbif_datasets']
     dataset_keys = []
     for dataset in datasets.values():
         dataset_keys.append(dataset['key'])
@@ -67,11 +68,12 @@ async def get_gbif_data(data:PipelineData):
 
     # Flag as completed
     if cs_table:
-        data.step_status[f'{cs_query.name}'] = StepStatus.completed    
-
+        data.storage[f"{cs_query.name}"]["db"] = cs_table
+        data.step_status[f'{cs_query.name}'] = StepStatus.completed   
     if expert_table:
+        data.storage[f"{expert_query.name}"]["db"] = expert_table
         data.step_status[f'{expert_query.name}'] = StepStatus.completed    
-
+        
 async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None):
     step_name = f"gbif_query_{name}"
     gbif_config = data.config['gbif']
@@ -91,8 +93,7 @@ async def _create_gbif_query(data:PipelineData, name:str, predicates:dict = None
     #Init step
     data.init_new_step(step_name)
         
-    return query
-       
+    return query   
         
 async def get_inaturalist_occurence_data(data:PipelineData):
     step_name = "get_inaturalist_occurence_data"
@@ -119,9 +120,14 @@ async def get_inaturalist_observer_data(data:PipelineData):
 
 async def get_environmental_data(data:PipelineData):
     step_name = 'get_environmental_data'
-
-    pass
-
-
-
-
+    data.init_new_step(step_name=step_name)
+    
+    # Get point to gee
+    points_list = await upload_points(data)
+    #Create table schema on db 
+    create_schema(data.con, schema = 'gee')
+    
+    #Create list of queries (one for each set of occurences)
+    gee_queries = [create_query('gee', data, points=points) for points in points_list]
+    for query in gee_queries:
+        await query.run(data)
