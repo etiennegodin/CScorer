@@ -52,8 +52,20 @@ class PipelineData:
         # Register handlers
         self._export()
         
-    def init_new_step(self, step_name:str)-> bool:
-
+    def init_new_module(self,module_name:str):
+        
+        self._write_to_step_status(module_name, level = 0)
+        pass
+    def init_new_substep(self,substep_name:str):
+        pass
+        
+    def init_new_step(self, step_name:str, parent_step:str=None)-> bool:
+        
+        if parent_step is None:
+            try:
+                step_name
+            
+        
         if not step_name in self.storage.keys():
             self.logger.info(f"First time running {step_name}, creating storage and step status")
             self.set(step_name,  {'init' : time.time()})
@@ -66,6 +78,28 @@ class PipelineData:
 
         
         return False
+    
+    def _write_to_step_status(self, step_name:str, level:int):
+        step_splits = step_name.split(sep="_", maxsplit=3)
+        module = step_splits[0]
+        step = step_splits[1]
+        substep = step_splits[2]
+        if module is None:
+            raise ValueError('Module not provided for step name. Please user {module}_{step}_{substep}')
+        if step is None:
+            if module not in self.storage.keys():
+                self.logger.info(f"First time running module {module}, creating storage and step status")
+                self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
+        if substep is None:
+            if step not in self.storage[module].keys():
+                self.logger.info(f"First time running step {step}, creating storage and step status")
+                self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
+                    
+        if not step_name in self.storage.keys():
+            self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
+            self.update_step_status(step_name, StepStatus.init)
+            return True
+    
             
     def update_step_status(self,step:str, status: StepStatus):
         self.step_status[step] = status
