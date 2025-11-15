@@ -1,5 +1,6 @@
 from .data.loaders.factory import create_query
 from .core import read_config, write_config, PipelineData
+
 from .data.main import main as data
 from .utils.debug import launch_debugger
 from .utils.duckdb import _open_connection
@@ -61,9 +62,6 @@ def init_pipeline(args)->PipelineData:
     config['folders'] = folders
     config['db_path'] = str(db_path)
     
-    # Create folders 
-    for folder in folders.values():
-        Path(folder).mkdir(exist_ok= True)
     
     # Force flag to wipe data
     if args.force:
@@ -71,9 +69,13 @@ def init_pipeline(args)->PipelineData:
             shutil.rmtree(str(data_folder))
         if pipe_folder.exists():
             shutil.rmtree(str(pipe_folder))
+        
+    # Create folders 
+    for folder in folders.values():
+        Path(folder).mkdir(exist_ok= True)
 
     #New instance if totally new run (or forced)
-    if not data_folder.exists() and not pipe_folder.exists():
+    if not (pipe_folder/'pipe.yaml').exists() :
         logging.info("No pipe data found, creating new instance from scratch")
 
         # Create instance 
@@ -83,10 +85,7 @@ def init_pipeline(args)->PipelineData:
     #Read from disk 
     else:
         try:
-            pipe_data = (PipelineData(config= config,
-                                 storage = read_config(pipe_folder / 'pipe_data.yaml'),
-                                 step_status= read_config(pipe_folder / 'pipe_steps.yaml')
-                                 ))
+            pipe_data = PipelineData.from_yaml_file(pipe_folder/'pipe.yaml')
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:
@@ -119,9 +118,12 @@ def main():
     # Init pipeline 
     pipe_data = init_pipeline(args)
     
+    
+    
     if args.module == "data":
+        pass
         #if args.step == loaders 
-        data((pipe_data))
+        #data((pipe_data))
     
     
     
