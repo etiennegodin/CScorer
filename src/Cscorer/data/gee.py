@@ -1,7 +1,7 @@
 
 from .base import BaseQuery
 from ..core import PipelineData, StepStatus, to_Path
-from ..utils.duckdb import export_to_shp, import_csv_to_db
+from ..utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
 from ..utils.core import _ask_yes_no
 from ..core import to_Path
 from google.cloud import storage
@@ -50,14 +50,17 @@ class GeeQuery(BaseQuery):
     #var elevation = dataset.select('elevation');
     #var slope = ee.Terrain.slope(elevation);
     
-    async def run(self, data:PipelineData, chunk_size = 5000):
+    async def run(self, data:PipelineData):
+        chunk_size = data.config['gee']['chunk_size']
         logger = data.logger
         con = data.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
-        logger.info(f'Launching sampling procees for {self.name}')
-
+        self.df = pd.DataFrame()
+                
         if data.step_status[self.name] == StepStatus.init:
-            data.storage[self.name]['db'] = table_name
+            logger.info(f'Launching sampling procees for {self.name}')
+
+            data.storage[self.name]['db'] = f"gee.{table_name}"
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
             points_list = self.points.toList(self.point_count)
@@ -73,15 +76,16 @@ class GeeQuery(BaseQuery):
                 # Create chunk
                 chunk = ee.FeatureCollection(points_list.slice(start_idx, end_idx))
                 samples = await self._sample_occurences(chunk, multi_raster,logger)
-                table = await self._save_samples_to_db(con, samples, table_name, logger)
+                await self._store_sample_to_df(samples)
                 print(f"Savec samples for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
-
+            
+            #Save final samples to db
+            table = await self._save_to_db(con, table_name, logger)
 
             #sample_chunks = self._chunk_samples(samples, logger)
-        logger.info(f"Finished getting gee data for {self.name}")
-        data.update_step_status(self.name, status= StepStatus.completed)
-        data.update()
-        
+            logger.info(f"Finished getting gee data for {self.name}")
+            data.update_step_status(self.name, status= StepStatus.completed)
+            data.update()
             
     def _chunk_samples(self, fc:FeatureCollection, logger, size:int = 2500):
         chunks = []
@@ -94,7 +98,6 @@ class GeeQuery(BaseQuery):
     def _get_gee_tasks(self):
         tasks = ee.data.getTaskList()
         pprint(tasks)
-        
         
     async def _wait_download(self, path, logger, delay = 10, retries = 10):
         data_downloaded = False
@@ -109,7 +112,15 @@ class GeeQuery(BaseQuery):
             logger.warning(f"{path.stem}{path.suffix} not found on retry {retry}/{retries}")
             await asyncio.sleep(delay)
             
-    async def _save_samples_to_db(self, con, samples, table_name:str, logger):
+    async def _save_to_db(self, con, table_name, logger):
+        #Savng to db
+        df = self.df
+        con.execute(f"CREATE OR REPLACE TABLE gee.{table_name} AS SELECT * FROM df")
+            
+        logger.info(f"Successfully saved {table_name} samples to disk")
+        return table_name
+        
+    async def _store_sample_to_df(self,samples):
         
         samples_data = []
         for feature in samples.getInfo()['features']:
@@ -118,13 +129,8 @@ class GeeQuery(BaseQuery):
             data['coordinates'] = feature['geometry']['coordinates']
             samples_data.append(data)
         #Samples data to df
-        df = pd.DataFrame(samples_data)
-        #Savng to db
-        con.execute(f"CREATE TABLE IF NOT EXISTS gee.{table_name} AS SELECT * FROM df")
-        logger.info(f"Successfully saved {table_name} samples to disk")
-        return table_name
-        
-        
+        df_temp = pd.DataFrame(samples_data)
+        self.df = pd.concat([self.df, df_temp], ignore_index=True)
         
     def _create_dir(self, data):
         sampled_dir = Path(data.config['folders']['gee_folder']) / "sampled"
@@ -166,18 +172,6 @@ class GeeQuery(BaseQuery):
         geometries=True   # keep original geometry in output
         )
         return samples
-    
-    async def _export_toDrive(self,samples_chunks:list, idx:int):
-        file_name = f"{self.name}_{idx:03d}"
-        try:
-            task = ee.batch.Export.table.toDrive(
-            collection=samples_chunks,
-            description= file_name,
-            fileFormat='CSV')
-            task.start()
-            return task
-        except Exception as e:
-            raise Exception(e)
             
     def _get_coords(self, data)->list:
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])
@@ -191,6 +185,8 @@ class GeeQuery(BaseQuery):
             return True
         except Exception as e:
             raise Exception(e)
+        
+        
     
 async def _check_asset_upload(file:Path, data:PipelineData, step_name):
     delay = 15
