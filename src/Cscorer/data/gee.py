@@ -1,7 +1,7 @@
 
 from .base import BaseQuery
 from ..core import PipelineData, StepStatus, to_Path
-from ..utils.duckdb import export_to_shp
+from ..utils.duckdb import export_to_shp, import_csv_to_db
 from ..utils.core import _ask_yes_no
 from ..core import to_Path
 from google.cloud import storage
@@ -30,7 +30,6 @@ class GeeQuery(BaseQuery):
         #Create geometry area of interest 
         self.aoi = ee.Geometry.Polygon(self._get_coords(data))
         self.points = ee.FeatureCollection(points)
-    
         #Dates
         self.date_min = data.config['time']['start']
         self.date_max = data.config['time']['end']
@@ -39,6 +38,9 @@ class GeeQuery(BaseQuery):
         points = to_Path(points)  
         self.name = f"gee_query_{points.stem}"
         data.init_new_step(step_name=self.name)
+        
+        #Create output dir:
+        self.output_dir = self._create_dir(data)
         
     #Snippets
     #var dataset = ee.Image('CGIAR/SRTM90_V4');
@@ -49,36 +51,41 @@ class GeeQuery(BaseQuery):
         logger = data.logger
         con = data.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
-        
         logger.info(f'Launching sampling procees for {self.name}')
-        
+
         #Main
         rasters = await self._load_rasters(data)
         multi_raster = await self._combine_rasters(rasters, logger)
         samples = await self._sample_occurences(multi_raster,logger)
+        file = await self._export_toDrive(samples)
+        logger.info(f"Exported {self.name} to Google Drive - Please download to : {str(self.output_dir)} ")
+        data.update_step_status(self.name, status= StepStatus.requested)
         
+        #Expected path
+        path = self.output_dir / file
+
+        if await self._wait_download(path, logger):
+            table = await import_csv_to_db(data.con,path,'gee',table_name)
+
         
-        x = await self._export_toCloudStorage(samples)
-        return
-        
-        samples = samples.select(['id'])
-        samples_list = samples.toList(samples.size())
-        block = samples_list.slice(0,2000).getInfo()
-        return
-        #Formatting data from gee 
-        logger.info('Saving samples to db...')
-        samples_data = []
-        for feature in samples.getInfo()['features']:
-            data = feature['properties']
-            data['gee_id'] = feature["id"]
-            data['coordinates'] = feature['geometry']['coordinates']
-            samples_data.append(data)
-        #Samples data to df
-        df = pd.DataFrame(samples_data)
-        #Savng to db
-        con.execute(f"CREATE OR REPLACE TABLE gee.{table_name} AS SELECT * FROM df")
-        logger.info(f"Successfully saved {table_name} samples to disk")
-        data.update_step_status(self.name, status= StepStatus.completed)
+    async def _wait_download(self, path, logger, delay = 10, retries = 10):
+        data_downloaded = False
+        retry = 0 
+        while not data_downloaded:
+            if retry > retries:
+                break
+            if path.exists():
+                data_downloaded = True
+                return True
+            retry += 1
+            logger.warning(f"{path.stem}{path.suffix} not found on retry {retry}/{retries}")
+            await asyncio.sleep(delay)
+            
+
+    def _create_dir(self, data):
+        sampled_dir = Path(data.config['folders']['gee_folder']) / "sampled"
+        sampled_dir.mkdir(exist_ok= True)
+        return sampled_dir
     
     async def _load_rasters(self,data:PipelineData)-> list[Image]:
         datasets = data.config['gee_datasets']
@@ -117,22 +124,16 @@ class GeeQuery(BaseQuery):
         logger.info(f"Sampled rasters")
         return samples
     
-    async def _export_toCloudStorage(self,samples):
+    async def _export_toDrive(self,samples):
         try:
-            task = ee.batch.Export.table.toCloudStorage(
+            task = ee.batch.Export.table.toDrive(
             collection=samples,
             description= self.name,
             fileFormat='CSV')
-            print(task)
-            #task.start()
+            task.start()
+            return f"{self.name}.csv"
         except Exception as e:
             raise Exception(e)
-        
-    def download_from_gcs(bucket_name, blob_name, local_path):
-        client = storage.Client()
-        bucket = client.bucket(bucket_name)
-        blob = bucket.blob(blob_name)
-        blob.download_to_filename(local_path)
         
     def _get_coords(self, data)->list:
         geo = wkt.loads(data.config['gbif']['GEOMETRY'])
@@ -146,27 +147,6 @@ class GeeQuery(BaseQuery):
             return True
         except Exception as e:
             raise Exception(e)
-
-
-async def _upload_file_to_gee(data, file:Path):
-    if not isinstance(file, Path):
-        file = to_Path(file)
-        
-    folder = str(file.parent) + "/"
-    command = ["earthengine",
-               f"--project={str(os.getenv('GEE_PROJECT_ID'))}",
-               "upload","table",
-               f"--asset_id=projects/{os.getenv('GEE_PROJECT_ID')}/assets/{file.stem}",
-               folder # positional arg for shp folder
-               ]
-    print(command)
-    try:
-        result = subprocess.run(command, check= True)
-        return result 
-    except Exception as e:
-        data.logger.error(f"Error uploading occurences to gee : \n{e}")
-        #data.update_step_status(step_name, StepStatus.failed)
-        raise Exception(e)
     
 async def _check_asset_upload(file:Path, data:PipelineData, step_name):
     delay = 15
