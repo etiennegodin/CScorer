@@ -8,26 +8,6 @@ import geopandas as gpd
 import time
 from enum import Enum
 
-@dataclass
-class PipelineSubstep:
-    substep: str
-
-@dataclass
-class PipelineStep:
-    step: list[PipelineStep] = field(default_factory=list)
-    def add_substep(self,substep_name):
-        self.substep = PipelineSubstep(substep= substep_name)
-
-@dataclass
-class PipelineModule:
-    module: str
-    steps: list[PipelineStep] = field(default_factory=list)
-    substeps: list[PipelineSubstep] = field(default_factory=list)
-
-    def add_step(self, step_name:str):
-        self.steps.append(PipelineStep(step = step_name))
-    def add_substep(self,substep_name:str):
-        self.step.add_substep(substep_name)
         
 
 class StepStatus(str, Enum):
@@ -82,11 +62,6 @@ class PipelineData:
         pass
         
     def init_new_step(self, step_name:str, parent_step:str=None)-> bool:
-        
-        if parent_step is None:
-            try:
-                step_name
-            
         
         if not step_name in self.storage.keys():
             self.logger.info(f"First time running {step_name}, creating storage and step status")
@@ -189,6 +164,9 @@ def read_config(path:Path):
     
 def write_config(config:dict, path:Path):
     import yaml
+    yaml.add_representer(StepStatus, stepstatus_representer)
+    yaml.add_representer(StepStatus, stepstatus_representer)
+    yaml.add_representer(StepStatus, stepstatus_representer)
     yaml.add_representer(StepStatus, stepstatus_representer)
 
     path = to_Path(path)
