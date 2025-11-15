@@ -11,6 +11,7 @@ gbif_query_expert:
   key: 0027013-251025141854904
   raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
 gee_query_citizen_occurences:
+  db: citizen_occurences
   init: 1763157247.058232
   tasks: &id001
   - *id001
