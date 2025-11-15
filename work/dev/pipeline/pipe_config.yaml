@@ -43,6 +43,8 @@ gbif_datasets:
     subtype: SPECIMEN
     title: "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)"
     type: OCCURRENCE
+gee:
+  chunk_size: 5000
 gee_datasets:
   image:
   - description: SRTM 90m Digital Elevation Data
