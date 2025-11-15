@@ -163,6 +163,10 @@ class PipelineData:
     def _export(self):
         try:
             pipeline_folder = self.config['folders'].get('pipeline_folder')
+            out = self.__dict__
+            out.pop('con')
+            out.pop('logger')
+
             write_config(self.__dict__, Path(pipeline_folder) / 'pipe.yaml')
             return True
         except Exception as e:
