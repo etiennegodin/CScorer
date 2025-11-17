@@ -10,7 +10,7 @@ import time
 from enum import Enum
 import yaml
 from Cscorer.utils.yaml import yaml_serializable
-from Cscorer.core import Pipeline, PipelineModule, PipelineStep, PipelineSubstep
+from Cscorer.pipeline import Pipeline, PipelineModule, PipelineStep, PipelineSubstep
 
 #Initiliaze data for PipelineObject
 def _init_data():

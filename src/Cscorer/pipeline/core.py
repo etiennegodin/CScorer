@@ -1,19 +1,16 @@
 from __future__ import annotations
 from typing import Callable, List, Dict, Any, Optional
-from shapely import Point
 from pathlib import Path
 from dataclasses import dataclass, field
 import logging
-import pandas as pd 
-import geopandas as gpd
 import time
 from enum import Enum
 import yaml
-from .utils.yaml import yaml_serializable, write_config
 import asyncio 
 import importlib
 import inspect
 import duckdb
+from ..utils.yaml import yaml_serializable
 
 
 def load_function(path: str):
@@ -26,17 +23,6 @@ def load_function(path: str):
 #Initiliaze data for PipelineObject
 def _init_data():
     return {'init': time.strftime("%Y-%m-%d %H:%M:%S") }
-
-
-
-
-def to_Path(file_path: str):
-    if isinstance(file_path, Path):
-        return file_path
-    if not isinstance(file_path, Path):
-        return Path(file_path)
-
-
 
 class StepStatus(str, Enum):
     init = "init"    
@@ -110,7 +96,7 @@ class PipelineSubmodule(Observable):
             if step.status == StepStatus.init:
                 incomplete_steps.append(step)
                 
-        submodule_tasks = [asyncio.create_task(step.run(pipe, step)) for step in incomplete_steps]
+        submodule_tasks = [asyncio.create_task(step.run(pipe)) for step in incomplete_steps]
         print(submodule_tasks)
         await asyncio.gather(*submodule_tasks)
         
@@ -122,7 +108,7 @@ class PipelineSubmodule(Observable):
 @dataclass
 class PipelineStep(Observable):
     name: str
-    func_path: str
+    func: str
     storage: Dict[str, Any] = field(default_factory= dict)
     config: Dict[str, Any] = field(default_factory=dict)
     
@@ -130,13 +116,13 @@ class PipelineStep(Observable):
         self.data = _init_data()
         self.status =  StepStatus.init
 
-    async def run(self, pipe:Pipeline, *args, **kwargs):
-        func = self.func_path
-        #func = load_function(self.func_path)
+    async def run(self, pipe:Pipeline):
+        func = self.func
+        #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
-            return await func(pipe, self, *args,**kwargs)
+            return await func(pipe, self)
         else:
-            return func(pipe,self,*args, **kwargs)
+            return func(pipe,self)
     
 @yaml_serializable()
 @dataclass
@@ -146,7 +132,7 @@ class Pipeline(Observable):
     logger: logging = logging
     con: duckdb.DuckDBPyConnection = None
 
-    __yaml_exclude__ = "con"
+    __yaml_exclude__ = {"con","logger", "_parent"}
     
     @classmethod
     def from_yaml_file(cls, path: str):
@@ -158,7 +144,7 @@ class Pipeline(Observable):
         #Init logger if empty
         self.logger.info("Pipeline data post_init")
         # Init db_connection 
-        from .utils.duckdb import _open_connection   
+        from ..utils.duckdb import _open_connection   
         self.con = _open_connection(db_path=self.config['db_path'] )
         # Register handlers
         self._export()
@@ -192,17 +178,3 @@ class Pipeline(Observable):
                 sm.set_parent(mod)
                 for step in sm.steps.values():
                     step.set_parent(sm)
-
-        
-
-def convert_df_to_gdf(df : pd.DataFrame, lat_col : str = 'decimalLatitude', long_col : str = 'decimalLongitude', crs = 4326, verbose = False):
-    return gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df["decimalLongitude"], df["decimalLatitude"])] , crs = 4326 )
-
-def rename_col_df(df:pd.DataFrame|gpd.GeoDataFrame, old:str = None, new:str = None):
-    #Replace ":" with "_" in columns
-    cols = df.columns.to_list()
-    for col in cols:
-        if old in col:
-            df.rename(columns={col : str(col).replace(old,new)}, inplace= True)
-    return df
-    

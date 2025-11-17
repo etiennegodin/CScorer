@@ -1,11 +1,9 @@
 # Main file to get data 
-from ...core import Pipeline, PipelineModule, PipelineSubmodule,PipelineStep, StepStatus
+from ...pipeline import Pipeline, PipelineModule, PipelineSubmodule,PipelineStep, StepStatus
 from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
 import asyncio
-import time
-import aiohttp
 from .gee import upload_points
 from pprint import pprint
 
@@ -14,18 +12,9 @@ from pprint import pprint
 async def set_loaders(pipe:Pipeline, module:PipelineModule):
     loaders_submodule = PipelineSubmodule("loaders")
     module.add_submodule(loaders_submodule)
-
-    # maybe like the gbif async orchestrator with task group 
     
-    # still need to run in order for occurence (gbif -> inat_observers) but env data can run concurrently 
-    
-    # gbif
-    #   inat observer
-    # inat occurences ( requires download file )
-    # env 
-    
-    step_data_load_gbif_citizen = PipelineStep( "data_load_gbif_citizen", func_path = data_load_gbif_main)
-    step_data_load_gbif_expert = PipelineStep("data_load_gbif_expert", func_path = data_load_gbif_main)
+    step_data_load_gbif_citizen = PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main)
+    step_data_load_gbif_expert = PipelineStep("data_load_gbif_expert", func = data_load_gbif_main)
     
     loaders_submodule.add_step(step_data_load_gbif_citizen)
     loaders_submodule.add_step(step_data_load_gbif_expert)
@@ -38,21 +27,7 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     loaders_submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
     loaders_submodule.add_step(PipelineStep("data_load_gee", func = data_load_gee))
 
-    
     await loaders_submodule.run(pipe)
-    
-    #loaders.run_submodule(data = )
-
-    #main orchestrator
-    #asyncio.run(data_load_gbif_main(data)) 
-    #asyncio.run(data_load_inat_occurence(data))
-    #asyncio.run(data_load_inat_observer(data))
-    #asyncio.run(data_load_gee(data)) 
-    pass
-
-async def test(pipe):
-    print('test')
-    
 
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     subcategory = step.name.split(sep="_")[-1]
