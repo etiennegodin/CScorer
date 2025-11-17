@@ -10,6 +10,13 @@ import time
 from enum import Enum
 import yaml
 from .utils.yaml import yaml_serializable
+import asyncio 
+import importlib
+
+def load_function(path: str):
+    mod_name, func_name = path.rsplit(".", 1)
+    module = importlib.import_module(mod_name)
+    return getattr(module, func_name)
 
 #Initiliaze data for PipelineObject
 def _init_data():
@@ -42,7 +49,6 @@ def write_config(config:dict, path:Path):
         file=open(path,"w")
         yaml.dump(config,file)
         file.close() 
-        print(path)
     except Exception as e:
         raise RuntimeError(e)
     
@@ -56,44 +62,59 @@ class StepStatus(str, Enum):
     local = 'local'
     completed = "completed"
     failed = "failed"
-
-@yaml_serializable
+    
+@yaml_serializable()
 @dataclass
 class PipelineModule:
     name: str
+    submodules: Dict[str, PipelineSubmodule] = field(default_factory=dict)
+    status: StepStatus = StepStatus.init
+    data: Dict[str, Any] = field(default_factory= dict)
+    
+    def __post_init__(self):
+        self.data = _init_data()
+
+    
+@yaml_serializable()
+@dataclass
+class PipelineSubmodule:
+    name: str
+    module :str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    pipe: Dict[str, Any] = field(default_factory=_init_data())
-
-@yaml_serializable
+    data: Dict[str, Any] = field(default_factory= dict)
+    
+    def __post_init__(self):
+        self.data = _init_data()
+    
+    async def run(self,*args,**kwargs):
+        submodule_tasks = [asyncio.create_task(stepObject.func(*args,**kwargs)) for step_name, stepObject in self.steps.items()]
+        await asyncio.gather(*submodule_tasks)
+        
+@yaml_serializable()
 @dataclass
 class PipelineStep:
     name: str
-    module :str
-    substeps: Dict[str, PipelineSubstep] = field(default_factory=dict)
-    status: StepStatus = StepStatus.init
-    pipe: Dict[str, Any] = field(default_factory=_init_data())
-
-@yaml_serializable
-@dataclass
-class PipelineSubstep:
-    name: str
-    step:str
+    submodule:str
     module:str
-    func: Callable
+    func_path: str
     status: StepStatus = StepStatus.init
-    pipe: Dict[str, Any] = field(default_factory=_init_data())
+    data: Dict[str, Any] = field(default_factory= dict)
     config: Dict[str, Any] = field(default_factory=dict)
     
     async def run(self, pipe:Pipeline):
+        func = load_function(self.func_path)
+        func(pipe)
         #run callabale
-        pass
+    
+    #result = await loop.run_in_executor(None, lambda: self.func(self, data, logger, data.progress_cb))
 
+@yaml_serializable()
 @dataclass
 class Pipeline:
     modules: Dict[str, PipelineModule] = field(default_factory=dict)
     config: Dict[str, Any] = field(default_factory=dict)
-    logger: logging.Logger = None
+    logger: logging = logging
     
     @classmethod
     def from_yaml_file(cls, path: str):
@@ -102,37 +123,34 @@ class Pipeline:
         return cls(**data)
     
     def __post_init__(self):
-
         #Init logger if empty
-        if self.logger is None:
-            self.logger = logging
-            self.logger.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
         
         self.logger.info("Pipeline data post_init")
-
         # Init db_connection 
         from .utils.duckdb import _open_connection
         self.con = _open_connection(db_path=self.config['db_path'] )
         # Register handlers
         self._export()
 
-    def add_module(self, name):
-        module = PipelineModule(name)
-        self.modules[name] = module
+    def add_module(self, *args, **kwargs):
+        module = PipelineModule(*args,**kwargs)
+        self.modules[module.name] = module
         self._export()
         return module
         
-    def add_step(self, module:PipelineModule,step_name:str):
+    def add_submodule(self, module:PipelineModule, submodule_name:str):
+        print(module)
         if module.name in self.modules.keys():
-            step = PipelineStep(step_name, module = module.name)
-            self.modules[module.name].steps[step_name] = step
+            step = PipelineSubmodule(submodule_name, module = module.name)
+            self.modules[module.name].submodules[submodule_name] = step
             self._export()
             return step
 
-    def add_substep(self, step:PipelineStep,substep_name:str, *args, **kwargs):
-        if step.name in self.modules[step.module].steps.keys():
-            substep = PipelineSubstep(substep_name, *args, step = step.name, module = step.module, **kwargs)
-            self.modules[step.module].steps[step.name].substeps[substep_name] = substep
+    def add_step(self, submodule:PipelineSubmodule,step_name:str,func:Callable):
+        if submodule.name in self.modules[submodule.module].submodules.keys():
+            path = f"{func.__module__}.{func.__name__}"
+            substep = PipelineStep(step_name, submodule = submodule.name, module = submodule.module, func_path = path)
+            self.modules[submodule.module].submodules[submodule.name].steps[step_name] = substep
             self._export()
 
             return substep
@@ -172,9 +190,12 @@ class Pipeline:
     def _export(self):
         try:
             pipeline_folder = self.config['folders'].get('pipeline_folder')
-            out = self.__dict__
-            out.pop('con')
-            out.pop('logger')
+            export = self.__dict__
+            #pprint(out)
+            if "con" in export.keys():
+                del export['con']
+            if "logger" in export.keys():
+                del export['logger']
 
             write_config(self.__dict__, Path(pipeline_folder) / 'pipe.yaml')
             return True

@@ -10,8 +10,8 @@ from .gee import upload_points
 
 ### Create instances for each class of data and run their queries
 
-async def loaders_main(pipe:Pipeline, module:PipelineModule):
-    step = pipe.add_step(module, 'loaders')
+async def set_loaders(pipe:Pipeline, module:PipelineModule):
+    submodule = pipe.add_submodule(module,'loaders')
 
     # maybe like the gbif async orchestrator with task group 
     
@@ -21,9 +21,12 @@ async def loaders_main(pipe:Pipeline, module:PipelineModule):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
-    pipe.add_substep(step, "data_load_gbif_main", func = data_load_gbif_main())
+    pipe.add_step(submodule, "data_load_gbif_main", func = data_load_gbif_main)
+    
     
     print(pipe.__dict__)
+    #loaders.run_submodule(data = )
+
     #main orchestrator
     #asyncio.run(data_load_gbif_main(data)) 
     #asyncio.run(data_load_inat_occurence(data))
@@ -31,10 +34,9 @@ async def loaders_main(pipe:Pipeline, module:PipelineModule):
     #asyncio.run(data_load_gee(data)) 
     pass
 
-async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
+async def data_load_gbif_main(pipe:Pipeline):
     
     step_name = "data_load_gbif_main"
-    data.init_new_step(step_name)
     #Temp assignement for async tasks 
     cs_data_task = None
     expert_data_task = None
@@ -43,15 +45,15 @@ async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     cs_predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
     
     #Prep expert specific predicates
-    datasets = data.config['gbif_datasets']
+    datasets = pipe.config['gbif_datasets']
     dataset_keys = []
     for dataset in datasets.values():
         dataset_keys.append(dataset['key'])
     expert_predicates = {"DATASET_KEY" : dataset_keys }
 
     # Create queries 
-    cs_query = await _create_gbif_loader(data, name= 'citizen', predicates= cs_predicates)
-    expert_query = await _create_gbif_loader(data, name= 'expert', predicates= expert_predicates)
+    cs_query = await _create_gbif_loader(pipe, name= 'citizen', predicates= cs_predicates)
+    expert_query = await _create_gbif_loader(pipe, name= 'expert', predicates= expert_predicates)
     
     #Lauch async concurrent queries 
     async with asyncio.TaskGroup() as tg:
