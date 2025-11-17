@@ -106,20 +106,41 @@ modules:
             config: {}
             func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
             name: data_load_gbif_citizen
-            status: !StepStatus 'ready'
+            status: !StepStatus 'completed'
             storage:
+              db: gbif_raw.citizen
               key: 0038478-251025141854904
-            timestamp:
-              init: '2025-11-17 11:48:01'
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0038478-251025141854904.csv
+            timestamp: '2025-11-17 16:02:07'
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
             name: data_load_gbif_expert
+            status: !StepStatus 'completed'
+            storage:
+              db: gbif_raw.expert
+              key: 0039928-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0039928-251025141854904.csv
+            timestamp: '2025-11-17 16:02:07'
+          data_load_gee: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_gee ''
+            name: data_load_gee
+            status: !StepStatus 'completed'
+            storage:
+              points: []
+            timestamp: '2025-11-17 16:02:07'
+          data_load_inat_observer: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            name: data_load_inat_observer
             status: !StepStatus 'init'
             storage: {}
-            timestamp:
-              init: '2025-11-17 11:48:01'
-        timestamp:
-          init: '2025-11-17 11:48:01'
-    timestamp:
-      init: '2025-11-17 11:48:01'
+            timestamp: '2025-11-17 16:02:07'
+        timestamp: '2025-11-17 16:02:07'
+      preprocessors: !PipelineSubmodule
+        name: preprocessors
+        status: !StepStatus 'init'
+        steps: {}
+        timestamp: '2025-11-17 16:02:07'
+    timestamp: '2025-11-17 16:02:07'

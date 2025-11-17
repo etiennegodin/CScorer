@@ -1,6 +1,6 @@
 from .data.main import data_main
 from .utils.debug import launch_debugger
-from .pipeline import Pipeline
+from .pipeline import Pipeline, PipelineModule, StepStatus
 from .pipeline.yaml_support import read_config
 
 import yaml
@@ -127,7 +127,16 @@ def main():
     
     # Init pipeline 
     pipe = init_pipeline(args)
-    asyncio.run(data_main(pipe))
+    
+    #Add modules
+    data_module = PipelineModule('data')
+    pipe.add_module(data_module)
+    
+    
+    
+    
+    if pipe.modules['data'].status != StepStatus.completed:
+        asyncio.run(data_main(pipe, data_module))
     
     
     

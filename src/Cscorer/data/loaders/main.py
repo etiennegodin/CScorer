@@ -9,25 +9,23 @@ from pprint import pprint
 
 ### Create instances for each class of data and run their queries
 
-async def set_loaders(pipe:Pipeline, module:PipelineModule):
-    loaders_submodule = PipelineSubmodule("loaders")
-    module.add_submodule(loaders_submodule)
-    
+async def data_loaders_main(pipe:Pipeline, submodule:PipelineSubmodule):
+
     step_data_load_gbif_citizen = PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main)
     step_data_load_gbif_expert = PipelineStep("data_load_gbif_expert", func = data_load_gbif_main)
     
-    loaders_submodule.add_step(step_data_load_gbif_citizen)
-    loaders_submodule.add_step(step_data_load_gbif_expert)
+    submodule.add_step(step_data_load_gbif_citizen)
+    submodule.add_step(step_data_load_gbif_expert)
 
     async with asyncio.TaskGroup() as tg:
         tg.create_task(step_data_load_gbif_citizen.run(pipe))    
         tg.create_task(step_data_load_gbif_expert.run(pipe))    
 
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
-    loaders_submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
-    loaders_submodule.add_step(PipelineStep("data_load_gee", func = data_load_gee))
+    submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
+    submodule.add_step(PipelineStep("data_load_gee", func = data_load_gee))
 
-    await loaders_submodule.run(pipe)
+    await submodule.run(pipe)
 
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     subcategory = step.name.split(sep="_")[-1]

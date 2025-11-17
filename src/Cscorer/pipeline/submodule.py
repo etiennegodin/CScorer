@@ -16,8 +16,9 @@ class PipelineSubmodule(Observable):
     timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
     
     def add_step(self, step:PipelineStep):
-        step.set_parent(self)
-        self.steps[step.name] = step
+        if step.name not in self.steps.keys():
+            step.set_parent(self)
+            self.steps[step.name] = step
 
     async def run(self,pipe:Pipeline):
         incomplete_steps = []
