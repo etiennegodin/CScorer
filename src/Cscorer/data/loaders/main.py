@@ -14,8 +14,9 @@ async def data_loaders_main(pipe:Pipeline, submodule:PipelineSubmodule):
     submodule.add_step(PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main))
     submodule.add_step(PipelineStep("data_load_gbif_expert", func = data_load_gbif_main))
 
-    tasks1 = [asyncio.create_task(step.run(pipe)) for step in submodule.steps.values() if step.status != StepStatus.completed]
-    await asyncio.gather(*tasks1)
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(submodule.steps["data_load_gbif_citizen"].run(pipe))
+        tg.create_task(submodule.steps["data_load_gbif_expert"].run(pipe))
  
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
     submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
