@@ -5,7 +5,7 @@ import asyncio
 from .yaml_support import yaml_serializable
 from .core import Observable, init_data
 from .enums import StepStatus
-
+import time
             
 @yaml_serializable()
 @dataclass
@@ -13,9 +13,7 @@ class PipelineSubmodule(Observable):
     name: str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    
-    def __post_init__(self):
-        self.data = init_data()
+    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
     
     def add_step(self, step:PipelineStep):
         step.set_parent(self)
