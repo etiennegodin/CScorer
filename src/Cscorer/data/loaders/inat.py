@@ -14,7 +14,9 @@ class iNatObsLoader(BaseLoader):
         super().__init__()
         self.name = name
 
-    async def run(self, pipe:Pipeline, step: PipelineStep, limit:int = None, overwrite:bool = False):
+    async def run(self, pipe:Pipeline, step: PipelineStep):
+        limit = pipe.config['inat_api']['limit']
+        overwrite = pipe.config['inat_api']['overwrite']
         con = pipe.con
         logger = pipe.logger
         self.limiter = AsyncLimiter(pipe.config['inat_api']['max_calls_per_minute'], 60)
@@ -114,14 +116,14 @@ class iNatOccLoader(BaseLoader):
         inat_folder = pipe.config['folders']['inat_folder']
 
         
-        if "query" not in step.storage[step_name].keys():
+        if "query" not in step.storage.keys():
             raise NotImplementedError("Query builder not implemented")
             query = await self._build_query()
             step.storage['query'] = query
             data.update()
         else:
             pass
-            query = step.storage[step_name]['query']
+            query = step.storage['query']
             
         #Override query
         query = "has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01"

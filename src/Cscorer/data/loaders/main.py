@@ -24,7 +24,7 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     # env 
     pipe.add_step(submodule, "data_load_gbif_main", func = data_load_gbif_main)
     
-    await submodule.run(pipe)
+    await submodule.run(pipe,step)
     
     #loaders.run_submodule(data = )
 
@@ -62,10 +62,10 @@ async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     #Lauch async concurrent queries 
     async with asyncio.TaskGroup() as tg:
         if not step.status[f"{cs_query.name}"] == StepStatus.local:
-            cs_data_task = tg.create_task(cs_query.run(pipe))
+            cs_data_task = tg.create_task(cs_query.run(pipe,step, step))
 
         if not step.status[f"{expert_query.name}"] == StepStatus.local:
-            expert_data_task = tg.create_task(expert_query.run(pipe))
+            expert_data_task = tg.create_task(expert_query.run(pipe,step, step))
 
     #Read data from async tasks or from data 
     if cs_data_task is not None:cs_data = cs_data_task.result()
@@ -108,25 +108,23 @@ async def data_load_inat_occurence(pipe:Pipeline, step:PipelineStep):
     inatOcc_query = create_query('inatOcc', name = step.name)
         
     #Return url for 
-    occurence = await inatOcc_query.run(pipe)    
+    occurence = await inatOcc_query.run(pipe,step)    
 
-async def data_load_inat_observer(pipe:Pipeline):
-    step_name = "data_load_inat_observer"
-    con = data.con
+async def data_load_inat_observer(pipe:Pipeline, step:PipelineStep):
+    con = pipe.con
     # Create query 
-    inatObs_query = create_query('inatObs', name = step_name)
+    inatObs_query = create_query('inatObs', name = step.name)
     #Init step
-    data.init_new_step(step_name)
     #Return url for 
-    oberver_table = await inatObs_query.run(data, limit = data.config['inat_api']['limit'], overwrite = data.config['inat_api']['overwrite'])    
+    oberver_table = await inatObs_query.run(pipe,step)    
 
-async def data_load_gee(pipe:Pipeline):
+async def data_load_gee(pipe:Pipeline, step:PipelineStep):
     # Get point to gee
-    points_list = await upload_points(data)
+    points_list = await upload_points(pipe,step)
     #Create table schema on db 
-    create_schema(data.con, schema = 'gee')
+    create_schema(pipe.con, schema = 'gee')
     
     #Create list of queries (one for each set of occurences)
-    gee_queries = [create_query('gee', data, points=points) for points in points_list]
+    gee_queries = [create_query('gee', pipe, points=points) for points in points_list]
     for query in gee_queries:
-        await query.run(data)
+        await query.run(pipe, step)
