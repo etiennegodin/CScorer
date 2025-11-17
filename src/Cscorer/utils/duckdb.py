@@ -75,7 +75,7 @@ async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:
     try:
         df = con.execute(f"SELECT {select} ST_Point({lon_col}, {lat_col}) AS geom FROM {table_name}").fetch_df()
         gdf = gpd.GeoDataFrame(df.drop(columns=[lon_col, lat_col, 'geom']), geometry=gpd.points_from_xy(df[lon_col], df[lat_col]), crs=4326)
-        print(gdf)
+        #print(gdf)
         gdf.to_file(file_path)  
         logger.info(f"Exported shp to : {file_path}")
     except Exception as e:

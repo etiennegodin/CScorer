@@ -1,4 +1,4 @@
-from .data.main import data_main
+from .data.main import data_submodules
 from .utils.debug import launch_debugger
 from .pipeline import Pipeline, PipelineModule, StepStatus
 from .pipeline.yaml_support import read_config
@@ -127,7 +127,7 @@ def main():
     pipe = init_pipeline(args)
     
     #Add modules
-    data_module = PipelineModule('data',  func = data_main)
+    data_module = PipelineModule('data',  func = data_submodules)
     pipe.add_module(data_module)
     
     pprint(pipe.modules)

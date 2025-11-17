@@ -217,11 +217,11 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
     step.storage['points'] = []
 
     # Create files and table lookups    
-    steps = [step for step in step.storage.keys() if step.startswith('gbif')]
-
+    steps = [s for s in step._parent.steps.values() if "gbif" in s.name]
+        
     # Create files and table lookups    
-    for step in steps:
-        table = step.storage[step]['db']
+    for s in steps:
+        table = s.storage['db']
         tables.append(table)
         #Make folder 
         data_name = table.split(sep='.')[1]
@@ -240,6 +240,10 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
         #Upload these points to gee 
         uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step))  for file in files]
         await asyncio.gather(*uploads)
-        step.status = StepStatus.completed
+        #step.status = StepStatus.completed
         pipe.logger.info('Successfully upload all files to gee')
-        return step.storage['points']
+    
+    return step.storage['points']
+    
+    
+    
