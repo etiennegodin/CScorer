@@ -10,9 +10,8 @@ config:
   gbif:
     COUNTRY: CA
     GADM_GID: CAN.11_1
-    GEOMETRY: POLYGON((-73.509156 45.524824, -74.519611 45.014526, -71.669469 45.014526,
-      -70.203212 46.296853,-71.032444 46.821866, -71.444314 46.686379, -73.086303
-      46.045787, -73.509156 45.524824))
+    GEOMETRY: POLYGON ((-73.173752 45.53377, -73.124313 45.53377, -73.124313 45.569832,
+      -73.173752 45.569832, -73.173752 45.53377))
     TAXON_KEY: 7707728
     YEAR: 2010
   gbif_datasets:
@@ -96,13 +95,13 @@ config:
 modules:
   data: !PipelineModule
     data:
-      init: '2025-11-17 00:08:56'
+      init: '2025-11-17 00:41:59'
     name: data
     status: !StepStatus 'init'
     submodules:
       loaders: !PipelineSubmodule
         data:
-          init: '2025-11-17 00:08:56'
+          init: '2025-11-17 00:41:59'
         module: data
         name: loaders
         status: !StepStatus 'init'
@@ -110,9 +109,40 @@ modules:
           data_load_gbif_main: !PipelineStep
             config: {}
             data:
-              init: '2025-11-17 00:08:56'
+              init: '2025-11-17 00:41:59'
             func_path: Cscorer.data.loaders.main.data_load_gbif_main
             module: data
             name: data_load_gbif_main
             status: !StepStatus 'init'
+            storage: {}
+            submodule: loaders
+          data_load_gee: !PipelineStep
+            config: {}
+            data:
+              init: '2025-11-17 00:41:59'
+            func_path: Cscorer.data.loaders.main.data_load_gee
+            module: data
+            name: data_load_gee
+            status: !StepStatus 'init'
+            storage: {}
+            submodule: loaders
+          data_load_inat_observer: !PipelineStep
+            config: {}
+            data:
+              init: '2025-11-17 00:41:59'
+            func_path: Cscorer.data.loaders.main.data_load_inat_observer
+            module: data
+            name: data_load_inat_observer
+            status: !StepStatus 'init'
+            storage: {}
+            submodule: loaders
+          data_load_inat_occurence: !PipelineStep
+            config: {}
+            data:
+              init: '2025-11-17 00:41:59'
+            func_path: Cscorer.data.loaders.main.data_load_inat_occurence
+            module: data
+            name: data_load_inat_occurence
+            status: !StepStatus 'init'
+            storage: {}
             submodule: loaders

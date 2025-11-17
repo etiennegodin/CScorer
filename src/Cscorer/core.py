@@ -88,7 +88,12 @@ class PipelineSubmodule:
         self.data = _init_data()
     
     async def run(self,pipe:Pipeline):
-        submodule_tasks = [asyncio.create_task(step.run(pipe, step)) for step_name, step in self.steps.items()]
+        incomplete_steps = []
+        for step in self.steps.values():
+            if step.status == StepStatus.init:
+                incomplete_steps.append(step)
+                
+        submodule_tasks = [asyncio.create_task(step.run(pipe, step)) for step in incomplete_steps]
         print(submodule_tasks)
         await asyncio.gather(*submodule_tasks)
         
@@ -108,12 +113,12 @@ class PipelineStep:
         
         
     
-    async def run(self, *args, **kwargs):
+    async def run(self, pipe:Pipeline, *args, **kwargs):
         func = load_function(self.func_path)
         if inspect.iscoroutinefunction(func):
-            return await func(*args,**kwargs)
+            return await func(pipe, self, *args,**kwargs)
         else:
-            return func(*args, **kwargs)
+            return func(pipe,self,*args, **kwargs)
     
 @yaml_serializable()
 @dataclass
@@ -154,11 +159,11 @@ class Pipeline:
     def add_step(self, submodule:PipelineSubmodule,step_name:str,func:Callable):
         if submodule.name in self.modules[submodule.module].submodules.keys():
             path = f"{func.__module__}.{func.__name__}"
-            substep = PipelineStep(step_name, submodule = submodule.name, module = submodule.module, func_path = path)
-            self.modules[submodule.module].submodules[submodule.name].steps[step_name] = substep
+            step = PipelineStep(step_name, submodule = submodule.name, module = submodule.module, func_path = path)
+            self.modules[submodule.module].submodules[submodule.name].steps[step_name] = step
             self._export()
 
-            return substep
+            return step
         
     def update(self):
         self._export()
