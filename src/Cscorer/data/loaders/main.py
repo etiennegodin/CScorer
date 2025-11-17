@@ -22,9 +22,19 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
-    pipe.add_step(submodule, "data_load_gbif_main", func = data_load_gbif_main)
+    step_data_load_gbif_citizen = pipe.add_step(submodule, "data_load_gbif_citizen", func = data_load_gbif_main)
+    step_data_load_gbif_expert = pipe.add_step(submodule, "data_load_gbif_expert", func = data_load_gbif_main)
     
-    await submodule.run(pipe,step)
+    with asyncio.TaskGroup() as tg:
+        tg.createTask(step_data_load_gbif_citizen.run(pipe))    
+        tg.createTask(step_data_load_gbif_expert.run(pipe))    
+
+    #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
+    pipe.add_step(submodule, "data_load_inat_observer", func = data_load_inat_observer)
+    pipe.add_step(submodule, "data_load_gee", func = data_load_gee)
+
+    
+    await submodule.run(pipe)
     
     #loaders.run_submodule(data = )
 
@@ -40,50 +50,36 @@ async def test(pipe):
     
 
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
-    
+    subcategory = step.name.split(sep="_")[-1]
     #Temp assignement for async tasks 
-    cs_data_task = None
-    expert_data_task = None
-    
+    task = None
+    if subcategory == "citizen":
     #Prep citizen specific predicates
-    cs_predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
-    
-    #Prep expert specific predicates
-    datasets = pipe.config['gbif_datasets']
-    dataset_keys = []
-    for dataset in datasets.values():
-        dataset_keys.append(dataset['key'])
-    expert_predicates = {"DATASET_KEY" : dataset_keys }
-
+        predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
+    elif subcategory == "expert":
+        #Prep expert specific predicates
+        datasets = pipe.config['gbif_datasets']
+        dataset_keys = []
+        for dataset in datasets.values():
+            dataset_keys.append(dataset['key'])
+        predicates = {"DATASET_KEY" : dataset_keys }
+    else:
+        raise NotImplementedError
     # Create queries 
-    cs_query = await _create_gbif_loader(pipe, name= 'citizen', predicates= cs_predicates)
-    expert_query = await _create_gbif_loader(pipe, name= 'expert', predicates= expert_predicates)
+    query = await _create_gbif_loader(pipe, step, name= subcategory, predicates= predicates)
     
     #Lauch async concurrent queries 
-    async with asyncio.TaskGroup() as tg:
-        if not step.status[f"{cs_query.name}"] == StepStatus.local:
-            cs_data_task = tg.create_task(cs_query.run(pipe,step, step))
-
-        if not step.status[f"{expert_query.name}"] == StepStatus.local:
-            expert_data_task = tg.create_task(expert_query.run(pipe,step, step))
-
-    #Read data from async tasks or from data 
-    if cs_data_task is not None:cs_data = cs_data_task.result()
-    else: cs_data = step.storage[f"{cs_query.name}"]["raw_data"]
-    if expert_data_task is not None:expert_data = expert_data_task.result()
-    else: expert_data = step.storage[f"{expert_query.name}"]["raw_data"]
+    if not step.status == StepStatus.local:
+        result = await query.run(pipe,step)
         
     # Commit local .csv to db 
-    cs_table = await import_csv_to_db(pipe.con, cs_data, schema= 'gbif_raw', table= 'citizen', geo = True)
-    expert_table = await import_csv_to_db(pipe.con, expert_data, schema= 'gbif_raw', table= 'expert', geo = True )
+    table = await import_csv_to_db(pipe.con, result, schema= 'gbif_raw', table= subcategory, geo = True)
 
     # Flag as completed
-    if cs_table:
-        step.storage[f"{cs_query.name}"]["db"] = cs_table
-        step.status[f'{cs_query.name}'] = StepStatus.completed   
-    if expert_table:
-        step.storage[f"{expert_query.name}"]["db"] = expert_table
-        step.status[f'{expert_query.name}'] = StepStatus.completed    
+    if table:
+        step.storage["db"] = table
+        step.status = StepStatus.completed   
+
         
 async def _create_gbif_loader(pipe:Pipeline, step:PipelineStep, name:str, predicates:dict = None):
     gbif_config = pipe.config['gbif']
@@ -117,6 +113,7 @@ async def data_load_inat_observer(pipe:Pipeline, step:PipelineStep):
     #Init step
     #Return url for 
     oberver_table = await inatObs_query.run(pipe,step)    
+
 
 async def data_load_gee(pipe:Pipeline, step:PipelineStep):
     # Get point to gee
