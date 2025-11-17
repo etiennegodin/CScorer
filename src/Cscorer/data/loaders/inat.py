@@ -2,7 +2,7 @@ from .base import BaseLoader
 from shapely import wkt
 from ...pipeline import Pipeline, PipelineStep, StepStatus
 from ...utils.core import _ask_yes_no
-from ...utils.duckdb import import_csv_to_db, get_all_tables
+from ...utils.duckdb import import_csv_to_db, get_all_tables, create_schema
 import asyncio, aiohttp, aiofiles
 from aiolimiter import AsyncLimiter
 from asyncio import Queue
@@ -23,12 +23,14 @@ class iNatObsLoader(BaseLoader):
         step_name = self.name
         self.queue  = Queue()
         self.table_name = "inat.observers"
-        
+        self.schema = 'inat'
         if step.status == StepStatus.completed:
             logger.info(f"{step_name} already completed")
             #SKip 
             return self.table_name
          
+        create_schema(con, self.schema)
+        
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id INTEGER, user_login TEXT, json JSON)")
         last_id = con.execute(f"SELECT MAX(id) FROM {self.table_name}").fetchone()[0] 

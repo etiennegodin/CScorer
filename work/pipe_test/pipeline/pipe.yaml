@@ -108,17 +108,37 @@ modules:
             config: {}
             func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
             name: data_load_gbif_citizen
-            status: !StepStatus 'ready'
+            status: !StepStatus 'completed'
             storage:
+              db: gbif_raw.citizen
               key: 0038478-251025141854904
-            timestamp: '2025-11-17 17:17:45'
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0038478-251025141854904.csv
+            timestamp: '2025-11-17 17:19:15'
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
             name: data_load_gbif_expert
+            status: !StepStatus 'completed'
+            storage:
+              db: gbif_raw.expert
+              key: 0040027-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0040027-251025141854904.csv
+            timestamp: '2025-11-17 17:19:15'
+          data_load_gee: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_gee ''
+            name: data_load_gee
+            status: !StepStatus 'completed'
+            storage:
+              points: []
+            timestamp: '2025-11-17 17:36:27'
+          data_load_inat_observer: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            name: data_load_inat_observer
             status: !StepStatus 'init'
             storage: {}
-            timestamp: '2025-11-17 17:17:45'
-        timestamp: '2025-11-17 17:17:45'
-    timestamp: '2025-11-17 17:17:45'
-timestamp: '2025-11-17 17:17:45'
+            timestamp: '2025-11-17 17:36:27'
+        timestamp: '2025-11-17 17:19:15'
+    timestamp: '2025-11-17 17:19:15'
+timestamp: '2025-11-17 17:19:15'
