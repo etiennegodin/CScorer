@@ -18,8 +18,9 @@ class PipelineModule(Observable):
     timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
         
     def add_submodule(self, submodule:PipelineSubmodule):
-        submodule.set_parent(self)
-        self.submodules[submodule.name] = submodule
+        if submodule.name not in self.submodules.keys():
+            submodule.set_parent(self)
+            self.submodules[submodule.name] = submodule
         
     def _child_updated(self, child, key, old, new):
         if self._parent:
