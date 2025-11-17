@@ -93,19 +93,18 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-logger: !!python/module:logging ''
 modules:
   data: &id002 !PipelineModule
     _parent: *id001
     data:
-      init: '2025-11-17 02:17:19'
+      init: '2025-11-17 10:38:12'
     name: data
     status: !StepStatus 'init'
     submodules:
       loaders: &id003 !PipelineSubmodule
         _parent: *id002
         data:
-          init: '2025-11-17 02:17:19'
+          init: '2025-11-17 10:38:12'
         name: loaders
         status: !StepStatus 'init'
         steps:
@@ -113,8 +112,8 @@ modules:
             _parent: *id003
             config: {}
             data:
-              init: '2025-11-17 02:17:19'
-            func_path: &id004 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+              init: '2025-11-17 10:38:12'
+            func: &id004 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
             name: data_load_gbif_citizen
             status: !StepStatus 'completed'
             storage:
@@ -125,9 +124,30 @@ modules:
             _parent: *id003
             config: {}
             data:
-              init: '2025-11-17 02:17:19'
-            func_path: *id004
+              init: '2025-11-17 10:38:12'
+            func: *id004
             name: data_load_gbif_expert
-            status: !StepStatus 'pending'
+            status: !StepStatus 'completed'
             storage:
-              key: 0038573-251025141854904
+              db: gbif_raw.expert
+              key: 0039366-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0039366-251025141854904.csv
+          data_load_gee: !PipelineStep
+            _parent: *id003
+            config: {}
+            data:
+              init: '2025-11-17 10:40:19'
+            func: !!python/name:Cscorer.data.loaders.main.data_load_gee ''
+            name: data_load_gee
+            status: !StepStatus 'completed'
+            storage:
+              points: []
+          data_load_inat_observer: !PipelineStep
+            _parent: *id003
+            config: {}
+            data:
+              init: '2025-11-17 10:40:19'
+            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            name: data_load_inat_observer
+            status: !StepStatus 'init'
+            storage: {}

@@ -1,10 +1,10 @@
 from .data.main import data_main
 from .utils.debug import launch_debugger
-from .core import Pipeline
+from .pipeline import Pipeline
 from .utils.yaml import read_config
 
 
-
+import yaml
 from pathlib import Path
 import argparse
 import subprocess
@@ -83,7 +83,8 @@ def init_pipeline(args)->Pipeline:
     #Read from disk 
     else:
         try:
-            pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
+            #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
+            pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:

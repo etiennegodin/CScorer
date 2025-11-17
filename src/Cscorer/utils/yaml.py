@@ -8,13 +8,12 @@ def stepstatus_representer(dumper, data):
     return dumper.represent_scalar("!StepStatus", data.value)
 
 def stepstatus_constructor(loader, node):
-    from ..core import StepStatus
+    from ..pipeline import StepStatus
     value = loader.construct_scalar(node)
     return StepStatus(value)
 
-
 def yaml_serializable(tag=None):
-    from ..core import StepStatus
+    from ..pipeline.core import StepStatus
 
     def wrapper(cls):
 
@@ -43,7 +42,7 @@ def yaml_serializable(tag=None):
 
 
 def read_config(path:Path):
-    from ..core import StepStatus, to_Path
+    from ..utils.core import to_Path
 
     import yaml
     path = to_Path(path)
@@ -51,7 +50,7 @@ def read_config(path:Path):
         return yaml.load(file, Loader=yaml.FullLoader)
 
 def write_config(config:dict, path:Path):
-    from ..core import to_Path
+    from ..pipeline import to_Path
     path = to_Path(path)
     try:
         file=open(path,"w")

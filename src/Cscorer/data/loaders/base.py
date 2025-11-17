@@ -1,6 +1,6 @@
 
 from abc import ABC, abstractmethod
-from ...core import Pipeline
+from ...pipeline import Pipeline
 
 class BaseLoader(ABC):
     @abstractmethod

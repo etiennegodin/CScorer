@@ -3,7 +3,7 @@ import asyncio
 import logging
 from pathlib import Path
 from pygbif import occurrences as occ
-from ...core import Pipeline, PipelineStep, StepStatus
+from ...pipeline import Pipeline, PipelineStep, StepStatus
 from .inat import BaseLoader
 
 class GbifLoader(BaseLoader):

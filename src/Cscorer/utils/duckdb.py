@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 import geopandas as gpd
 import pandas as pd
-from ..core import to_Path, rename_col_df, convert_df_to_gdf
+from ..utils.core import to_Path, rename_col_df, convert_df_to_gdf
 from dataclasses import dataclass, field
 
 def _open_connection(db_path: str):

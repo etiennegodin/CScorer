@@ -1,6 +1,6 @@
 from .base import BaseLoader
 from shapely import wkt
-from ...core import Pipeline, PipelineStep, StepStatus
+from ...pipeline import Pipeline, PipelineStep, StepStatus
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
