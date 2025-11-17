@@ -1,11 +1,11 @@
-from .loaders.main import data_loaders_main
+from .loaders.main import data_loaders_steps
 from .preprocessors.main import preprocessors_main
 
 from ..pipeline import Pipeline, PipelineModule, PipelineSubmodule, StepStatus
 import asyncio
 
-async def data_main(pipe:Pipeline, module:PipelineModule): 
-    loaders_submodule = PipelineSubmodule("loaders", func = data_loaders_main )
+async def data_submodules(pipe:Pipeline, module:PipelineModule): 
+    loaders_submodule = PipelineSubmodule("loaders", func = data_loaders_steps )
     #preprocessors_submodule = PipelineSubmodule("preprocessors")
 
     module.add_submodule(loaders_submodule)

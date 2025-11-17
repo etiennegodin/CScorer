@@ -17,15 +17,14 @@ class PipelineStep(Observable):
     status: StepStatus = StepStatus.init
     timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    async def run(self, pipe:Pipeline):
+    async def run(self, pipe:Pipeline, *args, **kwargs):
         from .enums import StepStatus
         if self.status != StepStatus.completed:
             pipe.logger.info(f'Running step : {self.name}')
-
             func = self.func
             #func = load_function(self.func)
             if inspect.iscoroutinefunction(func):
-                return await func(pipe, step = self)
+                return await func(pipe, *args, step = self, **kwargs)
             else:
-                return func(pipe,step = self)
+                return func(pipe, *args, step = self, **kwargs)
         

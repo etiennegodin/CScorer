@@ -9,21 +9,33 @@ from pprint import pprint
 
 ### Create instances for each class of data and run their queries
 
-async def data_loaders_main(pipe:Pipeline, submodule:PipelineSubmodule):
+async def data_loaders_steps(pipe:Pipeline, submodule:PipelineSubmodule):
     
     submodule.add_step(PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main))
     submodule.add_step(PipelineStep("data_load_gbif_expert", func = data_load_gbif_main))
+    #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
+    submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
+    submodule.add_step(PipelineStep("data_load_points", func = data_load_points))
+    submodule.add_step(PipelineStep("data_load_sample_gee", func = data_load_sample_gee))
 
+    
     async with asyncio.TaskGroup() as tg:
         tg.create_task(submodule.steps["data_load_gbif_citizen"].run(pipe))
         tg.create_task(submodule.steps["data_load_gbif_expert"].run(pipe))
- 
-    #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
-    submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
-    submodule.add_step(PipelineStep("data_load_gee", func = data_load_gee))
+        
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(submodule.steps["data_load_inat_observer"].run(pipe))
+        gee_upload_task = tg.create_task(submodule.steps["data_load_points"].run(pipe))
+
+    if not gee_upload_task:
+        points_list = submodule.steps["data_load_sample_gee"]['so']
+    else:
+        points_list =  gee_upload_task.result()
     
-    tasks2 = [asyncio.create_task(step.run(pipe)) for step in submodule.steps.values() if step.status != StepStatus.completed]
-    await asyncio.gather(*tasks2)
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(submodule.steps["data_load_sample_gee"].run(pipe, points_list = points_list ))
+
+    
 
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     subcategory = step.name.split(sep="_")[-1]
@@ -90,12 +102,14 @@ async def data_load_inat_observer(pipe:Pipeline, step:PipelineStep):
     #Return url for 
     oberver_table = await inatObs_query.run(pipe,step)    
 
-
-async def data_load_gee(pipe:Pipeline, step:PipelineStep):
-    # Get point to gee
-    points_list = await upload_points(pipe,step)
+async def data_load_points(pipe:Pipeline, step:PipelineStep):
     #Create table schema on db 
     create_schema(pipe.con, schema = 'gee')
+        # Get point to gee
+    points_list = await upload_points(pipe,step)
+    return points_list
+    
+async def data_load_sample_gee(pipe:Pipeline, step:PipelineStep, points_list:list):
     
     #Create list of queries (one for each set of occurences)
     gee_queries = [create_query('gee', pipe, points=points) for points in points_list]
