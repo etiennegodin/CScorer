@@ -1,13 +1,7 @@
 from __future__ import annotations
-from typing import Callable, List, Dict, Any, Optional
-from pathlib import Path
 from dataclasses import dataclass, field
-import logging
 import time
-import yaml
 import importlib
-import duckdb
-from ..utils.yaml import yaml_serializable
 
 def load_function(path: str):
     print(path)

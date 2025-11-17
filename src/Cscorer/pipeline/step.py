@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
-from ..utils.yaml import yaml_serializable
+from .yaml_support import yaml_serializable
 from .core import Observable, init_data
 
 @yaml_serializable()

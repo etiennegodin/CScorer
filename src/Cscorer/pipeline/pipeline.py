@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import logging
 import yaml
 import duckdb
-from ..utils.yaml import yaml_serializable
+from .yaml_support import yaml_serializable
 from .core import Observable
 from .module import PipelineModule
 
