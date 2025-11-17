@@ -1,6 +1,6 @@
 from .base import BaseLoader
 from shapely import wkt
-from ...core import Pipeline, StepStatus
+from ...core import Pipeline, PipelineStep, StepStatus
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import import_csv_to_db, get_all_tables
 import asyncio, aiohttp, aiofiles
@@ -14,15 +14,15 @@ class iNatObsLoader(BaseLoader):
         super().__init__()
         self.name = name
 
-    async def run(self, pipe:Pipeline, limit:int = None, overwrite:bool = False):
-        con = data.con
-        logger = data.logger
-        self.limiter = AsyncLimiter(data.config['inat_api']['max_calls_per_minute'], 60)
+    async def run(self, pipe:Pipeline, step: PipelineStep, limit:int = None, overwrite:bool = False):
+        con = pipe.con
+        logger = pipe.logger
+        self.limiter = AsyncLimiter(pipe.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
         self.queue  = Queue()
         self.table_name = "inat.observers"
         
-        if data.step_status[step_name] == StepStatus.completed:
+        if step.status == StepStatus.completed:
             logger.info(f"{step_name} already completed")
             #SKip 
             return self.table_name
@@ -69,8 +69,8 @@ class iNatObsLoader(BaseLoader):
             await self.queue.put(None)
             await writer_task
         
-        data.storage[step_name]['db'] = self.table_name
-        data.update_step_status(step_name, StepStatus.completed)
+        step.storage['db'] = self.table_name
+        step.status = StepStatus.completed
 
         
     async def _write_data(self, con, logger):
@@ -96,7 +96,7 @@ class iNatObsLoader(BaseLoader):
                 async with session.get(url, timeout = 10) as r:
                     r.raise_for_status()
                     data = await r.json()    
-                    if pipe:
+                    if data:
                         await self.queue.put((idx,data["results"][0]))
             except Exception as e:
                 logger.warning(f"[{user_login}] failed: {e}")
@@ -107,32 +107,32 @@ class iNatOccLoader(BaseLoader):
         super().__init__()
         self.name = name
 
-    async def run(self, pipe:Pipeline):
+    async def run(self, pipe:Pipeline, step:PipelineStep):
         import webbrowser
-        logger = data.logger
+        logger = pipe.logger
         step_name = self.name
-        inat_folder = data.config['folders']['inat_folder']
+        inat_folder = pipe.config['folders']['inat_folder']
 
         
-        if "query" not in data.storage[step_name].keys():
+        if "query" not in step.storage[step_name].keys():
             raise NotImplementedError("Query builder not implemented")
             query = await self._build_query()
-            data.storage[step_name]['query'] = query
+            step.storage['query'] = query
             data.update()
         else:
             pass
-            query = data.storage[step_name]['query']
+            query = step.storage[step_name]['query']
             
         #Override query
         query = "has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01"
         url = f"https://www.inaturalist.org/observations/export?{query}"
         
-        if data.step_status[step_name] == StepStatus.init:
+        if step.status == StepStatus.init:
             webbrowser.open(url)
-            data.update_step_status(step_name, StepStatus.requested)
+            step.status = StepStatus.requested
             input(f"Please save requested csv file to target directory and relaunch \n -Target dir: {inat_folder}")
             
-        if data.step_status[step_name] == StepStatus.requested:
+        if step.status == StepStatus.requested:
             logger.info(" Trying to find csv to merge in db from inat data folder")
             try:
                 files = list(inat_folder.glob('**/*.csv')) 
@@ -142,9 +142,9 @@ class iNatOccLoader(BaseLoader):
             if not files:
                 raise ImportError(f"No export files availabe in {inat_folder} - Please relaunch with data")
             
-            data.step_status[step_name] == StepStatus.local
+            step.status= StepStatus.local
             
-        if data.step_status[step_name] == StepStatus.local:
+        if step.status == StepStatus.local:
             logger.info(f"Found {len(files)} files")
             if len(files) > 1:
                 if not await _ask_yes_no('Found multiples files, do you want to process all ? (y/n)'):
@@ -158,12 +158,12 @@ class iNatOccLoader(BaseLoader):
                     
             occ_tables = []
             for f in files:
-                occ_table = await import_csv_to_db(data.con,f,'inat','occurences', replace= False)
+                occ_table = await import_csv_to_db(pipe.con,f,'inat','occurences', replace= False)
                 occ_tables.append(occ_table)
                 
             if occ_tables == len(files):
-                data.storage[step_name]['db'] = occ_tables[0]
-                data.update_step_status(step_name, StepStatus.completed)
+                step.storage['db'] = occ_tables[0]
+                step.status = StepStatus.completed
                 return occ_tables[0] # assuming same table with appended data if multiples sources
                 
     async def _build_query(self):

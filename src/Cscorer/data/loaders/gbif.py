@@ -3,7 +3,7 @@ import asyncio
 import logging
 from pathlib import Path
 from pygbif import occurrences as occ
-from ...core import Pipeline, StepStatus
+from ...core import Pipeline, PipelineStep, StepStatus
 from .inat import BaseLoader
 
 class GbifLoader(BaseLoader):
@@ -13,35 +13,35 @@ class GbifLoader(BaseLoader):
         self.config = config
         self.predicate = self._predicate_builder(self.config)
         
-    async def run(self, pipe:Pipeline):
-        logger = data.logger
+    async def run(self, pipe:Pipeline, step:PipelineStep):
+        logger = pipe.logger
         step_name = self.name
         # Set dict for step outputs 
         
-        if "key" not in data.storage[step_name].keys():
-            if data.step_status[f'{step_name}'] == StepStatus.init:
-                download_key = await self._submit_request(data)
-                data.storage[step_name]['key'] = download_key
+        if "key" not in step.storage[step_name].keys():
+            if step.status == StepStatus.init:
+                download_key = await self._submit_request(pipe)
+                step.storage[step_name]['key'] = download_key
                 logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
-                data.update_step_status(step_name, StepStatus.requested)
+                step.status = StepStatus.requested
         else:
-            download_key = data.storage[step_name]['key']
-            data.update_step_status(step_name, StepStatus.requested)
+            download_key = step.storage[step_name]['key']
+            step.status = StepStatus.requested
 
-        if data.step_status[f'{step_name}'] == StepStatus.requested:
-            ready_key = await self._poll_gbif_until_ready(download_key, logger= data.logger)
-            data.update_step_status(step_name, StepStatus.ready)
+        if step.status[f'{step_name}'] == StepStatus.requested:
+            ready_key = await self._poll_gbif_until_ready(download_key, logger= pipe.logger)
+            step.status = StepStatus.ready
 
-        if data.step_status[f'{step_name}'] == StepStatus.ready:
-            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= data.config['folders']['gbif_folder'], logger= data.logger)
-            data.storage[step_name]['raw_data'] = gbif_raw_data
-            data.update_step_status(step_name, StepStatus.local)
-            data.update()
+        if step.status[f'{step_name}'] == StepStatus.ready:
+            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
+            step.storage[step_name]['raw_data'] = gbif_raw_data
+            step.status = StepStatus.local
+            pipe.update()
 
         return gbif_raw_data
     
     async def _submit_request(self, pipe:Pipeline):  
-        logger = data.logger
+        logger = pipe.logger
         from dotenv import load_dotenv
         env_path = Path(__file__).parent.parent.parent.parent / ".env"
         load_dotenv(env_path)
