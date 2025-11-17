@@ -1,7 +1,6 @@
 import duckdb
 from pathlib import Path
 import logging
-from shapely import Point, Polygon
 import geopandas as gpd
 import pandas as pd
 from ..core import to_Path, rename_col_df, convert_df_to_gdf

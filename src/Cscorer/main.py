@@ -1,6 +1,9 @@
-from .core import read_config, Pipeline
 from .data.main import data_main
 from .utils.debug import launch_debugger
+from .core import Pipeline
+from .utils.yaml import read_config
+
+
 
 from pathlib import Path
 import argparse

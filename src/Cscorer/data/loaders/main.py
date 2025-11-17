@@ -1,5 +1,5 @@
 # Main file to get data 
-from ...core import Pipeline, PipelineModule,PipelineStep, StepStatus
+from ...core import Pipeline, PipelineModule, PipelineSubmodule,PipelineStep, StepStatus
 from ...utils.duckdb import import_csv_to_db, create_schema
 from .factory import create_query
 from pathlib import Path
@@ -12,7 +12,8 @@ from pprint import pprint
 ### Create instances for each class of data and run their queries
 
 async def set_loaders(pipe:Pipeline, module:PipelineModule):
-    submodule = pipe.add_submodule(module,'loaders')
+    loaders_submodule = PipelineSubmodule("loaders")
+    module.add_submodule(loaders_submodule)
 
     # maybe like the gbif async orchestrator with task group 
     
@@ -22,19 +23,23 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
-    step_data_load_gbif_citizen = pipe.add_step(submodule, "data_load_gbif_citizen", func = data_load_gbif_main)
-    step_data_load_gbif_expert = pipe.add_step(submodule, "data_load_gbif_expert", func = data_load_gbif_main)
     
+    step_data_load_gbif_citizen = PipelineStep( "data_load_gbif_citizen", func_path = data_load_gbif_main)
+    step_data_load_gbif_expert = PipelineStep("data_load_gbif_expert", func_path = data_load_gbif_main)
+    
+    loaders_submodule.add_step(step_data_load_gbif_citizen)
+    loaders_submodule.add_step(step_data_load_gbif_expert)
+
     async with asyncio.TaskGroup() as tg:
         tg.create_task(step_data_load_gbif_citizen.run(pipe))    
         tg.create_task(step_data_load_gbif_expert.run(pipe))    
 
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
-    pipe.add_step(submodule, "data_load_inat_observer", func = data_load_inat_observer)
-    pipe.add_step(submodule, "data_load_gee", func = data_load_gee)
+    loaders_submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
+    loaders_submodule.add_step(PipelineStep("data_load_gee", func = data_load_gee))
 
     
-    await submodule.run(pipe)
+    await loaders_submodule.run(pipe)
     
     #loaders.run_submodule(data = )
 
