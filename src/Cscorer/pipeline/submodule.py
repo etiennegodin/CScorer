@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
-import asyncio
+import inspect
 from .yaml_support import yaml_serializable
 from .core import Observable, init_data
 from .enums import StepStatus
@@ -11,6 +11,7 @@ import time
 @dataclass
 class PipelineSubmodule(Observable):
     name: str
+    func: str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
     timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -21,14 +22,14 @@ class PipelineSubmodule(Observable):
             self.steps[step.name] = step
 
     async def run(self,pipe:Pipeline):
-        incomplete_steps = []
-        for step in self.steps.values():
-            if step.status == StepStatus.init:
-                incomplete_steps.append(step)
-                
-        submodule_tasks = [asyncio.create_task(step.run(pipe)) for step in incomplete_steps]
-        print(submodule_tasks)
-        await asyncio.gather(*submodule_tasks)
+        pipe.logger.info(f'Running submodule : {self.name}')
+        func = self.func
+        #func = load_function(self.func)
+        if inspect.iscoroutinefunction(func):
+            await func(pipe, self)
+        else:
+            func(pipe,self)
+
         
     def _child_updated(self, child, key, old, new):
         if self._parent:
