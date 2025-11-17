@@ -130,9 +130,8 @@ def main():
     data_module = PipelineModule('data',  func = data_main)
     pipe.add_module(data_module)
     
-    print(pipe.modules)
+    pprint(pipe.modules)
     
-
     asyncio.run(pipe.run())
 
 

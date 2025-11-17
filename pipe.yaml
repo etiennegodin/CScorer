@@ -95,10 +95,12 @@ config:
     start: 2010-01-01
 modules:
   data: !PipelineModule
+    func: !!python/name:Cscorer.data.main.data_main ''
     name: data
     status: !StepStatus 'init'
     submodules:
       loaders: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.loaders.main.data_loaders_main ''
         name: loaders
         status: !StepStatus 'init'
         steps:
@@ -111,19 +113,15 @@ modules:
               db: gbif_raw.citizen
               key: 0038478-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0038478-251025141854904.csv
-            timestamp: '2025-11-17 16:12:09'
+            timestamp: '2025-11-17 17:19:15'
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
             name: data_load_gbif_expert
             status: !StepStatus 'pending'
             storage:
-              key: 0039944-251025141854904
-            timestamp: '2025-11-17 16:12:09'
-        timestamp: '2025-11-17 16:12:09'
-      preprocessors: !PipelineSubmodule
-        name: preprocessors
-        status: !StepStatus 'init'
-        steps: {}
-        timestamp: '2025-11-17 16:12:09'
-    timestamp: '2025-11-17 16:12:09'
+              key: 0040027-251025141854904
+            timestamp: '2025-11-17 17:19:15'
+        timestamp: '2025-11-17 17:19:15'
+    timestamp: '2025-11-17 17:19:15'
+timestamp: '2025-11-17 17:19:15'
