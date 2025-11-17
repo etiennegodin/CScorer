@@ -1,8 +1,7 @@
 from .data.main import data_main
 from .utils.debug import launch_debugger
-from .pipeline import Pipeline
+from .pipeline import Pipeline, StepStatus
 from .utils.yaml import read_config
-
 
 import yaml
 from pathlib import Path
@@ -22,6 +21,15 @@ steps = ["get_gbif_data",
 
 modules = ['data', 'features', 'model']
 
+
+def pipe_reconstructor(pipeline:Pipeline):
+    for module in pipeline.modules.values():
+        module._parent = pipeline
+        for sub in module.submodules.values():
+            sub._parent = module
+            for step in sub.steps.values():
+                step._parent = sub
+                
 def init_pipeline(args)->Pipeline:
     
     # Check if required file, else try dev mode
@@ -85,6 +93,9 @@ def init_pipeline(args)->Pipeline:
         try:
             #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
             pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
+            print(pipe)
+            quit()
+            pipe_reconstructor(pipe)
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:

@@ -13,7 +13,7 @@ from Cscorer.utils.yaml import yaml_serializable
 from Cscorer.pipeline import Pipeline, PipelineModule, PipelineStep, PipelineSubstep
 
 #Initiliaze data for PipelineObject
-def _init_data():
+def init_data():
     return {'init': time.strftime("%Y-%m-%d %H:%M:%S") }
 
 # Custom YAML handlers

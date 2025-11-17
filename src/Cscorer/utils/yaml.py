@@ -1,19 +1,13 @@
 
 import yaml
 from pathlib import Path
+import enum
+
 CLASS_REGISTRY = {}
 
-# Custom YAML handlers
-def stepstatus_representer(dumper, data):
-    return dumper.represent_scalar("!StepStatus", data.value)
-
-def stepstatus_constructor(loader, node):
-    from ..pipeline import StepStatus
-    value = loader.construct_scalar(node)
-    return StepStatus(value)
 
 def yaml_serializable(tag=None):
-    from ..pipeline.core import StepStatus
+    from yaml.nodes import MappingNode
 
     def wrapper(cls):
 
@@ -22,17 +16,26 @@ def yaml_serializable(tag=None):
 
         def representer(dumper, obj):
             exclude = getattr(obj, "__yaml_exclude__", set())
-            data = {k: v for k, v in obj.__dict__.items()
-                    if k not in exclude}
+            data = {}
+
+            for k, v in obj.__dict__.items():
+                if k in exclude:
+                    continue
+                if isinstance(v, enum.Enum):
+                    data[k] = v
+                    continue
+                data[k] = v
+            data[k] = v
             return dumper.represent_mapping(yaml_tag, data)
 
         def constructor(loader, node):
+            if not isinstance(node, MappingNode):
+                raise TypeError(f"{yaml_tag} must be applied to a mapping node")
+
             data = loader.construct_mapping(node, deep=True)
             return cls(**data)
 
         yaml.add_representer(cls, representer)
-        yaml.add_representer(StepStatus, stepstatus_representer)
-
         yaml.add_constructor(yaml_tag, constructor)
 
         return cls
@@ -60,3 +63,4 @@ def write_config(config:dict, path:Path):
         raise RuntimeError(e)
     
     return path
+
