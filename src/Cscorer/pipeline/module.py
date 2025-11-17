@@ -6,7 +6,7 @@ from .yaml_support import yaml_serializable
 from .core import Observable, init_data
 from .submodule import PipelineSubmodule
 from .enums import StepStatus
-
+import time
 
 
 @yaml_serializable()
@@ -15,9 +15,7 @@ class PipelineModule(Observable):
     name: str
     submodules: Dict[str, PipelineSubmodule] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    
-    def __post_init__(self):
-        self.data = init_data()
+    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
         
     def add_submodule(self, submodule:PipelineSubmodule):
         submodule.set_parent(self)
