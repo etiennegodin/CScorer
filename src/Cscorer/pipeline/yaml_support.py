@@ -5,7 +5,6 @@ import enum
 
 CLASS_REGISTRY = {}
 
-
 def yaml_serializable(tag=None):
     from yaml.nodes import MappingNode
 
@@ -17,7 +16,6 @@ def yaml_serializable(tag=None):
         def representer(dumper, obj):
             exclude = getattr(obj, "__yaml_exclude__", set())
             data = {}
-
             for k, v in obj.__dict__.items():
                 if k in exclude:
                     continue
@@ -25,7 +23,6 @@ def yaml_serializable(tag=None):
                     data[k] = v
                     continue
                 data[k] = v
-            data[k] = v
             return dumper.represent_mapping(yaml_tag, data)
 
         def constructor(loader, node):
@@ -41,9 +38,6 @@ def yaml_serializable(tag=None):
         return cls
     return wrapper
 
-
-
-
 def read_config(path:Path):
     from ..utils.core import to_Path
 
@@ -51,16 +45,4 @@ def read_config(path:Path):
     path = to_Path(path)
     with open(path, 'r') as file:
         return yaml.load(file, Loader=yaml.FullLoader)
-
-def write_config(config:dict, path:Path):
-    from ..pipeline import to_Path
-    path = to_Path(path)
-    try:
-        file=open(path,"w")
-        yaml.dump(config,file)
-        file.close() 
-    except Exception as e:
-        raise RuntimeError(e)
-    
-    return path
 
