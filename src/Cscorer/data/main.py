@@ -5,9 +5,10 @@ from ..core import Pipeline, PipelineModule,PipelineStep
 import asyncio
 
 async def data_main(pipe:Pipeline):
-
-    module = pipe.add_module(name ='data')
-    await set_loaders(pipe,module)
+    data_module = PipelineModule('data')
+    pipe.add_module(data_module)
+    
+    await set_loaders(pipe,data_module)
     #await loaders.run_submodule())
     #asyncio.run(preprocessors_main(data))
 

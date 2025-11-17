@@ -1,3 +1,4 @@
+&id001 !Pipeline
 config:
   db_path: /home/manat/projects/CScorer/work/pipe_test/data/data.duckdb
   folders:
@@ -92,37 +93,41 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
+logger: !!python/module:logging ''
 modules:
-  data: !PipelineModule
+  data: &id002 !PipelineModule
+    _parent: *id001
     data:
-      init: '2025-11-17 01:05:06'
+      init: '2025-11-17 02:17:19'
     name: data
     status: !StepStatus 'init'
     submodules:
-      loaders: !PipelineSubmodule
+      loaders: &id003 !PipelineSubmodule
+        _parent: *id002
         data:
-          init: '2025-11-17 01:05:06'
-        module: data
+          init: '2025-11-17 02:17:19'
         name: loaders
         status: !StepStatus 'init'
         steps:
           data_load_gbif_citizen: !PipelineStep
+            _parent: *id003
             config: {}
             data:
-              init: '2025-11-17 01:05:06'
-            func_path: Cscorer.data.loaders.main.data_load_gbif_main
-            module: data
+              init: '2025-11-17 02:17:19'
+            func_path: &id004 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
             name: data_load_gbif_citizen
-            status: !StepStatus 'init'
-            storage: {}
-            submodule: loaders
+            status: !StepStatus 'completed'
+            storage:
+              db: gbif_raw.citizen
+              key: 0038478-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0038478-251025141854904.csv
           data_load_gbif_expert: !PipelineStep
+            _parent: *id003
             config: {}
             data:
-              init: '2025-11-17 01:05:06'
-            func_path: Cscorer.data.loaders.main.data_load_gbif_main
-            module: data
+              init: '2025-11-17 02:17:19'
+            func_path: *id004
             name: data_load_gbif_expert
-            status: !StepStatus 'init'
-            storage: {}
-            submodule: loaders
+            status: !StepStatus 'pending'
+            storage:
+              key: 0038573-251025141854904
