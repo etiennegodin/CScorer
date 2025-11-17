@@ -93,8 +93,6 @@ def init_pipeline(args)->Pipeline:
         try:
             #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
             pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
-            print(pipe)
-            quit()
             pipe_reconstructor(pipe)
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
@@ -129,16 +127,17 @@ def main():
     pipe = init_pipeline(args)
     
     #Add modules
-    data_module = PipelineModule('data')
+    data_module = PipelineModule('data',  func = data_main)
     pipe.add_module(data_module)
     
+    print(pipe.modules)
     
-    
-    
-    if pipe.modules['data'].status != StepStatus.completed:
-        asyncio.run(data_main(pipe, data_module))
-    
-    
+
+    asyncio.run(pipe.run())
+
+
+           
+        
     
     # eda 
 

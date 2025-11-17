@@ -3,6 +3,7 @@ from typing import Callable, List, Dict, Any, Optional
 from pathlib import Path
 from dataclasses import dataclass, field
 import logging
+import time
 import yaml
 import duckdb
 from .yaml_support import yaml_serializable
@@ -16,6 +17,7 @@ class Pipeline(Observable):
     config: Dict[str, Any] = field(default_factory=dict)
     logger: logging = logging
     con: duckdb.DuckDBPyConnection = None
+    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
 
     __yaml_exclude__ = {"con","logger", "_parent"}
     
@@ -35,10 +37,11 @@ class Pipeline(Observable):
         self._export()
 
     def add_module(self, module:PipelineModule):
-        module.set_parent(self)
-        self.modules[module.name] = module
-        self._export()
-        
+        if module.name not in self.modules.keys():
+            module.set_parent(self)
+            self.modules[module.name] = module
+            self._export()
+
     def update(self):
         self._export()
         
@@ -55,7 +58,15 @@ class Pipeline(Observable):
             # do not raise from storage persistence
             self.logger.error(f"Failed to persist pipeline storage : {e}") 
             return False
-        
+    
+    async def run(self):
+        from .enums import StepStatus
+        for m in self.modules.values():
+            print(m.status)
+            if m.status != StepStatus.completed:
+                await m.run()
+            
+    
     def rebuild_runtime(self):
         for mod in self.modules.values():
             mod.set_parent(self)

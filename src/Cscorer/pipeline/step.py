@@ -16,9 +16,10 @@ class PipelineStep(Observable):
     config: Dict[str, Any] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
     timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
-    
 
     async def run(self, pipe:Pipeline):
+        pipe.logger.info(f'Running step : {self.name}')
+
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
