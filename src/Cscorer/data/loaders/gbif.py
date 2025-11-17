@@ -18,14 +18,14 @@ class GbifLoader(BaseLoader):
         step_name = self.name
         # Set dict for step outputs 
         
-        if "key" not in step.storage[step_name].keys():
+        if "key" not in step.storage.keys():
             if step.status == StepStatus.init:
                 download_key = await self._submit_request(pipe)
-                step.storage[step_name]['key'] = download_key
+                step.storage['key'] = download_key
                 logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
                 step.status = StepStatus.requested
         else:
-            download_key = step.storage[step_name]['key']
+            download_key = step.storage['key']
             step.status = StepStatus.requested
 
         if step.status[f'{step_name}'] == StepStatus.requested:
@@ -34,7 +34,7 @@ class GbifLoader(BaseLoader):
 
         if step.status[f'{step_name}'] == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
-            step.storage[step_name]['raw_data'] = gbif_raw_data
+            step.storage['raw_data'] = gbif_raw_data
             step.status = StepStatus.local
             pipe.update()
 
