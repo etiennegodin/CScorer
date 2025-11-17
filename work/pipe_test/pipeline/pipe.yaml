@@ -95,54 +95,34 @@ config:
 modules:
   data: !PipelineModule
     data:
-      init: '2025-11-17 00:41:59'
+      init: '2025-11-17 01:05:06'
     name: data
     status: !StepStatus 'init'
     submodules:
       loaders: !PipelineSubmodule
         data:
-          init: '2025-11-17 00:41:59'
+          init: '2025-11-17 01:05:06'
         module: data
         name: loaders
         status: !StepStatus 'init'
         steps:
-          data_load_gbif_main: !PipelineStep
+          data_load_gbif_citizen: !PipelineStep
             config: {}
             data:
-              init: '2025-11-17 00:41:59'
+              init: '2025-11-17 01:05:06'
             func_path: Cscorer.data.loaders.main.data_load_gbif_main
             module: data
-            name: data_load_gbif_main
+            name: data_load_gbif_citizen
             status: !StepStatus 'init'
             storage: {}
             submodule: loaders
-          data_load_gee: !PipelineStep
+          data_load_gbif_expert: !PipelineStep
             config: {}
             data:
-              init: '2025-11-17 00:41:59'
-            func_path: Cscorer.data.loaders.main.data_load_gee
+              init: '2025-11-17 01:05:06'
+            func_path: Cscorer.data.loaders.main.data_load_gbif_main
             module: data
-            name: data_load_gee
-            status: !StepStatus 'init'
-            storage: {}
-            submodule: loaders
-          data_load_inat_observer: !PipelineStep
-            config: {}
-            data:
-              init: '2025-11-17 00:41:59'
-            func_path: Cscorer.data.loaders.main.data_load_inat_observer
-            module: data
-            name: data_load_inat_observer
-            status: !StepStatus 'init'
-            storage: {}
-            submodule: loaders
-          data_load_inat_occurence: !PipelineStep
-            config: {}
-            data:
-              init: '2025-11-17 00:41:59'
-            func_path: Cscorer.data.loaders.main.data_load_inat_occurence
-            module: data
-            name: data_load_inat_occurence
+            name: data_load_gbif_expert
             status: !StepStatus 'init'
             storage: {}
             submodule: loaders

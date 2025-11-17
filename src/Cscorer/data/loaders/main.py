@@ -25,9 +25,9 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     step_data_load_gbif_citizen = pipe.add_step(submodule, "data_load_gbif_citizen", func = data_load_gbif_main)
     step_data_load_gbif_expert = pipe.add_step(submodule, "data_load_gbif_expert", func = data_load_gbif_main)
     
-    with asyncio.TaskGroup() as tg:
-        tg.createTask(step_data_load_gbif_citizen.run(pipe))    
-        tg.createTask(step_data_load_gbif_expert.run(pipe))    
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(step_data_load_gbif_citizen.run(pipe))    
+        tg.create_task(step_data_load_gbif_expert.run(pipe))    
 
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
     pipe.add_step(submodule, "data_load_inat_observer", func = data_load_inat_observer)

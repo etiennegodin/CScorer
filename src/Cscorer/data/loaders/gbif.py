@@ -20,7 +20,7 @@ class GbifLoader(BaseLoader):
         
         if "key" not in step.storage.keys():
             if step.status == StepStatus.init:
-                download_key = await self._submit_request(pipe)
+                download_key = await self._submit_request(pipe, step)
                 step.storage['key'] = download_key
                 logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
                 step.status = StepStatus.requested
@@ -28,23 +28,23 @@ class GbifLoader(BaseLoader):
             download_key = step.storage['key']
             step.status = StepStatus.requested
 
-        if step.status[f'{step_name}'] == StepStatus.requested:
-            ready_key = await self._poll_gbif_until_ready(download_key, logger= pipe.logger)
+        if step.status == StepStatus.requested:
+            ready_key = await self._poll_gbif_until_ready(step,download_key, logger= pipe.logger)
             step.status = StepStatus.ready
 
-        if step.status[f'{step_name}'] == StepStatus.ready:
-            gbif_raw_data = await self._download_and_unpack(ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
+        if step.status == StepStatus.ready:
+            gbif_raw_data = await self._download_and_unpack(step,ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
             step.storage['raw_data'] = gbif_raw_data
             step.status = StepStatus.local
             pipe.update()
 
         return gbif_raw_data
     
-    async def _submit_request(self, pipe:Pipeline):  
+    async def _submit_request(self, pipe:Pipeline, step:PipelineStep):  
         logger = pipe.logger
         from dotenv import load_dotenv
-        env_path = Path(__file__).parent.parent.parent.parent / ".env"
-        load_dotenv(env_path)
+        load_dotenv()
+        
         try:
             query = self.predicate.to_dict() # build 
             #threaded as returns tuples 
@@ -56,11 +56,12 @@ class GbifLoader(BaseLoader):
             
         except Exception as e:
             logger.error(f"Error running gbif request: {e}")
+            step.status = StepStatus.failed
             raise RuntimeError(e)
         if response:   
             return response[0]
     
-    async def _poll_gbif_until_ready(self, download_key:str, logger = logging.Logger, poll_interval: int = 30, timeout_seconds: int = 60*60, ):
+    async def _poll_gbif_until_ready(self, step, download_key:str, logger = logging.Logger, poll_interval: int = 30, timeout_seconds: int = 60*60, ):
         
         """
         Poll GBIF for the download status. Uses occ.download_meta or occ.download_get to inspect.
@@ -79,13 +80,16 @@ class GbifLoader(BaseLoader):
                 logger.info("GBIF download ready.")
                 return download_key
             if status and status.upper() in ("KILLED", "FAILED", "ERROR"):
+                step.status = StepStatus.failed
                 raise RuntimeError(f"GBIF download failed: {meta}")
             if time.time() - start > timeout_seconds:
+                step.status = StepStatus.failed
                 raise TimeoutError("Timed out waiting for GBIF download.")
             
+            step.status = StepStatus.pending
             time.sleep(poll_interval)
 
-    async def _download_and_unpack(self, download_key:str, dest_dir: str, logger = logging.Logger):
+    async def _download_and_unpack(step,self, download_key:str, dest_dir: str, logger = logging.Logger):
         """
         Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
         pygbif.occurrence.download_get can write the file locally.

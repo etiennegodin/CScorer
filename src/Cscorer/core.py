@@ -56,6 +56,23 @@ def write_config(config:dict, path:Path):
     
     return path
 
+@dataclass
+class Observable:
+    _callback: callable = field(default=None, init=False, repr=False)
+
+    def set_callback(self, fn):
+        self._callback = fn
+
+    def __setattr__(self, key, value):
+        old = self.__dict__.get(key, None)
+
+        super().__setattr__(key, value)
+
+        cb = self.__dict__.get("_callback", None)
+        if cb and key != "_callback":
+            cb(self, key, old, value)
+
+
 class StepStatus(str, Enum):
     init = "init"    
     requested = "requested" 
