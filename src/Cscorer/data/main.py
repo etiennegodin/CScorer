@@ -1,15 +1,14 @@
-from .loaders.main import loaders_main
-from .preprocessors.main import data_preprocess_main
+from .loaders.main import set_loaders
+from .preprocessors.main import preprocessors_main
 
-from ..core import Pipeline, PipelineModule
+from ..core import Pipeline, PipelineModule,PipelineStep
 import asyncio
 
+async def data_main(pipe:Pipeline):
 
-def data_main(pipe:Pipeline):
-    print(pipe.logger)
-    quit()
-    module = pipe.add_module('data')
-    asyncio.run(loaders_main(pipe, module))
+    module = pipe.add_module(name ='data')
+    await set_loaders(pipe,module)
+    #await loaders.run_submodule())
     #asyncio.run(preprocessors_main(data))
 
     # 

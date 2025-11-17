@@ -93,4 +93,25 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-modules: {}
+modules:
+  data: !PipelineModule
+    data:
+      init: '2025-11-16 23:58:20'
+    name: data
+    status: !StepStatus 'init'
+    submodules:
+      loaders: !PipelineSubmodule
+        data:
+          init: '2025-11-16 23:58:20'
+        module: data
+        name: loaders
+        status: !StepStatus 'init'
+        steps:
+          data_load_gbif_main: !PipelineStep
+            config: {}
+            data: {}
+            func_path: Cscorer.data.loaders.main.data_load_gbif_main
+            module: data
+            name: data_load_gbif_main
+            status: !StepStatus 'init'
+            submodule: loaders

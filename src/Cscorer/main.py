@@ -1,9 +1,6 @@
-from .data.loaders.factory import create_query
-from .core import read_config, write_config, Pipeline
-
+from .core import read_config, Pipeline
 from .data.main import data_main
 from .utils.debug import launch_debugger
-from .utils.duckdb import _open_connection
 
 from pathlib import Path
 import argparse
@@ -78,19 +75,18 @@ def init_pipeline(args)->Pipeline:
     if not (pipe_folder/'pipe.yaml').exists() :
         logging.info("No pipe data found, creating new instance from scratch")
         # Create instance 
-        pipe_data = Pipeline(config = config)
-        
+        pipe = Pipeline(config = config)
 
     #Read from disk 
     else:
         try:
-            pipe_data = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
+            pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:
             raise Exception(e)
 
-    return pipe_data
+    return pipe
 
 
 def main():
@@ -117,9 +113,7 @@ def main():
     # Init pipeline 
     pipe = init_pipeline(args)
     
-    
-
-    data_main((pipe))
+    asyncio.run(data_main(pipe))
     
     
     
