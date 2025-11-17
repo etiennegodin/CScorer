@@ -12,6 +12,8 @@ import yaml
 from .utils.yaml import yaml_serializable
 import asyncio 
 import importlib
+import inspect
+
 
 def load_function(path: str):
     mod_name, func_name = path.rsplit(".", 1)
@@ -88,7 +90,9 @@ class PipelineSubmodule:
         self.data = _init_data()
     
     async def run(self,*args,**kwargs):
-        submodule_tasks = [asyncio.create_task(stepObject.func(*args,**kwargs)) for step_name, stepObject in self.steps.items()]
+        submodule_tasks = [asyncio.create_task(step.run(*args,**kwargs)) for step_name, step in self.steps.items()]
+        print(submodule_tasks)
+        quit()
         await asyncio.gather(*submodule_tasks)
         
 @yaml_serializable()
@@ -102,13 +106,16 @@ class PipelineStep:
     data: Dict[str, Any] = field(default_factory= dict)
     config: Dict[str, Any] = field(default_factory=dict)
     
-    async def run(self, pipe:Pipeline):
-        func = load_function(self.func_path)
-        func(pipe)
-        #run callabale
+    def __post_init__(self):
+        self.data = _init_data()
     
-    #result = await loop.run_in_executor(None, lambda: self.func(self, data, logger, data.progress_cb))
-
+    async def run(self, *args, **kwargs):
+        func = load_function(self.func_path)
+        if inspect.iscoroutinefunction(func):
+            return await func(*args,**kwargs)
+        else:
+            return func(*args, **kwargs)
+    
 @yaml_serializable()
 @dataclass
 class Pipeline:
@@ -139,7 +146,6 @@ class Pipeline:
         return module
         
     def add_submodule(self, module:PipelineModule, submodule_name:str):
-        print(module)
         if module.name in self.modules.keys():
             step = PipelineSubmodule(submodule_name, module = module.name)
             self.modules[module.name].submodules[submodule_name] = step

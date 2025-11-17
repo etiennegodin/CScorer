@@ -7,6 +7,7 @@ import asyncio
 import time
 import aiohttp
 from .gee import upload_points
+from pprint import pprint
 
 ### Create instances for each class of data and run their queries
 
@@ -21,10 +22,13 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
-    pipe.add_step(submodule, "data_load_gbif_main", func = data_load_gbif_main)
+    step = pipe.add_step(submodule, "data_load_gbif_main", func = test)
     
+    await submodule.run()
+    print("\n"*10)
     
-    print(pipe.__dict__)
+    #pprint(pipe.__dict__)
+    await step.run(pipe)
     #loaders.run_submodule(data = )
 
     #main orchestrator
@@ -33,6 +37,10 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     #asyncio.run(data_load_inat_observer(data))
     #asyncio.run(data_load_gee(data)) 
     pass
+
+async def test(pipe):
+    print('test')
+    
 
 async def data_load_gbif_main(pipe:Pipeline):
     

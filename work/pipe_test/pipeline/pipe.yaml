@@ -96,21 +96,22 @@ config:
 modules:
   data: !PipelineModule
     data:
-      init: '2025-11-16 23:58:20'
+      init: '2025-11-17 00:07:06'
     name: data
     status: !StepStatus 'init'
     submodules:
       loaders: !PipelineSubmodule
         data:
-          init: '2025-11-16 23:58:20'
+          init: '2025-11-17 00:07:06'
         module: data
         name: loaders
         status: !StepStatus 'init'
         steps:
           data_load_gbif_main: !PipelineStep
             config: {}
-            data: {}
-            func_path: Cscorer.data.loaders.main.data_load_gbif_main
+            data:
+              init: '2025-11-17 00:07:06'
+            func_path: Cscorer.data.loaders.main.test
             module: data
             name: data_load_gbif_main
             status: !StepStatus 'init'

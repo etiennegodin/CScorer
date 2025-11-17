@@ -112,7 +112,6 @@ def main():
     
     # Init pipeline 
     pipe = init_pipeline(args)
-    
     asyncio.run(data_main(pipe))
     
     
