@@ -71,7 +71,6 @@ class PipelineModule:
     name: str
     submodules: Dict[str, PipelineSubmodule] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = field(default_factory= dict)
     
     def __post_init__(self):
         self.data = _init_data()
@@ -84,15 +83,13 @@ class PipelineSubmodule:
     module :str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = field(default_factory= dict)
     
     def __post_init__(self):
         self.data = _init_data()
     
-    async def run(self,*args,**kwargs):
-        submodule_tasks = [asyncio.create_task(step.run(*args,**kwargs)) for step_name, step in self.steps.items()]
+    async def run(self,pipe:Pipeline):
+        submodule_tasks = [asyncio.create_task(step.run(pipe, step)) for step_name, step in self.steps.items()]
         print(submodule_tasks)
-        quit()
         await asyncio.gather(*submodule_tasks)
         
 @yaml_serializable()
@@ -103,11 +100,13 @@ class PipelineStep:
     module:str
     func_path: str
     status: StepStatus = StepStatus.init
-    data: Dict[str, Any] = field(default_factory= dict)
+    storage: Dict[str, Any] = field(default_factory= dict)
     config: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
         self.data = _init_data()
+        
+        
     
     async def run(self, *args, **kwargs):
         func = load_function(self.func_path)
@@ -160,38 +159,10 @@ class Pipeline:
             self._export()
 
             return substep
-    
-    def _write_to_step_status(self, step_name:str, level:int):
-        step_splits = step_name.split(sep="_", maxsplit=3)
-        try:module = step_splits[0]
-        except:module = None
-        try:step = step_splits[1]
-        except: step = None
-        try:substep = step_splits[2]
-        except:substep = None
         
-        if module is None:
-            raise ValueError('Module not provided for step name. Please user {module}_{step}_{substep}')
-        if step is None:
-            if module not in self.storage.keys():
-                self.logger.info(f"First time running module {module}, creating storage and step status")
-                self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
-                return True
-        if substep is None:
-            if step not in self.storage[module].keys():
-                self.logger.info(f"First time running step {module}_{step}, creating storage and step status")
-                self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
-                return True
-                    
-        if not substep in self.storage[module][step].keys():
-            self.logger.info(f"First time running substep {module}_{step}_{substep}, creating storage and step status")
-
-            self.set(step_name,  {'init' : time.strftime("%Y-%m-%d %H:%M:%S")})
-            self.update_step_status(step_name, StepStatus.init)
-            return True
-
-        raise ValueError('Step provided not written to pipeline data.\nPlease user {module}_{step}_{substep} format')
-        return False
+    def update(self):
+        self._export()
+        
     
     def _export(self):
         try:

@@ -22,13 +22,10 @@ async def set_loaders(pipe:Pipeline, module:PipelineModule):
     #   inat observer
     # inat occurences ( requires download file )
     # env 
-    step = pipe.add_step(submodule, "data_load_gbif_main", func = test)
+    pipe.add_step(submodule, "data_load_gbif_main", func = data_load_gbif_main)
     
-    await submodule.run()
-    print("\n"*10)
+    await submodule.run(pipe)
     
-    #pprint(pipe.__dict__)
-    await step.run(pipe)
     #loaders.run_submodule(data = )
 
     #main orchestrator
@@ -42,9 +39,8 @@ async def test(pipe):
     print('test')
     
 
-async def data_load_gbif_main(pipe:Pipeline):
+async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     
-    step_name = "data_load_gbif_main"
     #Temp assignement for async tasks 
     cs_data_task = None
     expert_data_task = None
@@ -65,62 +61,54 @@ async def data_load_gbif_main(pipe:Pipeline):
     
     #Lauch async concurrent queries 
     async with asyncio.TaskGroup() as tg:
-        if not data.step_status[f"{cs_query.name}"] == StepStatus.local:
-            cs_data_task = tg.create_task(cs_query.run(data))
+        if not step.status[f"{cs_query.name}"] == StepStatus.local:
+            cs_data_task = tg.create_task(cs_query.run(pipe))
 
-        if not data.step_status[f"{expert_query.name}"] == StepStatus.local:
-            expert_data_task = tg.create_task(expert_query.run(data))
+        if not step.status[f"{expert_query.name}"] == StepStatus.local:
+            expert_data_task = tg.create_task(expert_query.run(pipe))
 
-    #Read data from async tasks or from storage 
+    #Read data from async tasks or from data 
     if cs_data_task is not None:cs_data = cs_data_task.result()
-    else: cs_data = data.storage[f"{cs_query.name}"]["raw_data"]
+    else: cs_data = step.storage[f"{cs_query.name}"]["raw_data"]
     if expert_data_task is not None:expert_data = expert_data_task.result()
-    else: expert_data = data.storage[f"{expert_query.name}"]["raw_data"]
+    else: expert_data = step.storage[f"{expert_query.name}"]["raw_data"]
         
     # Commit local .csv to db 
-    cs_table = await import_csv_to_db(data.con, cs_data, schema= 'gbif_raw', table= 'citizen', geo = True)
-    expert_table = await import_csv_to_db(data.con, expert_data, schema= 'gbif_raw', table= 'expert', geo = True )
+    cs_table = await import_csv_to_db(pipe.con, cs_data, schema= 'gbif_raw', table= 'citizen', geo = True)
+    expert_table = await import_csv_to_db(pipe.con, expert_data, schema= 'gbif_raw', table= 'expert', geo = True )
 
     # Flag as completed
     if cs_table:
-        data.storage[f"{cs_query.name}"]["db"] = cs_table
-        data.step_status[f'{cs_query.name}'] = StepStatus.completed   
+        step.storage[f"{cs_query.name}"]["db"] = cs_table
+        step.status[f'{cs_query.name}'] = StepStatus.completed   
     if expert_table:
-        data.storage[f"{expert_query.name}"]["db"] = expert_table
-        data.step_status[f'{expert_query.name}'] = StepStatus.completed    
+        step.storage[f"{expert_query.name}"]["db"] = expert_table
+        step.status[f'{expert_query.name}'] = StepStatus.completed    
         
-async def _create_gbif_loader(pipe:Pipeline, name:str, predicates:dict = None):
-    step_name = f"data_load_gbif_{name}"
-    gbif_config = data.config['gbif']
+async def _create_gbif_loader(pipe:Pipeline, step:PipelineStep, name:str, predicates:dict = None):
+    gbif_config = pipe.config['gbif']
     
     if not isinstance(predicates, (dict, None)):
         raise ValueError("Pedicates must be dict")
     
-    data.logger.info(f"Creating new instance of {step_name}")
+    pipe.logger.info(f"Creating new instance of {step.name}")
 
     # Create query
-    query = create_query('gbif', name = step_name, config = gbif_config)
+    query = create_query('gbif', name = step.name, config = gbif_config)
     
     #Add additonnal predicates
     for key, value in predicates.items():
         query.predicate.add_field(key = key, value = value)
-    
-    #Init step
-    data.init_new_step(step_name)
-        
+            
     return query   
         
-async def data_load_inat_occurence(pipe:Pipeline):
-    step_name = "data_load_inat_occurence"
-    con = data.con
+async def data_load_inat_occurence(pipe:Pipeline, step:PipelineStep):
+    con = pipe.con
     # Create query 
-    inatOcc_query = create_query('inatOcc', name = step_name)
-    
-    #Init step
-    data.init_new_step(step_name)
-    
+    inatOcc_query = create_query('inatOcc', name = step.name)
+        
     #Return url for 
-    occurence = await inatOcc_query.run(data)    
+    occurence = await inatOcc_query.run(pipe)    
 
 async def data_load_inat_observer(pipe:Pipeline):
     step_name = "data_load_inat_observer"
