@@ -100,7 +100,7 @@ modules:
     func: !!python/name:Cscorer.data.main.data_submodules ''
     init: '2025-11-18 10:02:47'
     name: data
-    status: !StepStatus 'completed'
+    status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders_steps ''
@@ -162,3 +162,16 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
+      preprocessors: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
+        init: '2025-11-18 10:27:22'
+        name: preprocessors
+        status: !StepStatus 'incomplete'
+        steps:
+          data_prepro_dumy: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.preprocessors.main.dummy ''
+            init: '2025-11-18 10:37:50'
+            name: data_prepro_dumy
+            status: !StepStatus 'init'
+            storage: {}

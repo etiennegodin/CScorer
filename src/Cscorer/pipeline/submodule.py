@@ -27,10 +27,19 @@ class PipelineSubmodule(Observable):
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
             await func(pipe, self)
+            self.status = StepStatus.incomplete
         else:
             func(pipe,self)
+            self.status = StepStatus.incomplete
+
+        
+        for s in self.steps.values():
+            print(s)
+            if s.status != StepStatus.completed:
+                break
             
-        self.status = StepStatus.completed   
+        #self.status = StepStatus.completed
+           
 
         
     def _child_updated(self, child, key, old, new):

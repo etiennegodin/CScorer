@@ -208,12 +208,9 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
     output_folder = pipe.config['folders']['gee_folder']
     tables = []
     files = []
-    print('exit')
-
+    
     if step.status == StepStatus.completed:
         pipe.logger.info(f"Step {step_name} completed")
-        print('exit')
-        print(step.storage['points'])
         return step.storage['points'] 
        
     #Init step if not done 

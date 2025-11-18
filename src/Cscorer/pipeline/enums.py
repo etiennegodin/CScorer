@@ -10,6 +10,7 @@ class StepStatus(str, Enum):
     local = 'local'
     completed = "completed"
     failed = "failed"
+    incomplete = 'incomplete'
     
 # Custom YAML handlers
 def stepstatus_representer(dumper, data):
