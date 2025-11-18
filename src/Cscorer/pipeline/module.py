@@ -3,7 +3,7 @@ from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
 from .yaml_support import yaml_serializable
-from .core import Observable, init_data
+from .core import Observable, init_data, check_completion
 from .submodule import PipelineSubmodule
 from .enums import StepStatus
 import time
@@ -44,7 +44,5 @@ class PipelineModule(Observable):
             else:
                 pipe.logger.info(f"{sm.name} submodule is completed")
 
-        for sm in self.submodules.values():
-            if sm.status != StepStatus.completed:
-                break
-        #self.status = StepStatus.completed
+        if check_completion(self.submodules):
+            self.status = StepStatus.completed

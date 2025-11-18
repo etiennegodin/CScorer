@@ -164,14 +164,28 @@ modules:
               db: gee.data_load_sample_gee_expert_occurences
       preprocessors: !PipelineSubmodule
         func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
-        init: '2025-11-18 10:27:22'
+        init: '2025-11-18 11:59:23'
         name: preprocessors
         status: !StepStatus 'incomplete'
         steps:
-          data_prepro_dumy: !PipelineStep
+          clean_gbif_citizen: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.preprocessors.main.dummy ''
-            init: '2025-11-18 10:37:50'
-            name: data_prepro_dumy
+            func: &id003 !!python/name:Cscorer.data.preprocessors.main.execute_sql_query ''
+            init: '2025-11-18 12:01:59'
+            name: clean_gbif_citizen
+            status: !StepStatus 'completed'
+            storage: {}
+          clean_gbif_expert: !PipelineStep
+            config: {}
+            func: *id003
+            init: '2025-11-18 12:01:59'
+            name: clean_gbif_expert
+            status: !StepStatus 'completed'
+            storage: {}
+          template: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.preprocessors.main.data_prepro_template ''
+            init: '2025-11-18 12:01:59'
+            name: template
             status: !StepStatus 'init'
             storage: {}
