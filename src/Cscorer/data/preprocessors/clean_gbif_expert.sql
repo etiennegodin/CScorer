@@ -17,15 +17,14 @@ g.eventDate,
 g.day,
 g.month,
 g.year,
-g.taxonKey,
 g.recordedBy,
 g.coordinateUncertaintyInMeters,
 g.decimalLatitude,
 g.decimalLongitude,
-g.elevation,
 g.issue,
 g.geom,
 
 
 FROM gbif_raw.expert g
+WHERE g.institutionCode = 'iNaturalist'
 
