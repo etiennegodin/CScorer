@@ -15,7 +15,7 @@ dag:
   create_grid:
     outputs:
     - grid
-  get_gbif_data:
+  get_gbif_pipe:
     depends_on:
     - get_obs_count
     outputs:
@@ -24,7 +24,7 @@ dag:
   get_obs_count:
     outputs:
     - obs_count
-  get_osm_data:
+  get_osm_pipe:
     outputs:
     - osm_data
   process_spatial_index:

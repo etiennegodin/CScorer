@@ -1,27 +1,22 @@
 Main:
   init: 1763157312.3641274
-gbif_query_citizen:
+data_load_gbif_citizen:
   db: gbif_raw.citizen
   init: 1762872918.0885973
   key: 0027014-251025141854904
-  raw_data: /home/manat/projects/CScorer/work/dev/data/0027014-251025141854904.csv
-gbif_query_expert:
+  raw_pipe: /home/manat/projects/CScorer/work/dev/data/0027014-251025141854904.csv
+data_load_gbif_expert:
   db: gbif_raw.expert
   init: 1762872918.0967045
   key: 0027013-251025141854904
-  raw_data: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
+  raw_pipe: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
 gee_query_citizen_occurences:
   db: gee.citizen_occurences
   init: 1763157247.058232
 gee_query_expert_occurences:
   db: gee.expert_occurences
   init: 1763157247.8091726
-get_environmental_data:
-  init: 1763150480.15918
-get_inaturalist_data:
-  init: 1762914879.8214715
-  query: null
-get_inaturalist_observer_data:
+data_load_inat_observer:
   init: 1763048478.2635362
 upload_occurences_point_to_gee:
   init: 1763144361.5152352

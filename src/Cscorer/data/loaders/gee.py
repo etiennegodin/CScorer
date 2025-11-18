@@ -1,9 +1,8 @@
 
-from .base import BaseQuery
-from ..core import PipelineData, StepStatus, to_Path
-from ..utils.duckdb import export_to_shp, import_csv_to_db, get_all_tables
-from ..utils.core import _ask_yes_no
-from ..core import to_Path
+from .base import BaseLoader
+from ...pipeline import Pipeline, PipelineStep, StepStatus
+from ...utils.duckdb import export_to_shp
+from ...utils.core import to_Path
 import pandas as pd
 from shapely import wkt
 import ee
@@ -16,44 +15,43 @@ from pathlib import Path
 import asyncio
 from pprint import pprint
 
-class GeeQuery(BaseQuery):
+class GeeLoader(BaseLoader):
 
-    def __init__(self, data:PipelineData, points:str):
+    def __init__(self, pipe:Pipeline, name:str, points:str):
         super().__init__()
         # Init gee 
         self._init_gee()
         #Create geometry area of interest 
-        self.aoi = ee.Geometry.Polygon(self._get_coords(data))
+        self.aoi = ee.Geometry.Polygon(self._get_coords(pipe))
         self.points = ee.FeatureCollection(points)
         self.point_count = self.points.size().getInfo()
         #Dates
-        self.date_min = data.config['time']['start']
-        self.date_max = data.config['time']['end']
+        self.date_min = pipe.config['time']['start']
+        self.date_max = pipe.config['time']['end']
         
         # Create step_name from name of point dataset
         points = to_Path(points)  
-        self.name = f"gee_query_{points.stem}"
-        data.init_new_step(step_name=self.name)
-        
+        self.name = f"gee_sampling_{name}"
+
         #Create output dir:
-        self.output_dir = self._create_dir(data)
+        self.output_dir = self._create_dir(pipe)
     
-    async def run(self, data:PipelineData):
-        chunk_size = data.config['gee']['chunk_size']
-        logger = data.logger
-        con = data.con
+    async def run(self, pipe:Pipeline, step:PipelineStep):
+        chunk_size = pipe.config['gee']['chunk_size']
+        logger = pipe.logger
+        con = pipe.con
         table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
         self.df = pd.DataFrame()
         #Main
-        if data.step_status[self.name] == StepStatus.init:
+        if step.status == StepStatus.init:
             logger.info(f'Launching sampling procees for {self.name}')
-            data.storage[self.name]['db'] = f"gee.{table_name}"
+            step.storage['db'] = f"gee.{table_name}"
             #Set chunks
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
             points_list = self.points.toList(self.point_count)
             #Rasters 
-            rasters = await self._load_rasters(data)
+            rasters = await self._load_rasters(pipe)
             multi_raster = await self._combine_rasters(rasters, logger)
             
             for i in range(num_chunks):
@@ -68,8 +66,8 @@ class GeeQuery(BaseQuery):
             #Save final samples to db
             table = await self._save_to_db(con, table_name, logger)
             logger.info(f"Finished getting gee data for {self.name}")
-            data.update_step_status(self.name, status= StepStatus.completed)
-            data.update()
+            step.status = StepStatus.completed
+            pipe.update()
             
     def _chunk_samples(self, fc:FeatureCollection, logger, size:int = 2500):
         chunks = []
@@ -116,13 +114,13 @@ class GeeQuery(BaseQuery):
         df_temp = pd.DataFrame(samples_data)
         self.df = pd.concat([self.df, df_temp], ignore_index=True)
         
-    def _create_dir(self, data):
-        sampled_dir = Path(data.config['folders']['gee_folder']) / "sampled"
+    def _create_dir(self, pipe):
+        sampled_dir = Path(pipe.config['folders']['gee_folder']) / "sampled"
         sampled_dir.mkdir(exist_ok= True)
         return sampled_dir
     
-    async def _load_rasters(self,data:PipelineData)-> list[Image]:
-        datasets = data.config['gee_datasets']
+    async def _load_rasters(self,pipe:Pipeline)-> list[Image]:
+        datasets = pipe.config['gee_datasets']
         image_datasets = datasets['image']
         imageCollection_datasets = datasets['imageCollection']
         rasters = []
@@ -141,7 +139,7 @@ class GeeQuery(BaseQuery):
             median = img_col.median().clip(self.aoi)        
             rasters.append(median)        
 
-        data.logger.info(f"Loaded {len(rasters)} rasters to sample")
+        pipe.logger.info(f"Loaded {len(rasters)} rasters to sample")
         return rasters 
     
     async def _combine_rasters(self, rasters:list[Image], logger)-> Image:    
@@ -171,7 +169,7 @@ class GeeQuery(BaseQuery):
             raise Exception(e)
         
     
-async def _check_asset_upload(file:Path, data:PipelineData, step_name):
+async def _check_asset_upload(file:Path, pipe:Pipeline, step:PipelineStep):
     delay = 15
     load_dotenv()
     if not isinstance(file, Path):
@@ -193,38 +191,40 @@ async def _check_asset_upload(file:Path, data:PipelineData, step_name):
         stdout, stderr = await proc.communicate()
 
         if proc.returncode == 0:
-            data.logger.info(f" {file.stem}{file.suffix} successfully uploaded to gee")
-            data.storage[step_name]['points'].append(asset_id)
-            data.update()
+            pipe.logger.info(f" {file.stem}{file.suffix} successfully uploaded to gee")
+            step.storage['points'][file.stem] = asset_id
+            pipe.update()
 
             confirmed = True
         else:
-            data.logger.info(f"Please manually upload {file.stem}{file.suffix} to gee project - Sleeping for {delay}s")
-            data.logger.warning(stdout.decode())
+            pipe.logger.info(f"Please manually upload {file.stem}{file.suffix} to gee project - Sleeping for {delay}s")
+            pipe.logger.warning(stdout.decode())
 
             await asyncio.sleep(delay)
             
-async def upload_points(data:PipelineData ):
+async def upload_points(pipe:Pipeline, step :PipelineStep):
 
     step_name = 'upload_occurences_point_to_gee'
-    output_folder = data.config['folders']['gee_folder']
+    output_folder = pipe.config['folders']['gee_folder']
     tables = []
     files = []
+    print('exit')
 
-    if data.step_status[step_name] == StepStatus.completed:
-        data.logger.info(f"Step {step_name} completed")
-        return data.storage[step_name]['points'] 
+    if step.status == StepStatus.completed:
+        pipe.logger.info(f"Step {step_name} completed")
+        print('exit')
+        print(step.storage['points'])
+        return step.storage['points'] 
        
     #Init step if not done 
-    data.init_new_step(step_name=step_name)
-    data.storage[step_name]['points'] = []
+    step.storage['points'] = {}
 
     # Create files and table lookups    
-    steps = [step for step in data.storage.keys() if step.startswith('gbif')]
-
+    steps = [s for s in step._parent.steps.values() if "gbif" in s.name]
+        
     # Create files and table lookups    
-    for step in steps:
-        table = data.storage[step]['db']
+    for s in steps:
+        table = s.storage['db']
         tables.append(table)
         #Make folder 
         data_name = table.split(sep='.')[1]
@@ -233,16 +233,20 @@ async def upload_points(data:PipelineData ):
         files.append(sub_folder / f"{data_name}_occurences.shp")
         
     #Export to shp
-    if data.step_status[step_name] == StepStatus.init:
+    if step.status == StepStatus.init:
         #Export table points to disk
-        exports = [asyncio.create_task(export_to_shp(con = data.con, file_path = file, table_name = table, table_fields= 'gbifID', logger = data.logger)) for file, table in zip(files,tables)]
+        exports = [asyncio.create_task(export_to_shp(con = pipe.con, file_path = file, table_name = table, table_fields= 'gbifID', logger = pipe.logger)) for file, table in zip(files,tables)]
         await asyncio.gather(*exports)
-        data.update_step_status(step_name, StepStatus.local)
+        step.status = StepStatus.local
 
-    if data.step_status[step_name] == StepStatus.local:
+    if step.status == StepStatus.local:
         #Upload these points to gee 
-        uploads = [asyncio.create_task(_check_asset_upload(file, data, step_name))  for file in files]
+        uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step))  for file in files]
         await asyncio.gather(*uploads)
-        data.update_step_status(step_name, StepStatus.completed)
-        data.logger.info('Successfully upload all files to gee')
-        return data.storage[step_name]['points']
+        step.status = StepStatus.completed
+        pipe.logger.info('Successfully upload all files to gee')
+    
+    return step.storage['points']
+    
+    
+    
