@@ -1,8 +1,0 @@
-Main: !StepStatus 'init'
-data_load_gbif_citizen: !StepStatus 'completed'
-data_load_gbif_expert: !StepStatus 'completed'
-gee_query_citizen_occurences: !StepStatus 'completed'
-gee_query_expert_occurences: !StepStatus 'completed'
-data_load_inat_observer: !StepStatus 'completed'
-data_load_inat_occurence: !StepStatus 'completed'
-upload_occurences_point_to_gee: !StepStatus 'completed'

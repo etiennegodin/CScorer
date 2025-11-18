@@ -94,71 +94,71 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
+init: '2025-11-18 10:02:47'
 modules:
   data: !PipelineModule
     func: !!python/name:Cscorer.data.main.data_submodules ''
+    init: '2025-11-18 10:02:47'
     name: data
     status: !StepStatus 'completed'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders_steps ''
+        init: '2025-11-18 10:02:47'
         name: loaders
-        status: !StepStatus 'init'
+        status: !StepStatus 'completed'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
             func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+            init: '2025-11-18 10:02:47'
             name: data_load_gbif_citizen
             status: !StepStatus 'completed'
             storage:
               db: gbif_raw.citizen
               key: 0027014-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027014-251025141854904.csv
-            init: '2025-11-18 10:02:47'
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
+            init: '2025-11-18 10:02:47'
             name: data_load_gbif_expert
             status: !StepStatus 'completed'
             storage:
               db: gbif_raw.expert
               key: 0027013-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027013-251025141854904.csv
-            init: '2025-11-18 10:02:47'
           data_load_inat_observer: !PipelineStep
             config: {}
             func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            init: '2025-11-18 10:02:47'
             name: data_load_inat_observer
             status: !StepStatus 'completed'
             storage:
               db: inat.observers
-            init: '2025-11-18 10:02:47'
           data_load_points: !PipelineStep
             config: {}
             func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
+            init: '2025-11-18 10:09:30'
             name: data_load_points
             status: !StepStatus 'completed'
             storage:
               points:
                 citizen_occurences: projects/observationscorer/assets/citizen_occurences
                 expert_occurences: projects/observationscorer/assets/expert_occurences
-            init: '2025-11-18 10:09:30'
           data_load_sample_gee_citizen_occurences: !PipelineStep
             config: {}
             func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            init: '2025-11-18 10:12:57'
             name: data_load_sample_gee_citizen_occurences
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_citizen_occurences
-            init: '2025-11-18 10:12:57'
           data_load_sample_gee_expert_occurences: !PipelineStep
             config: {}
             func: *id002
+            init: '2025-11-18 10:12:57'
             name: data_load_sample_gee_expert_occurences
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
-            init: '2025-11-18 10:12:57'
-        init: '2025-11-18 10:02:47'
-    init: '2025-11-18 10:02:47'
-init: '2025-11-18 10:02:47'

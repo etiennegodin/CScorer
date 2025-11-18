@@ -14,7 +14,7 @@ class PipelineSubmodule(Observable):
     func: str
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    init = time.strftime("%Y-%m-%d %H:%M:%S")
+    init:str = time.strftime("%Y-%m-%d %H:%M:%S")
     
     def add_step(self, step:PipelineStep):
         if step.name not in self.steps.keys():
@@ -29,6 +29,8 @@ class PipelineSubmodule(Observable):
             await func(pipe, self)
         else:
             func(pipe,self)
+            
+        self.status = StepStatus.completed   
 
         
     def _child_updated(self, child, key, old, new):
