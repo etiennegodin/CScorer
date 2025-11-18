@@ -17,17 +17,18 @@ g.eventDate,
 g.day,
 g.month,
 g.year,
-g.taxonKey,
 g.recordedBy,
 g.coordinateUncertaintyInMeters,
 g.decimalLatitude,
 g.decimalLongitude,
-g.elevation,
 g.issue,
 g.geom,
 
 i.url,
-i.description,
+CASE
+    WHEN i.description IS NOT NULL THEN 1
+    ELSE 0
+END AS description,
 i.num_identification_agreements,
 i.num_identification_disagreements,
 i.image_url,
@@ -35,5 +36,6 @@ i.image_url,
 
 FROM gbif_raw.citizen g
 JOIN inat.occurences i
-
 ON g.occurrenceID = i.url
+WHERE g.institutionCode = 'iNaturalist' AND g.taxonRank = 'SPECIES'
+
