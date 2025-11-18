@@ -28,15 +28,14 @@ async def data_loaders_steps(pipe:Pipeline, submodule:PipelineSubmodule):
         gee_upload_task = tg.create_task(submodule.steps["data_load_points"].run(pipe))
 
     if not gee_upload_task:
-        points_list = submodule.steps["data_load_sample_gee"]['so']
+        points_dict = submodule.steps["data_load_sample_gee"]['so']
     else:
-        points_list =  gee_upload_task.result()
+        points_dict =  gee_upload_task.result()
     
-    async with asyncio.TaskGroup() as tg:
-        tg.create_task(submodule.steps["data_load_sample_gee"].run(pipe, points_list = points_list ))
-
-    
-
+    for name, points in points_dict.items():
+        submodule.add_step(PipelineStep(f"data_load_sample_gee_{name}", func = data_load_sample_gee))
+        await submodule.steps[f"data_load_sample_gee_{name}"].run(pipe, points = points)
+        
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     subcategory = step.name.split(sep="_")[-1]
     #Temp assignement for async tasks 
@@ -109,9 +108,7 @@ async def data_load_points(pipe:Pipeline, step:PipelineStep):
     points_list = await upload_points(pipe,step)
     return points_list
     
-async def data_load_sample_gee(pipe:Pipeline, step:PipelineStep, points_list:list):
-    
+async def data_load_sample_gee(pipe:Pipeline, step:PipelineStep, points:str):
+    gee_query = create_query('gee', pipe, name = step.name, points=points)
     #Create list of queries (one for each set of occurences)
-    gee_queries = [create_query('gee', pipe, points=points) for points in points_list]
-    for query in gee_queries:
-        await query.run(pipe, step)
+    await gee_query.run(pipe, step)
