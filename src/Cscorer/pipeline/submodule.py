@@ -3,7 +3,7 @@ from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
 from .yaml_support import yaml_serializable
-from .core import Observable, init_data
+from .core import Observable, init_data, check_completion
 from .enums import StepStatus
 import time
             
@@ -20,6 +20,9 @@ class PipelineSubmodule(Observable):
         if step.name not in self.steps.keys():
             step.set_parent(self)
             self.steps[step.name] = step
+            
+    def reset_steps(self):
+        self.steps = {}
 
     async def run(self,pipe:Pipeline):
         pipe.logger.info(f'Running submodule : {self.name}')
@@ -31,15 +34,9 @@ class PipelineSubmodule(Observable):
         else:
             func(pipe,self)
             self.status = StepStatus.incomplete
-
         
-        for s in self.steps.values():
-            print(s)
-            if s.status != StepStatus.completed:
-                break
-            
-        #self.status = StepStatus.completed
-           
+        if check_completion(self.steps):
+            self.status = StepStatus.completed
 
         
     def _child_updated(self, child, key, old, new):
