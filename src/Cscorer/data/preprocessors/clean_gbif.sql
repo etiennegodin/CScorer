@@ -18,13 +18,22 @@ g.day,
 g.month,
 g.year,
 g.recordedBy,
-g.coordinateUncertaintyInMeters,
 g.decimalLatitude,
 g.decimalLongitude,
 g.issue,
 g.geom,
+CASE
+    WHEN coordinateUncertaintyInMeters IS NULL THEN 0
+    ELSE coordinateUncertaintyInMeters
+END AS coordinateUncertaintyInMeters
 
 
 FROM {{source_table_name}} g
-WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL AND g.taxonRank = 'SPECIES' 
+WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL;
+
+DELETE FROM preprocessed.{{target_table_name}} t
+WHERE NOT t.taxonRank = 'SPECIES';
+
+
+
 

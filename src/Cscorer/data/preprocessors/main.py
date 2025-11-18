@@ -15,11 +15,14 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     clean_gbif_citizen = PipelineStep( "clean_gbif_citizen", func = clean_gbif_occurences)
     clean_gbif_expert = PipelineStep( "clean_gbif_expert", func = clean_gbif_occurences)
     merge_inatOccurences = PipelineStep( "merge_inatOccurences", func = simple_sql_query)
+    matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
+
 
     submodule.add_step(template)
     submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
     submodule.add_step(merge_inatOccurences)
+    submodule.add_step(matchGbifDatasets)
 
 
     tasks = [asyncio.create_task(step.run(pipe)) for step in submodule.steps.values()]
@@ -54,11 +57,11 @@ async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep):
         step.status = StepStatus.failed
     step.status = StepStatus.completed
     
-async def data_prepro_missing_values(pipe:Pipeline, step:Pipeline):
+
+async def matched_dataset(pipe:Pipeline, step:PipelineStep):
     pass
 
-
-async def data_prepro_temporal_filter(pipe:Pipeline, step:Pipeline):
+async def data_prepro_temporal_filter(pipe:Pipeline, step:PipelineStep):
     pass
 
 
