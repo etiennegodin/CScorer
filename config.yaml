@@ -11,10 +11,10 @@ dag:
   create_grid:
     outputs:
     - grid
-  get_osm_data:
+  get_osm_pipe:
     outputs:
     - osm_data
-  get_gbif_data:
+  get_gbif_pipe:
     depends_on:
     - get_obs_count
     outputs:

@@ -1,13 +1,14 @@
-from .data.factory import create_query
-from .core import read_config, write_config, PipelineData
-from .data.get_data import get_gbif_data, get_inaturalist_occurence_data, get_inaturalist_observer_data, get_environmental_data
+from .data.main import data_submodules
 from .utils.debug import launch_debugger
-from .utils.duckdb import _open_connection
+from .pipeline import Pipeline, PipelineModule, StepStatus
+from .pipeline.yaml_support import read_config
 
+import yaml
 from pathlib import Path
 import argparse
 import subprocess
 import asyncio
+
 from pprint import pprint
 import logging
 import shutil
@@ -20,7 +21,16 @@ steps = ["get_gbif_data",
 
 modules = ['data', 'features', 'model']
 
-def init_pipeline(args)->PipelineData:
+
+def pipe_reconstructor(pipeline:Pipeline):
+    for module in pipeline.modules.values():
+        module._parent = pipeline
+        for sub in module.submodules.values():
+            sub._parent = module
+            for step in sub.steps.values():
+                step._parent = sub
+                
+def init_pipeline(args)->Pipeline:
     
     # Check if required file, else try dev mode
     if not args.file:
@@ -28,6 +38,8 @@ def init_pipeline(args)->PipelineData:
             raise UserWarning("Missing config file")
         #dev branch
         config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
+        #config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
+
     else:
         config_path = args.file
     
@@ -58,9 +70,6 @@ def init_pipeline(args)->PipelineData:
     config['folders'] = folders
     config['db_path'] = str(db_path)
     
-    # Create folders 
-    for folder in folders.values():
-        Path(folder).mkdir(exist_ok= True)
     
     # Force flag to wipe data
     if args.force:
@@ -68,28 +77,29 @@ def init_pipeline(args)->PipelineData:
             shutil.rmtree(str(data_folder))
         if pipe_folder.exists():
             shutil.rmtree(str(pipe_folder))
+        
+    # Create folders 
+    for folder in folders.values():
+        Path(folder).mkdir(exist_ok= True)
 
     #New instance if totally new run (or forced)
-    if not data_folder.exists() and not pipe_folder.exists():
+    if not (pipe_folder/'pipe.yaml').exists() :
         logging.info("No pipe data found, creating new instance from scratch")
-
         # Create instance 
-        pipe_data = PipelineData(config = config)
-        
+        pipe = Pipeline(config = config)
 
     #Read from disk 
     else:
         try:
-            pipe_data = (PipelineData(config= config,
-                                 storage = read_config(pipe_folder / 'pipe_data.yaml'),
-                                 step_status= read_config(pipe_folder / 'pipe_steps.yaml')
-                                 ))
+            #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
+            pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
+            pipe_reconstructor(pipe)
             logging.info("Previous pipe data found, creating new instance from data on disk")
 
         except Exception as e:
             raise Exception(e)
 
-    return pipe_data
+    return pipe
 
 
 def main():
@@ -114,13 +124,21 @@ def main():
         launch_debugger()
     
     # Init pipeline 
-    data = init_pipeline(args)
+    pipe = init_pipeline(args)
     
+    #Add modules
+    data_module = PipelineModule('data',  func = data_submodules)
+    pipe.add_module(data_module)
+    
+    pprint(pipe.modules)
+    
+    asyncio.run(pipe.run())
 
-    #asyncio.run(get_gbif_data(data)) 
-    #asyncio.run(get_inaturalist_occurence_data(data))
-    #asyncio.run(get_inaturalist_observer_data(data))
-    asyncio.run(get_environmental_data(data)) 
+
+           
+        
+    
+    # eda 
 
     
     
