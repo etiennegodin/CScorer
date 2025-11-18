@@ -21,7 +21,7 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     submodule.add_step(template)
     submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
-    submodule.add_step(merge_inatOccurences)
+    #submodule.add_step(merge_inatOccurences)
     submodule.add_step(matchGbifDatasets)
 
 
