@@ -3,6 +3,14 @@ from dataclasses import dataclass, field
 import time
 import importlib
 
+def check_completion(items:dict):
+    from .enums import StepStatus
+    completion = True
+    for item in items.values():
+        if item.status != StepStatus.completed:
+                completion = False
+    return completion
+
 def load_function(path: str):
     print(path)
     print(type(path))
