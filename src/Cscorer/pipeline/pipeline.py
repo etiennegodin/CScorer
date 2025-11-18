@@ -65,6 +65,8 @@ class Pipeline(Observable):
             print(m.status)
             if m.status != StepStatus.completed:
                 await m.run()
+            else:
+                self.logger.info(f"{m.name} module is completed")
             
     
     def rebuild_runtime(self):

@@ -16,7 +16,6 @@ async def data_loaders_steps(pipe:Pipeline, submodule:PipelineSubmodule):
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
     submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
     submodule.add_step(PipelineStep("data_load_points", func = data_load_points))
-    submodule.add_step(PipelineStep("data_load_sample_gee", func = data_load_sample_gee))
 
     
     async with asyncio.TaskGroup() as tg:
@@ -27,15 +26,13 @@ async def data_loaders_steps(pipe:Pipeline, submodule:PipelineSubmodule):
         tg.create_task(submodule.steps["data_load_inat_observer"].run(pipe))
         gee_upload_task = tg.create_task(submodule.steps["data_load_points"].run(pipe))
 
-    if not gee_upload_task:
-        points_dict = submodule.steps["data_load_sample_gee"]['so']
-    else:
-        points_dict =  gee_upload_task.result()
-    
+
+    points_dict = submodule.steps["data_load_points"].storage['points']
+
     for name, points in points_dict.items():
         submodule.add_step(PipelineStep(f"data_load_sample_gee_{name}", func = data_load_sample_gee))
         await submodule.steps[f"data_load_sample_gee_{name}"].run(pipe, points = points)
-        
+    
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     subcategory = step.name.split(sep="_")[-1]
     #Temp assignement for async tasks 

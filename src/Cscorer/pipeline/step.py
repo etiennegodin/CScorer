@@ -27,4 +27,7 @@ class PipelineStep(Observable):
                 return await func(pipe, *args, step = self, **kwargs)
             else:
                 return func(pipe, *args, step = self, **kwargs)
+        else:
+            pipe.logger.info(f"{self.name} step is completed")
+
         
