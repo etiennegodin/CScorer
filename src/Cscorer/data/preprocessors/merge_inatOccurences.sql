@@ -4,7 +4,6 @@ ALTER TABLE preprocessed.gbif_citizen ADD COLUMN num_identification_agreements I
 ALTER TABLE preprocessed.gbif_citizen ADD COLUMN num_identification_disagreements INTEGER;
 ALTER TABLE preprocessed.gbif_citizen ADD COLUMN description INTEGER;
 
-
 WITH inat_inter AS (
 
 SELECT 

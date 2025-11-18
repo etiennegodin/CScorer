@@ -62,7 +62,6 @@ class Pipeline(Observable):
     async def run(self):
         from .enums import StepStatus
         for m in self.modules.values():
-            print(m.status)
             if m.status != StepStatus.completed:
                 await m.run()
             else:
