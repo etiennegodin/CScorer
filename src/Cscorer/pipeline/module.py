@@ -40,7 +40,11 @@ class PipelineModule(Observable):
         for sm in self.submodules.values():
             if sm.status != StepStatus.completed:
                 await sm.run(pipe)
+                self.status = StepStatus.incomplete
             else:
                 pipe.logger.info(f"{sm.name} submodule is completed")
-                
-        self.status = StepStatus.completed
+
+        for sm in self.submodules.values():
+            if sm.status != StepStatus.completed:
+                break
+        #self.status = StepStatus.completed
