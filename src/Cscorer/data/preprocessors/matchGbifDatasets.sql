@@ -1,22 +1,24 @@
 CREATE INDEX idx_c_geom ON preprocessed.gbif_citizen USING RTREE (geom);
 CREATE INDEX idx_e_geom ON preprocessed.gbif_expert USING RTREE (geom);
 
-CREATE OR REPLACE TABLE preprocessed.matchedGbif AS
+CREATE OR REPLACE TABLE preprocessed.citizen_matched AS
 
 WITH c3857 AS(
     
-    SELECT gbifID, "month", ST_Transform(geom, 'EPSG:4326', 'EPSG:3857') AS geom
+    SELECT gbifID, "month", taxonKey, ST_Transform(geom, 'EPSG:4326', 'EPSG:3857') AS geom
     FROM preprocessed.gbif_citizen
 ),
 
 e3857 AS(
     
-    SELECT gbifID, "month", ST_Transform(geom, 'EPSG:4326', 'EPSG:3857') AS geom
+    SELECT gbifID, "month", taxonKey, ST_Transform(geom, 'EPSG:4326', 'EPSG:3857') AS geom
     FROM preprocessed.gbif_expert
-)
+),
 
-SELECT e.gbifID as e_id, e.month as e_month,
-    c.gbifID as c_id, c.month as c_month
+matched_ids AS(
+
+SELECT e.gbifID as e_id, e.month as e_month, e.taxonKey as e_taxon,
+    c.gbifID as c_id, c.month as c_month, c.taxonKey as c_taxon,
 
 FROM e3857 e
 JOIN c3857 c
@@ -25,5 +27,19 @@ JOIN c3857 c
         (SELECT geom FROM preprocessed.gbif_citizen WHERE gbifID = c.gbifID),  -- index hit
         0.1
     )
-WHERE ST_DWithin(e.geom, c.geom, 5000) AND e_month = c_month;
+WHERE ST_DWithin(e.geom, c.geom, 5000) AND e_taxon = c_taxon
+
+)
+
+SELECT c.*, 
+CASE
+    WHEN c.gbifID IN (SELECT c_id FROM matched_ids)
+    THEN 1
+    ELSE 0
+END AS expert_match,
+
+FROM preprocessed.gbif_citizen c
+;
+
+
 
