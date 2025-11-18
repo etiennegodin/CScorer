@@ -8,6 +8,7 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     schema = "preprocessed"
     create_schema(pipe.con, schema)
     
+    
     submodule.reset_steps()
     
     template = PipelineStep( "template", func = data_prepro_template)
