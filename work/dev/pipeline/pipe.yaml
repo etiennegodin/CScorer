@@ -1,0 +1,164 @@
+!Pipeline
+config:
+  db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
+  folders:
+    data_folder: /home/manat/projects/CScorer/work/dev/data
+    gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
+    gee_folder: /home/manat/projects/CScorer/work/dev/data/gee
+    inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
+    pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
+    run_folder: /home/manat/projects/CScorer/work/dev
+  gbif:
+    COUNTRY: CA
+    GADM_GID: CAN.11_1
+    GEOMETRY: POLYGON((-73.509156 45.524824, -74.519611 45.014526, -71.669469 45.014526,
+      -70.203212 46.296853,-71.032444 46.821866, -71.444314 46.686379, -73.086303
+      46.045787, -73.509156 45.524824))
+    TAXON_KEY: 7707728
+    YEAR: 2010
+  gbif_datasets:
+    Herbier Louis-Marie (QFA) - Collection de plantes vasculaires:
+      key: 2fd02649-fc08-4957-9ac5-2830e072c097
+      subtype: SPECIMEN
+      title: Herbier Louis-Marie (QFA) - Collection de plantes vasculaires
+      type: OCCURRENCE
+    "Herbier du Qu\xE9bec (QUE) - Collection de plantes vasculaires":
+      key: c4a5efee-4c61-45d8-bd7a-6275b2388308
+      subtype: SPECIMEN
+      title: "Herbier du Qu\xE9bec (QUE) - Collection de plantes vasculaires"
+      type: OCCURRENCE
+    "Jardin botanique de Montr\xE9al (JBM)":
+      key: 7a7244fc-13b9-43ee-93c9-0d5c4457a86a
+      title: "Jardin botanique de Montr\xE9al (JBM)"
+      type: OCCURRENCE
+    Marie-Victorin Herbarium (MT) - Plantes vasculaires:
+      key: 0348540a-e644-4496-89d3-c257da9ad776
+      subtype: SPECIMEN
+      title: Marie-Victorin Herbarium (MT) - Plantes vasculaires
+      type: OCCURRENCE
+    National Collection of Vascular Plants (DAO):
+      key: 10cf770a-282a-41dd-9e19-83b7c894b956
+      title: National Collection of Vascular Plants (DAO)
+      type: OCCURRENCE
+    "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)":
+      key: 1e837919-112c-40ad-abb9-5ca74b044742
+      subtype: SPECIMEN
+      title: "UQTR-herbarium (Herbier Estelle-Lacoursi\xE8re)"
+      type: OCCURRENCE
+  gee:
+    chunk_size: 5000
+  gee_datasets:
+    image:
+    - description: SRTM 90m Digital Elevation Data
+      link: https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4
+      name: CGIAR/SRTM90_V4
+    - description: WorldClim Version 1 Bioclimatic Variables
+      link: https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO
+      name: WORLDCLIM/V1/BIO
+    - description: National Land Cover Database (NLCD) 2020 North American Land Change
+        Monitoring System (NALCMS)
+      link: https://developers.google.com/earth-engine/datasets/catalog/USGS_NLCD_RELEASES_2020_REL_NALCMS
+      name: USGS/NLCD_RELEASES/2020_REL/NALCMS
+    - description: Accessibility to Cities 2015
+      link: https://developers.google.com/earth-engine/datasets/catalog/Oxford_MAP_accessibility_to_cities_2015_v1_0
+      name: Oxford/MAP/accessibility_to_cities_2015_v1_0
+    - description: Soil Organic Carbon Content (g/kg) - USDA 6A1C Method
+      link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_ORGANIC-CARBON_USDA-6A1C_M_v02
+      name: OpenLandMap/SOL/SOL_ORGANIC-CARBON_USDA-6A1C_M/v02
+    - description: Soil Water Content at 33kPa (cm3/cm3) - USDA 4B1C Method
+      link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_WATERCONTENT-33KPA_USDA-4B1C_M_v01
+      name: OpenLandMap/SOL/SOL_WATERCONTENT-33KPA_USDA-4B1C_M/v01
+    - description: Soil pH in H2O - USDA 4C1A2A Method
+      link: https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_PH-H2O_USDA-4C1A2A_M_v02
+      name: OpenLandMap/SOL/SOL_PH-H2O_USDA-4C1A2A_M/v02
+    imageCollection:
+    - description: Landsat Collection 2 Tier 1 Annual EVI Composite
+      link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_EVI
+      name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_EVI
+    - description: Landsat Collection 2 Tier 1 Annual NDVI Composite
+      link: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_COMPOSITES_C02_T1_L2_ANNUAL_NDVI
+      name: LANDSAT/COMPOSITES/C02/T1_L2_ANNUAL_NDVI
+    - description: Global Forest Change 2020 v2.0
+      link: https://developers.google.com/earth-engine/datasets/catalog/JRC_GFC2020_V2
+      name: JRC/GFC2020/V2
+    - description: Global Human Modification of Terrestrial Systems
+      link: https://developers.google.com/earth-engine/datasets/catalog/CSP_HM_GlobalHumanModification
+      name: CSP/HM/GlobalHumanModification
+  inat_api:
+    limit: null
+    max_calls_per_minute: 60
+    overwrite: true
+  inat_export:
+  - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2010-01-01&d2=2020-12-31
+  - has%5B%5D=photos&quality_grade=research&identifications=any&captive=false&swlat=45.014526+&swlng=-74.519611&nelat=46.821866+&nelng=-70.203212&not_in_place=187355&taxon_id=211194&d1=2021-01-01&d2=2025-11-01
+  time:
+    end: 2025-11-01
+    start: 2010-01-01
+modules:
+  data: !PipelineModule
+    func: !!python/name:Cscorer.data.main.data_submodules ''
+    name: data
+    status: !StepStatus 'completed'
+    submodules:
+      loaders: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.loaders.main.data_loaders_steps ''
+        name: loaders
+        status: !StepStatus 'init'
+        steps:
+          data_load_gbif_citizen: !PipelineStep
+            config: {}
+            func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+            name: data_load_gbif_citizen
+            status: !StepStatus 'completed'
+            storage:
+              db: gbif_raw.citizen
+              key: 0027014-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027014-251025141854904.csv
+            timestamp: '2025-11-18 10:02:47'
+          data_load_gbif_expert: !PipelineStep
+            config: {}
+            func: *id001
+            name: data_load_gbif_expert
+            status: !StepStatus 'completed'
+            storage:
+              db: gbif_raw.expert
+              key: 0027013-251025141854904
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027013-251025141854904.csv
+            timestamp: '2025-11-18 10:02:47'
+          data_load_inat_observer: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            name: data_load_inat_observer
+            status: !StepStatus 'completed'
+            storage:
+              db: inat.observers
+            timestamp: '2025-11-18 10:02:47'
+          data_load_points: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
+            name: data_load_points
+            status: !StepStatus 'completed'
+            storage:
+              points:
+                citizen_occurences: projects/observationscorer/assets/citizen_occurences
+                expert_occurences: projects/observationscorer/assets/expert_occurences
+            timestamp: '2025-11-18 10:09:30'
+          data_load_sample_gee_citizen_occurences: !PipelineStep
+            config: {}
+            func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            name: data_load_sample_gee_citizen_occurences
+            status: !StepStatus 'completed'
+            storage:
+              db: gee.data_load_sample_gee_citizen_occurences
+            timestamp: '2025-11-18 10:12:57'
+          data_load_sample_gee_expert_occurences: !PipelineStep
+            config: {}
+            func: *id002
+            name: data_load_sample_gee_expert_occurences
+            status: !StepStatus 'completed'
+            storage:
+              db: gee.data_load_sample_gee_expert_occurences
+            timestamp: '2025-11-18 10:12:57'
+        timestamp: '2025-11-18 10:02:47'
+    timestamp: '2025-11-18 10:02:47'
+timestamp: '2025-11-18 10:02:47'

@@ -208,9 +208,12 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
     output_folder = pipe.config['folders']['gee_folder']
     tables = []
     files = []
+    print('exit')
 
     if step.status == StepStatus.completed:
         pipe.logger.info(f"Step {step_name} completed")
+        print('exit')
+        print(step.storage['points'])
         return step.storage['points'] 
        
     #Init step if not done 
@@ -240,7 +243,7 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
         #Upload these points to gee 
         uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step))  for file in files]
         await asyncio.gather(*uploads)
-        #step.status = StepStatus.completed
+        step.status = StepStatus.completed
         pipe.logger.info('Successfully upload all files to gee')
     
     return step.storage['points']
