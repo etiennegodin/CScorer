@@ -139,16 +139,24 @@ modules:
             status: !StepStatus 'local'
             storage:
               points:
-              - projects/observationscorer/assets/expert_occurences
-              - projects/observationscorer/assets/citizen_occurences
-            timestamp: '2025-11-17 18:10:43'
+                citizen_occurences: projects/observationscorer/assets/citizen_occurences
+                expert_occurences: projects/observationscorer/assets/expert_occurences
+            timestamp: '2025-11-18 09:51:10'
           data_load_sample_gee: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
             name: data_load_sample_gee
             status: !StepStatus 'init'
             storage: {}
-            timestamp: '2025-11-17 18:10:43'
+            timestamp: '2025-11-18 09:51:10'
+          data_load_sample_gee_expert_occurences: !PipelineStep
+            config: {}
+            func: *id002
+            name: data_load_sample_gee_expert_occurences
+            status: !StepStatus 'completed'
+            storage:
+              db: gee.data_load_sample_gee_expert_occurences
+            timestamp: '2025-11-18 09:53:55'
         timestamp: '2025-11-17 17:19:15'
     timestamp: '2025-11-17 17:19:15'
 timestamp: '2025-11-17 17:19:15'

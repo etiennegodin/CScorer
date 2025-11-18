@@ -17,7 +17,7 @@ from pprint import pprint
 
 class GeeLoader(BaseLoader):
 
-    def __init__(self, pipe:Pipeline, points:str):
+    def __init__(self, pipe:Pipeline, name:str, points:str):
         super().__init__()
         # Init gee 
         self._init_gee()
@@ -31,8 +31,8 @@ class GeeLoader(BaseLoader):
         
         # Create step_name from name of point dataset
         points = to_Path(points)  
-        self.name = f"gee_query_{points.stem}"
-        
+        self.name = f"gee_sampling_{name}"
+
         #Create output dir:
         self.output_dir = self._create_dir(pipe)
     
@@ -45,7 +45,7 @@ class GeeLoader(BaseLoader):
         #Main
         if step.status == StepStatus.init:
             logger.info(f'Launching sampling procees for {self.name}')
-            step.storage[self.name]['db'] = f"gee.{table_name}"
+            step.storage['db'] = f"gee.{table_name}"
             #Set chunks
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
@@ -192,7 +192,7 @@ async def _check_asset_upload(file:Path, pipe:Pipeline, step:PipelineStep):
 
         if proc.returncode == 0:
             pipe.logger.info(f" {file.stem}{file.suffix} successfully uploaded to gee")
-            step.storage['points'].append(asset_id)
+            step.storage['points'][file.stem] = asset_id
             pipe.update()
 
             confirmed = True
@@ -214,7 +214,7 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
         return step.storage['points'] 
        
     #Init step if not done 
-    step.storage['points'] = []
+    step.storage['points'] = {}
 
     # Create files and table lookups    
     steps = [s for s in step._parent.steps.values() if "gbif" in s.name]
