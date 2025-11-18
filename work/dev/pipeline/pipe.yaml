@@ -114,7 +114,7 @@ modules:
               db: gbif_raw.citizen
               key: 0027014-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027014-251025141854904.csv
-            timestamp: '2025-11-18 10:02:47'
+            init: '2025-11-18 10:02:47'
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
@@ -124,7 +124,7 @@ modules:
               db: gbif_raw.expert
               key: 0027013-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027013-251025141854904.csv
-            timestamp: '2025-11-18 10:02:47'
+            init: '2025-11-18 10:02:47'
           data_load_inat_observer: !PipelineStep
             config: {}
             func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
@@ -132,7 +132,7 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: inat.observers
-            timestamp: '2025-11-18 10:02:47'
+            init: '2025-11-18 10:02:47'
           data_load_points: !PipelineStep
             config: {}
             func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
@@ -142,7 +142,7 @@ modules:
               points:
                 citizen_occurences: projects/observationscorer/assets/citizen_occurences
                 expert_occurences: projects/observationscorer/assets/expert_occurences
-            timestamp: '2025-11-18 10:09:30'
+            init: '2025-11-18 10:09:30'
           data_load_sample_gee_citizen_occurences: !PipelineStep
             config: {}
             func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
@@ -150,7 +150,7 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_citizen_occurences
-            timestamp: '2025-11-18 10:12:57'
+            init: '2025-11-18 10:12:57'
           data_load_sample_gee_expert_occurences: !PipelineStep
             config: {}
             func: *id002
@@ -158,7 +158,7 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
-            timestamp: '2025-11-18 10:12:57'
-        timestamp: '2025-11-18 10:02:47'
-    timestamp: '2025-11-18 10:02:47'
-timestamp: '2025-11-18 10:02:47'
+            init: '2025-11-18 10:12:57'
+        init: '2025-11-18 10:02:47'
+    init: '2025-11-18 10:02:47'
+init: '2025-11-18 10:02:47'

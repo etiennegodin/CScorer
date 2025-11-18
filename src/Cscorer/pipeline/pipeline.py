@@ -17,7 +17,7 @@ class Pipeline(Observable):
     config: Dict[str, Any] = field(default_factory=dict)
     logger: logging = logging
     con: duckdb.DuckDBPyConnection = None
-    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
+    init = time.strftime("%Y-%m-%d %H:%M:%S")
 
     __yaml_exclude__ = {"con","logger", "_parent"}
     
