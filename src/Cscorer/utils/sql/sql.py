@@ -2,6 +2,7 @@ from jinja2 import Template
 from pathlib import Path
 import inspect
 from pathlib import Path
+from ...pipeline import Pipeline, PipelineStep, StepStatus
 
 def who_called_me():
     # Frame 0 = this function
@@ -37,3 +38,12 @@ def read_sql_file(file_name:str, local:bool = False):
     
     return sql_query
     
+async def simple_sql_query(pipe:Pipeline, step:PipelineStep):
+    con = pipe.con
+    query = read_sql_file(step.name, local= True)
+    try:
+        con.execute(query)
+    except Exception as e:
+        pipe.logger.error(f"Failed to run query : {e}")
+        step.status = StepStatus.failed
+    step.status = StepStatus.completed

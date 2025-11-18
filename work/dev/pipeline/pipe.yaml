@@ -184,7 +184,7 @@ modules:
             storage: {}
           matchGbifDatasets: !PipelineStep
             config: {}
-            func: &id004 !!python/name:Cscorer.data.preprocessors.main.simple_sql_query ''
+            func: &id004 !!python/name:Cscorer.utils.sql.sql.simple_sql_query ''
             init: '2025-11-18 17:42:14'
             name: matchGbifDatasets
             status: !StepStatus 'completed'
@@ -200,5 +200,18 @@ modules:
     func: !!python/name:Cscorer.features.main.features_submodules ''
     init: '2025-11-18 17:42:14'
     name: features
-    status: !StepStatus 'completed'
-    submodules: {}
+    status: !StepStatus 'incomplete'
+    submodules:
+      observer: !PipelineSubmodule
+        func: !!python/name:Cscorer.features.observer.observer_features ''
+        init: '2025-11-18 17:58:43'
+        name: observer
+        status: !StepStatus 'incomplete'
+        steps:
+          total_observations: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.features.observer.test ''
+            init: '2025-11-18 17:58:43'
+            name: total_observations
+            status: !StepStatus 'init'
+            storage: {}

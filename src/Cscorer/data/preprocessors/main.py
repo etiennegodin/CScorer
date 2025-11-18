@@ -1,6 +1,6 @@
 from ...pipeline import Pipeline, PipelineModule, PipelineSubmodule,PipelineStep, StepStatus
 from ...utils.duckdb import create_schema
-from ...utils.sql import read_sql_template, read_sql_file
+from ...utils.sql import read_sql_template, read_sql_file, simple_sql_query
 import duckdb
 import asyncio
 
@@ -14,7 +14,6 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
 
 
-    submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
     submodule.add_step(merge_inatOccurences)
     submodule.add_step(matchGbifDatasets)
@@ -26,15 +25,6 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
 async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
     pass
 
-async def simple_sql_query(pipe:Pipeline, step:PipelineStep):
-    con = pipe.con
-    query = read_sql_file(step.name, local= True)
-    try:
-        con.execute(query)
-    except Exception as e:
-        pipe.logger.error(f"Failed to run query : {e}")
-        step.status = StepStatus.failed
-    step.status = StepStatus.completed
     
 async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep):
     con = pipe.con
