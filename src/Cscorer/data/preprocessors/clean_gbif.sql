@@ -31,8 +31,22 @@ END AS coordinateUncertaintyInMeters
 FROM {{source_table_name}} g
 WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL;
 
+
+-- FILTERS 
+
+-- species only
 DELETE FROM preprocessed.{{target_table_name}} t
 WHERE NOT t.taxonRank = 'SPECIES';
+
+-- growing season
+DELETE FROM preprocessed.{{target_table_name}} t
+WHERE t.month < 4;
+
+DELETE FROM preprocessed.{{target_table_name}} t
+WHERE t.month > 9;
+
+
+
 
 
 
