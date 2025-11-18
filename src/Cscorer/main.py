@@ -1,4 +1,5 @@
 from .data.main import data_submodules
+from .features.main import features_submodules
 from .utils.debug import launch_debugger
 from .pipeline import Pipeline, PipelineModule, StepStatus
 from .pipeline.yaml_support import read_config
@@ -131,8 +132,11 @@ def main():
     
     #Add modules
     data_module = PipelineModule('data',  func = data_submodules)
+    features_module = PipelineModule('features',  func = features_submodules)
+
     pipe.add_module(data_module)
-    
+    pipe.add_module(features_module)
+
     pprint(pipe.modules)
     
     asyncio.run(pipe.run())
