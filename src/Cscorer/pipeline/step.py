@@ -15,7 +15,7 @@ class PipelineStep(Observable):
     storage: Dict[str, Any] = field(default_factory= dict)
     config: Dict[str, Any] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
+    init = time.strftime("%Y-%m-%d %H:%M:%S")
 
     async def run(self, pipe:Pipeline, *args, **kwargs):
         from .enums import StepStatus

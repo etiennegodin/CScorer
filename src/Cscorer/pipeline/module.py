@@ -16,7 +16,7 @@ class PipelineModule(Observable):
     func: str
     submodules: Dict[str, PipelineSubmodule] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
-    timestamp:str = time.strftime("%Y-%m-%d %H:%M:%S")
+    init = time.strftime("%Y-%m-%d %H:%M:%S")
         
     def add_submodule(self, submodule:PipelineSubmodule):
         if submodule.name not in self.submodules.keys():
