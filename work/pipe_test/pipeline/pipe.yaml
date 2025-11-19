@@ -100,7 +100,7 @@ modules:
     func: !!python/name:Cscorer.data.main.data_submodules ''
     init: '2025-11-19 13:12:41'
     name: data
-    status: !StepStatus 'init'
+    status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
@@ -118,7 +118,7 @@ modules:
     func: !!python/name:Cscorer.features.main.features_submodules ''
     init: '2025-11-19 13:12:41'
     name: features
-    status: !StepStatus 'init'
+    status: !StepStatus 'incomplete'
     submodules:
       observer: !PipelineSubmodule
         func: !!python/name:Cscorer.features.observer.main.features_observer ''
