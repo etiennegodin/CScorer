@@ -26,6 +26,9 @@ class PipelineModule(Observable):
     def _child_updated(self, child, key, old, new):
         if self._parent:
             self._parent._child_updated(child, key, old, new)
+    
+    def reset_submodules(self):
+        self.submodules = {}
             
     async def run(self):
         pipe = self._parent
