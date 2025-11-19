@@ -1,2 +1,2 @@
 [console_scripts]
-Cscorer = Cscorer.main:main
+obsq = Cscorer.cli:main
