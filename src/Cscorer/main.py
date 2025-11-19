@@ -2,6 +2,7 @@ from .data.main import data_submodules
 from .features.main import features_submodules
 from .pipeline import Pipeline, PipelineModule, StepStatus
 from .pipeline.yaml_support import read_config
+from .pipeline.core import load_function
 import yaml
 from pathlib import Path
 from pprint import pprint
@@ -64,11 +65,12 @@ def init_pipeline(args, pipe_struct:dict)->Pipeline:
     #Create folder structure
     config = init_folder(config, config_path)
     folders = config['folders']
-
+    pipe_folder = Path(folders['pipeline_folder'])
+    
     # Force flag to wipe data
     if args.force:
         data_folder = Path(folders['data_folder'])
-        pipe_folder = Path(folders['pipe_folder'])
+        pipe_folder = Path(folders['pipeline_folder'])
         if data_folder.exists():
             shutil.rmtree(str(data_folder))
         if pipe_folder.exists():
@@ -84,7 +86,7 @@ def init_pipeline(args, pipe_struct:dict)->Pipeline:
     #Read from disk 
     else:
         # New instance if totally new run 
-        if not (pipe_folder/'pipe.yaml').exists() :
+        if not (pipe_folder /'pipe.yaml').exists() :
             # Create instance 
             pipe = Pipeline(config = config)
             pipe.logger.info("No pipe data found, creating new instance from scratch")
@@ -98,9 +100,14 @@ def init_pipeline(args, pipe_struct:dict)->Pipeline:
 
             except Exception as e:
                 raise Exception(e)
-    
-    if args.full:
+    if args.module == 'full':
         for module, submodules in pipe_struct.items():
+            func = load_function(f"Cscorer.{module}.main.{module}_submodules")
+
+            module = PipelineModule(module, func = func)
+            print(module)
+            quit()
+            pipe.add_module(module)
             for sub in submodules.keys():
                 pass
         

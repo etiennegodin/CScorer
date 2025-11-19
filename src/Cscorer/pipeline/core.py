@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 import time
 import importlib
 
+
 def check_completion(items:dict):
     from .enums import StepStatus
     completion = True
@@ -12,8 +13,6 @@ def check_completion(items:dict):
     return completion
 
 def load_function(path: str):
-    print(path)
-    print(type(path))
     mod_name, func_name = path.rsplit(".", 1)
     module = importlib.import_module(mod_name)
     return getattr(module, func_name)
