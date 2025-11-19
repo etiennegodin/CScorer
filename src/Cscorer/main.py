@@ -51,10 +51,65 @@ def create_folders(folders:dict):
     for folder in folders.values():
         Path(folder).mkdir(exist_ok= True)
         
-def create_pipe_struct(args, pipe:Pipeline, pipe_struct:dict, module:str, submodule:str):
+def build_full_pipeline(args, pipe:Pipeline, pipe_struct)->dict:
+    to_run = {}
+    for module_name, submodules in pipe_struct.items():
+        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        module = PipelineModule(module_name, func = mod_func)
+        submodules_list = []
+        for submodule_name in submodules.keys():
+            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            submodule = PipelineSubmodule(submodule_name, func= sub_func)
+            submodules_list.append(submodule)
+            
+        #Add back to pipe once all submodules are declaed
+        pipe.add_module(module)
+        to_run[module.name] = submodules_list
+    pprint(to_run)
+ 
+    return to_run
+        
+def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
+    to_run = {}
+    module_name = args.module
+    submodules_name = args.submodule
     
-    pass
+    if submodules_name == "full":
+        submodules = pipe_struct[module_name].keys() # get all submodules 
+        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        module = PipelineModule(module_name, func = mod_func)
+        submodules_list = []
+        for submodule_name in submodules:
+            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            submodule = PipelineSubmodule(submodule_name, func= sub_func)
+            submodules_list.append(submodule)
+            
+        #Add back to pipe once all submodules are declaed
+        pipe.add_module(module)
+        to_run[module.name] = submodules_list
+    pprint(to_run)
+
+    return to_run
     
+    
+def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
+    to_run = {}
+    module_name = args.module
+    submodule_name = args.submodule
+    submodules = [] #need to be a list even if single submodule
+    
+    mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+    module = PipelineModule(module_name, func = mod_func)
+    submodules_list = []
+
+    sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+    submodule = PipelineSubmodule(submodule_name, func= sub_func)
+    submodules_list.append(submodule)
+    #Add back to pipe once all submodules are declaed
+    pipe.add_module(module)
+    to_run[module.name] = submodules_list
+    pprint(to_run)
+    return to_run
    
 def run_pipeline(args, pipe_struct:dict)->Pipeline:
     
@@ -110,21 +165,12 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
                 raise Exception(e)
             
     if args.module == 'full':
-        to_run = {}
-        for mod_name, submodules in pipe_struct.items():
-            mod_func = load_function(f"Cscorer.{mod_name}.main.{mod_name}_submodules")
-            module = PipelineModule(mod_name, func = mod_func)
-            submodules_list = []
-            for sub_name in submodules.keys():
-                sub_func = load_function(f"Cscorer.{mod_name}.{sub_name}.main.{mod_name}_{sub_name}")
-                submodule = PipelineSubmodule(sub_name, func= sub_func)
-                submodules_list.append(submodule)
-                
-            #Add back to pipe once all submodules are declaed
-            pipe.add_module(module)
-            to_run[module.name] = submodules_list
-            
-        asyncio.run(pipe.run(to_run))
-    
-    if args.module == 'data':
-        pass
+        to_run = build_full_pipeline(args, pipe, pipe_struct)
+
+    else:
+        if args.submodule == "full":
+            to_run = build_full_module(args, pipe, pipe_struct)
+        else:
+            to_run = build_full_submodule(args, pipe, pipe_struct)
+
+    #asyncio.run(pipe.run(to_run))
