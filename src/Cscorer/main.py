@@ -61,9 +61,9 @@ def build_full_pipeline(args, pipe:Pipeline, pipe_struct)->dict:
             sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
-            module.add_submodule(submodule)
+            module.add_submodule(submodule, args.force)
         #Add back to pipe once all submodules are declaed
-        pipe.add_module(module)
+        pipe.add_module(module, args.force)
         to_run[module.name] = submodules_list 
     return to_run
         
@@ -81,10 +81,10 @@ def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
             sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
-            module.add_submodule(submodule)
+            module.add_submodule(submodule, args.force)
 
         #Add back to pipe once all submodules are declaed
-        pipe.add_module(module)
+        pipe.add_module(module, args.force)
         to_run[module.name] = submodules_list
     return to_run
     
@@ -102,8 +102,10 @@ def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
     sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
     submodule = PipelineSubmodule(submodule_name, func= sub_func)
     submodules_list.append(submodule)
+    module.add_submodule(submodule, args.force)
+
     #Add back to pipe once all submodules are declaed
-    pipe.add_module(module)
+    pipe.add_module(module, args.force)
     to_run[module.name] = submodules_list
     return to_run
    
@@ -114,8 +116,8 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
         if not args.dev:
             raise UserWarning("Missing config file")
         #dev branch
-        #config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
+        config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
+        #config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
 
     else:
         config_path = args.file

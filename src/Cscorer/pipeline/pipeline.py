@@ -36,8 +36,8 @@ class Pipeline(Observable):
         # Register handlers
         self._export()
 
-    def add_module(self, module:PipelineModule):
-        if module.name not in self.modules.keys():
+    def add_module(self, module:PipelineModule, force:bool = False):
+        if module.name not in self.modules.keys() or force:
             module.set_parent(self)
             self.modules[module.name] = module
             self._export()
