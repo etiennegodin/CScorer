@@ -19,12 +19,12 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     async with asyncio.TaskGroup() as tg:
         tg.create_task(submodule.steps['clean_gbif_citizen'].run(pipe, sql_folder = sql_folder))
         tg.create_task(submodule.steps['clean_gbif_expert'].run(pipe, sql_folder = sql_folder))
-
+    
     submodule.add_step(merge_inatOccurences)
     submodule.add_step(matchGbifDatasets)
     
-    tasks = [asyncio.create_task(step.run(pipe, sql_folder = sql_folder)) for step in submodule.steps.values()]
-    await asyncio.gather(*tasks)
+    await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
+    await submodule.steps['matchGbifDatasets'].run(pipe, sql_folder = sql_folder)
 
 async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
     pass

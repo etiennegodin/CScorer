@@ -3,7 +3,7 @@ from pathlib import Path
 import inspect
 from pathlib import Path
 from ...pipeline import Pipeline, PipelineStep, StepStatus
-
+import asyncio
 def who_called_me():
     # Frame 0 = this function
     # Frame 1 = direct caller
@@ -37,9 +37,12 @@ async def simple_sql_query(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
     
     try:
         con.execute(query)
-        step.status = StepStatus.completed
 
     except Exception as e:
-        pipe.logger.error(f"Failed to run query : {e}")
+        pipe.logger.error(f"Failed to run query :\n{e}")
         step.status = StepStatus.failed
+        raise RuntimeError(e)
+    
+    step.status = StepStatus.completed
+
     

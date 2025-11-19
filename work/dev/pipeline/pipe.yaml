@@ -200,18 +200,18 @@ modules:
     func: !!python/name:Cscorer.features.main.features_submodules ''
     init: '2025-11-19 00:48:02'
     name: features
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'completed'
     submodules:
       observer: !PipelineSubmodule
         func: !!python/name:Cscorer.features.observer.observer.observer_features ''
         init: '2025-11-19 00:48:02'
         name: observer
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps:
           observer: !PipelineStep
             config: {}
             func: *id004
-            init: '2025-11-19 01:08:39'
+            init: '2025-11-19 02:13:56'
             name: observer
-            status: !StepStatus 'failed'
+            status: !StepStatus 'completed'
             storage: {}
