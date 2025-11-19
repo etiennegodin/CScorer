@@ -81,7 +81,8 @@ def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
             sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
-            
+            module.add_submodule(submodule)
+
         #Add back to pipe once all submodules are declaed
         pipe.add_module(module)
         to_run[module.name] = submodules_list
