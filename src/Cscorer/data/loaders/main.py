@@ -9,7 +9,7 @@ from pprint import pprint
 
 ### Create instances for each class of data and run their queries
 
-async def data_loaders_steps(pipe:Pipeline, submodule:PipelineSubmodule):
+async def data_loaders(pipe:Pipeline, submodule:PipelineSubmodule):
     
     submodule.add_step(PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main))
     submodule.add_step(PipelineStep("data_load_gbif_expert", func = data_load_gbif_main))

@@ -1,13 +1,12 @@
-from .data.main import data_submodules
-from .features.main import features_submodules
-from .pipeline import Pipeline, PipelineModule, StepStatus
+from .pipeline import Pipeline, PipelineModule, PipelineSubmodule, StepStatus
 from .pipeline.yaml_support import read_config
 from .pipeline.core import load_function
+import Cscorer # to reload functions from string
 import yaml
 from pathlib import Path
 from pprint import pprint
-import logging
 import shutil
+import asyncio
 
 def pipe_reconstructor(pipeline:Pipeline):
     for module in pipeline.modules.values():
@@ -46,8 +45,18 @@ def init_folder(config:dict, config_path:Path)->dict:
     config['db_path'] = str(db_path)
 
     return config  
-      
-def init_pipeline(args, pipe_struct:dict)->Pipeline:
+
+def create_folders(folders:dict):
+    # Create folders 
+    for folder in folders.values():
+        Path(folder).mkdir(exist_ok= True)
+        
+def create_pipe_struct(args, pipe:Pipeline, pipe_struct:dict, module:str, submodule:str):
+    
+    pass
+    
+   
+def run_pipeline(args, pipe_struct:dict)->Pipeline:
     
     # Check if required file, else try dev mode
     if not args.file:
@@ -76,18 +85,17 @@ def init_pipeline(args, pipe_struct:dict)->Pipeline:
         if pipe_folder.exists():
             shutil.rmtree(str(pipe_folder))
             
+        # Re-create folders
+        create_folders(folders)        
         pipe = Pipeline(config = config)
         pipe.logger.info("Forcing new instance from scratch")
-
-    # Create folders 
-    for folder in folders.values():
-        Path(folder).mkdir(exist_ok= True)
-
+        
     #Read from disk 
     else:
         # New instance if totally new run 
         if not (pipe_folder /'pipe.yaml').exists() :
             # Create instance 
+            create_folders(folders)
             pipe = Pipeline(config = config)
             pipe.logger.info("No pipe data found, creating new instance from scratch")
 
@@ -100,28 +108,23 @@ def init_pipeline(args, pipe_struct:dict)->Pipeline:
 
             except Exception as e:
                 raise Exception(e)
+            
     if args.module == 'full':
-        for module, submodules in pipe_struct.items():
-            func = load_function(f"Cscorer.{module}.main.{module}_submodules")
-
-            module = PipelineModule(module, func = func)
-            print(module)
-            quit()
+        to_run = {}
+        for mod_name, submodules in pipe_struct.items():
+            mod_func = load_function(f"Cscorer.{mod_name}.main.{mod_name}_submodules")
+            module = PipelineModule(mod_name, func = mod_func)
+            submodules_list = []
+            for sub_name in submodules.keys():
+                sub_func = load_function(f"Cscorer.{mod_name}.{sub_name}.main.{mod_name}_{sub_name}")
+                submodule = PipelineSubmodule(sub_name, func= sub_func)
+                submodules_list.append(submodule)
+                
+            #Add back to pipe once all submodules are declaed
             pipe.add_module(module)
-            for sub in submodules.keys():
-                pass
-        
-    quit()
-    #Add modules
-    data_module = PipelineModule('data',  func = data_submodules)
-    features_module = PipelineModule('features',  func = features_submodules)    
+            to_run[module.name] = submodules_list
+            
+        asyncio.run(pipe.run(to_run))
     
-    pipe.add_module(data_module)
-    pipe.add_module(features_module)
-    
-    
-
-    pprint(pipe.modules)
-        
-
-    return pipe
+    if args.module == 'data':
+        pass

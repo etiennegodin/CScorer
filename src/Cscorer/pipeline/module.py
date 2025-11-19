@@ -36,7 +36,7 @@ class PipelineModule(Observable):
             self.submodules.pop(key)
             self._parent.logger.info(f"Reseted submodule {key}")
             
-    async def run(self):
+    async def run(self, submodules:list[PipelineSubmodule]):
         pipe = self._parent
         pipe.logger.info(f'Running module : {self.name}')
         func = self.func
@@ -45,8 +45,8 @@ class PipelineModule(Observable):
             await func(pipe, self)
         else:
             func(pipe,self)
-        
-        for sm in self.submodules.values():
+            
+        for sm in submodules:
             if sm.status != StepStatus.completed:
                 await sm.run(pipe)
                 self.status = StepStatus.incomplete
