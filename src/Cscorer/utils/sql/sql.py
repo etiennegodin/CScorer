@@ -37,7 +37,9 @@ async def simple_sql_query(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
     
     try:
         con.execute(query)
+        step.status = StepStatus.completed
+
     except Exception as e:
         pipe.logger.error(f"Failed to run query : {e}")
         step.status = StepStatus.failed
-    step.status = StepStatus.completed
+    
