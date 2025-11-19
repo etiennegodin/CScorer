@@ -38,7 +38,7 @@ class PipelineModule(Observable):
             
     async def run(self, submodules:list[PipelineSubmodule], force:bool = False):
         pipe = self._parent
-        pipe.logger.info(f'Running module : {self.name}')
+        pipe.logger.info(f"{'Forced' if force else ''}Running module : {self.name}")
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):

@@ -29,7 +29,7 @@ class PipelineSubmodule(Observable):
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
-            #await func(pipe, self)
+            await func(pipe, self)
             self.status = StepStatus.incomplete
         else:
             func(pipe,self)
