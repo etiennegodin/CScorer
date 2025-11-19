@@ -132,16 +132,15 @@ def main():
     
     #Add modules
     data_module = PipelineModule('data',  func = data_submodules)
-    features_module = PipelineModule('features',  func = features_submodules)
-
-    pipe.remove_module(features_module)
-    
+    features_module = PipelineModule('features',  func = features_submodules)    
     
     pipe.add_module(data_module)
     pipe.add_module(features_module)
+    
+    
 
     pprint(pipe.modules)
-    
+        
     asyncio.run(pipe.run())
 
 
