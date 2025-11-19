@@ -103,7 +103,7 @@ modules:
     status: !StepStatus 'completed'
     submodules:
       loaders: !PipelineSubmodule
-        func: !!python/name:Cscorer.data.loaders.main.data_loaders_steps ''
+        func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
         init: '2025-11-18 10:02:47'
         name: loaders
         status: !StepStatus 'completed'
@@ -198,20 +198,20 @@ modules:
             storage: {}
   features: !PipelineModule
     func: !!python/name:Cscorer.features.main.features_submodules ''
-    init: '2025-11-19 00:48:02'
+    init: '2025-11-19 14:47:39'
     name: features
     status: !StepStatus 'completed'
     submodules:
       observer: !PipelineSubmodule
-        func: !!python/name:Cscorer.features.observer.observer.observer_features ''
-        init: '2025-11-19 00:48:02'
+        func: !!python/name:Cscorer.features.observer.main.features_observer ''
+        init: '2025-11-19 14:47:39'
         name: observer
         status: !StepStatus 'completed'
         steps:
           observer: !PipelineStep
             config: {}
             func: *id004
-            init: '2025-11-19 02:13:56'
+            init: '2025-11-19 14:47:39'
             name: observer
             status: !StepStatus 'completed'
             storage: {}

@@ -18,8 +18,8 @@ class PipelineModule(Observable):
     status: StepStatus = StepStatus.init
     init:str = time.strftime("%Y-%m-%d %H:%M:%S")
         
-    def add_submodule(self, submodule:PipelineSubmodule):
-        if submodule.name not in self.submodules.keys():
+    def add_submodule(self, submodule:PipelineSubmodule, force:bool= False):
+        if submodule.name not in self.submodules.keys() or force:
             submodule.set_parent(self)
             self.submodules[submodule.name] = submodule
         
@@ -47,11 +47,8 @@ class PipelineModule(Observable):
             func(pipe,self)
         
         for sm in submodules:
-            if force:
-                await sm.run(pipe, force)
-                self.status = StepStatus.incomplete
-
-            if sm.status != StepStatus.completed:                
+            sm = self.submodules[sm.name]
+            if sm.status != StepStatus.completed or force:                
                 await sm.run(pipe)
                 self.status = StepStatus.incomplete
             else:

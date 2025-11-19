@@ -94,35 +94,35 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-init: '2025-11-19 14:16:26'
+init: '2025-11-19 14:23:31'
 modules:
   data: !PipelineModule
     func: !!python/name:Cscorer.data.main.data_submodules ''
-    init: '2025-11-19 14:16:26'
+    init: '2025-11-19 14:23:31'
     name: data
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'completed'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
-        init: '2025-11-19 14:16:26'
+        init: '2025-11-19 14:23:31'
         name: loaders
         status: !StepStatus 'completed'
         steps: {}
       preprocessors: !PipelineSubmodule
         func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
-        init: '2025-11-19 14:16:26'
+        init: '2025-11-19 14:23:31'
         name: preprocessors
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps: {}
   features: !PipelineModule
     func: !!python/name:Cscorer.features.main.features_submodules ''
-    init: '2025-11-19 14:16:26'
+    init: '2025-11-19 14:23:31'
     name: features
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'completed'
     submodules:
       observer: !PipelineSubmodule
         func: !!python/name:Cscorer.features.observer.main.features_observer ''
-        init: '2025-11-19 14:16:26'
+        init: '2025-11-19 14:23:31'
         name: observer
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps: {}
