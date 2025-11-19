@@ -66,7 +66,7 @@ class Pipeline(Observable):
             self.logger.error(f"Failed to persist pipeline storage : {e}") 
             return False
     
-    async def run(self, to_run:dict[str:list[PipelineSubmodule]]):
+    async def run(self, to_run:dict[str:list[PipelineSubmodule]], force:bool = False):
         """_summary_
 
         Args:
@@ -75,9 +75,15 @@ class Pipeline(Observable):
         from .enums import StepStatus
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
+            print(module.submodules)
             if module.status == StepStatus.incomplete:
                 continue
             for sm in submodules:
+                sm = module.submodules[sm.name]
+                if force:
+                    sm.status = StepStatus.incomplete
+                    module.status = StepStatus.incomplete
+                    continue
                 if sm.status == StepStatus.incomplete:
                     continue
                 for st in sm.steps.values():
@@ -88,7 +94,7 @@ class Pipeline(Observable):
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
             if module.status != StepStatus.completed:
-                await module.run(submodules)
+                await module.run(submodules, force)
             else:
                 self.logger.info(f"{module.name} module is completed")
             
