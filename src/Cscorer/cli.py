@@ -1,4 +1,4 @@
-from .main import init_pipeline
+from .main import run_pipeline
 from .utils.debug import launch_debugger
 from .pipeline.yaml_support import read_config
 import argparse
@@ -54,6 +54,6 @@ def main():
     print(args)
     
     # Init pipeline 
-    pipe = init_pipeline(args, pipe_struct)
+    pipe = run_pipeline(args, pipe_struct)
 
     #asyncio.run(pipe.run())

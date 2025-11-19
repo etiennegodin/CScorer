@@ -8,7 +8,7 @@ import yaml
 import duckdb
 from .yaml_support import yaml_serializable
 from .core import Observable, check_completion
-from .module import PipelineModule
+from .module import PipelineModule, PipelineSubmodule
 
 @yaml_serializable()
 @dataclass
@@ -66,24 +66,31 @@ class Pipeline(Observable):
             self.logger.error(f"Failed to persist pipeline storage : {e}") 
             return False
     
-    async def run(self):
+    async def run(self, to_run:dict[str:list[PipelineSubmodule]]):
+        """_summary_
+
+        Args:
+            to_run (dict): {PipelineModule : list[PipelineSubmodules]}
+        """
         from .enums import StepStatus
-        for m in self.modules.values():
-            if m.status == StepStatus.incomplete:
+        for module_name, submodules in to_run.items():
+            module = self.modules[module_name]
+            if module.status == StepStatus.incomplete:
                 continue
-            for sm in m.submodules.values():
+            for sm in submodules:
                 if sm.status == StepStatus.incomplete:
                     continue
                 for st in sm.steps.values():
                     if st.status != StepStatus.completed:
                         sm.status = StepStatus.incomplete
-                        m.status = StepStatus.incomplete
+                        module.status = StepStatus.incomplete
         
-        for m in self.modules.values():
-            if m.status != StepStatus.completed:
-                await m.run()
+        for module_name, submodules in to_run.items():
+            module = self.modules[module_name]
+            if module.status != StepStatus.completed:
+                await module.run(submodules)
             else:
-                self.logger.info(f"{m.name} module is completed")
+                self.logger.info(f"{module.name} module is completed")
             
     
     def rebuild_runtime(self):

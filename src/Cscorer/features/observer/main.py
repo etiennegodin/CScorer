@@ -13,7 +13,7 @@ from pathlib import Path
 - observation_detail_length (metadata richness)
 """
 
-async def observer_features(pipe:Pipeline, submodule:PipelineSubmodule):
+async def features_observer(pipe:Pipeline, submodule:PipelineSubmodule):
     sql_folder = Path(__file__).parent
     submodule.reset_steps()
     observer = PipelineStep( "observer", func = simple_sql_query)

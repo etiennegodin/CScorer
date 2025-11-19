@@ -94,5 +94,35 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-init: '2025-11-19 12:50:21'
-modules: {}
+init: '2025-11-19 13:12:41'
+modules:
+  data: !PipelineModule
+    func: !!python/name:Cscorer.data.main.data_submodules ''
+    init: '2025-11-19 13:12:41'
+    name: data
+    status: !StepStatus 'init'
+    submodules:
+      loaders: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
+        init: '2025-11-19 13:12:41'
+        name: loaders
+        status: !StepStatus 'init'
+        steps: {}
+      preprocessors: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
+        init: '2025-11-19 13:12:41'
+        name: preprocessors
+        status: !StepStatus 'init'
+        steps: {}
+  features: !PipelineModule
+    func: !!python/name:Cscorer.features.main.features_submodules ''
+    init: '2025-11-19 13:12:41'
+    name: features
+    status: !StepStatus 'init'
+    submodules:
+      observer: !PipelineSubmodule
+        func: !!python/name:Cscorer.features.observer.main.features_observer ''
+        init: '2025-11-19 13:12:41'
+        name: observer
+        status: !StepStatus 'init'
+        steps: {}
