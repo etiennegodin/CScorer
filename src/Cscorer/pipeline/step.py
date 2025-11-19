@@ -20,7 +20,7 @@ class PipelineStep(Observable):
     async def run(self, pipe:Pipeline, *args, **kwargs):
         from .enums import StepStatus
         if self.status != StepStatus.completed:
-            pipe.logger.info(f'Running step : {self.name}')
+            pipe.logger.info(f'\t\tRunning step : {self.name}')
             func = self.func
             #func = load_function(self.func)
             if inspect.iscoroutinefunction(func):
@@ -28,6 +28,6 @@ class PipelineStep(Observable):
             else:
                 return func(pipe, *args, step = self, **kwargs)
         else:
-            pipe.logger.info(f"{self.name} step is completed")
+            pipe.logger.info(f"\t\t{self.name} step is completed")
 
         
