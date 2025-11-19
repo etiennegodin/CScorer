@@ -14,14 +14,6 @@ from pprint import pprint
 import logging
 import shutil
 
-# as meta config
-steps = ["get_gbif_data",
-         "get_inaturalist_occurence_data",
-         "get_inaturalist_observer_data",
-         "get_environmental_data"]
-
-modules = ['data', 'features', 'model']
-
 
 def pipe_reconstructor(pipeline:Pipeline):
     for module in pipeline.modules.values():
@@ -104,53 +96,3 @@ def init_pipeline(args)->Pipeline:
             raise Exception(e)
 
     return pipe
-
-
-def main():
-    
-    parser = argparse.ArgumentParser(
-                    prog='BioCity',
-                    description='What the program does',
-                    epilog='Text at the bottom of help'
-    )
-    
-    parser.add_argument("--file", "-f",help = 'Config File')
-    parser.add_argument("--module", choices=modules, help = "Optionnal run only one module")
-    parser.add_argument("--step", choices=steps, help = "Optionnal run only one step")
-    parser.add_argument("--dev", "-d", action= 'store_true', help = 'Run dev')
-    parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
-    parser.add_argument("--force", action= 'store_true', help = 'Force re-run')
-
-    args = parser.parse_args()
-
-    # Debugger
-    if args.debug:
-        launch_debugger()
-    
-    # Init pipeline 
-    pipe = init_pipeline(args)
-    
-    #Add modules
-    data_module = PipelineModule('data',  func = data_submodules)
-    features_module = PipelineModule('features',  func = features_submodules)    
-    
-    pipe.add_module(data_module)
-    pipe.add_module(features_module)
-    
-    
-
-    pprint(pipe.modules)
-        
-    asyncio.run(pipe.run())
-
-
-           
-        
-    
-    # eda 
-
-    
-    
-    
-    
-    
