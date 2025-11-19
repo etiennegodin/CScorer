@@ -41,6 +41,13 @@ class Pipeline(Observable):
             module.set_parent(self)
             self.modules[module.name] = module
             self._export()
+            
+    def remove_module(self, module:PipelineModule):
+        if module.name in self.modules.keys():
+            self.modules.pop(module.name)
+            self.logger.info(f"Reseted module {module.name}")
+        else:
+            self.logger.warning(f"Erro removing ,odule {module.name} from pipeline - Not found in pipeline's modules")
 
     def update(self):
         self._export()

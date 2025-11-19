@@ -134,6 +134,9 @@ def main():
     data_module = PipelineModule('data',  func = data_submodules)
     features_module = PipelineModule('features',  func = features_submodules)
 
+    pipe.remove_module(features_module)
+    
+    
     pipe.add_module(data_module)
     pipe.add_module(features_module)
 

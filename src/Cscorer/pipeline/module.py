@@ -27,8 +27,14 @@ class PipelineModule(Observable):
         if self._parent:
             self._parent._child_updated(child, key, old, new)
     
-    def reset_submodules(self):
-        self.submodules = {}
+    def remove_submodule(self, submodule:str/PipelineSubmodule):
+        if isinstance(submodule, PipelineSubmodule):
+            key = submodule.name
+        else:
+            key = submodule
+        if key in self.submodules.keys():
+            self.modules.pop(key)
+            self.logger.info(f"Reseted submodule {key}")
             
     async def run(self):
         pipe = self._parent

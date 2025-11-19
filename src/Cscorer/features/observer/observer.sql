@@ -21,7 +21,7 @@ gbif_metadata  AS (
 
 SELECT
 COUNT(*) as observations_count,
-ROUND(100.0000 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS total_pct,
+ROUND(100.0000 * COUNT(*) / SUM(COUNT(*)) OVER (), 6) AS total_pct,
 COUNT(DISTINCT class) as class_count,
 COUNT(DISTINCT "order") as order_count,
 COUNT(DISTINCT family) as family_count,

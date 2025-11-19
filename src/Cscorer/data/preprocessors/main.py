@@ -32,7 +32,7 @@ async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep, sql_folder:Pat
     file_name = 'clean_gbif'
     file_path = sql_folder / f"{file_name}.sql"
     
-    template = read_sql_template(file_path, local= True)
+    template = read_sql_template(file_path)
     query = template.render(target_table_name = target_table_name, source_table_name = source_table_name)
     
     try:
