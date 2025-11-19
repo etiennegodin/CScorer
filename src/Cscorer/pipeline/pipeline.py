@@ -75,7 +75,6 @@ class Pipeline(Observable):
         from .enums import StepStatus
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
-            print(module.submodules)
             if module.status == StepStatus.incomplete:
                 continue
             for sm in submodules:

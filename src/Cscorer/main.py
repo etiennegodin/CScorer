@@ -128,7 +128,7 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
     pipe_folder = Path(folders['pipeline_folder'])
     
     # Force flag to wipe data
-    if args.force:
+    if args.force and args.module == 'full':
         data_folder = Path(folders['data_folder'])
         pipe_folder = Path(folders['pipeline_folder'])
         if data_folder.exists():
