@@ -198,20 +198,20 @@ modules:
             storage: {}
   features: !PipelineModule
     func: !!python/name:Cscorer.features.main.features_submodules ''
-    init: '2025-11-18 17:42:14'
+    init: '2025-11-18 23:30:32'
     name: features
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'completed'
     submodules:
       observer: !PipelineSubmodule
-        func: !!python/name:Cscorer.features.observer.observer_features ''
-        init: '2025-11-18 17:58:43'
+        func: !!python/name:Cscorer.features.observer.observer.observer_features ''
+        init: '2025-11-18 23:30:32'
         name: observer
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps:
-          total_observations: !PipelineStep
+          observer: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.features.observer.test ''
-            init: '2025-11-18 17:58:43'
-            name: total_observations
-            status: !StepStatus 'init'
+            func: *id004
+            init: '2025-11-18 23:47:49'
+            name: observer
+            status: !StepStatus 'completed'
             storage: {}

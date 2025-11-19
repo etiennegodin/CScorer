@@ -25,7 +25,7 @@ class PipelineSubmodule(Observable):
         self.steps = {}
 
     async def run(self,pipe:Pipeline):
-        pipe.logger.info(f'Running submodule : {self.name}')
+        pipe.logger.info(f'\tRunning submodule : {self.name}')
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
