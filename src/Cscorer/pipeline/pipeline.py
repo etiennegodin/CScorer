@@ -7,7 +7,7 @@ import time
 import yaml
 import duckdb
 from .yaml_support import yaml_serializable
-from .core import Observable
+from .core import Observable, check_completion
 from .module import PipelineModule
 
 @yaml_serializable()
@@ -68,6 +68,17 @@ class Pipeline(Observable):
     
     async def run(self):
         from .enums import StepStatus
+        for m in self.modules.values():
+            if m.status == StepStatus.incomplete:
+                continue
+            for sm in m.submodules.values():
+                if sm.status == StepStatus.incomplete:
+                    continue
+                for st in sm.steps.values():
+                    if st.status != StepStatus.completed:
+                        sm.status = StepStatus.incomplete
+                        m.status = StepStatus.incomplete
+        
         for m in self.modules.values():
             if m.status != StepStatus.completed:
                 await m.run()

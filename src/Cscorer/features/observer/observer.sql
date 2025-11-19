@@ -5,8 +5,9 @@ CREATE OR REPLACE TABLE features.observers AS
 WITH inat_data AS (
 
 SELECT 
-    "json" ->> 'id' AS id,
-    "json" ->> 'login' AS login,
+    "json" ->> 'id' AS inat_id,
+    "json" ->> 'name' AS inat_name,
+    "json" ->> 'login' AS inat_login,
     "json" ->> 'orcid' AS orcid,
     "json" ->> 'observations_count' AS inat_obs_count,
     "json" ->> 'identifications_count' AS id_count,
@@ -27,15 +28,15 @@ COUNT(DISTINCT "order") as order_count,
 COUNT(DISTINCT family) as family_count,
 COUNT(DISTINCT genus) as genus_count,
 COUNT(DISTINCT species) as species_count,
-COUNT(DISTINCT "day") as unique_day_count,
+COUNT(DISTINCT "day") as unique_day_count, -- better way to find distribution 
 COUNT(DISTINCT "month") as unique_month_count,
-COUNT(DISTINCT "year") as unique_year_count,
+COUNT(DISTINCT "year") as unique_year_count, 
 AVG(coordinateUncertaintyInMeters) as avg_coord_un,
 MAX(coordinateUncertaintyInMeters) as max_coord_un,
 SUM(num_identification_agreements) as id_agree_count,
-100 * SUM(num_identification_agreements) / SUM(SUM(num_identification_agreements)) OVER () as id_agree_pct,
+100 * SUM(num_identification_agreements) / COUNT(num_identification_agreements) as id_agree_pct,
 SUM(num_identification_disagreements) as id_disagree_count,
-100 * SUM(num_identification_disagreements) / SUM(SUM(num_identification_disagreements)) OVER () as id_disagree_pct,
+100 * SUM(num_identification_disagreements) / COUNT(num_identification_disagreements) as id_disagree_pct,
 100 * SUM(description) / observations_count as description_pct,
 100 * SUM(expert_match) / observations_count as expert_match_pct,
 recordedBy
@@ -50,7 +51,7 @@ SELECT g.*, i.*
 
 FROM gbif_metadata g
 JOIN inat_data i
-    ON g.recordedBy = i.login
+    ON g.recordedBy = i.name
 
 
 

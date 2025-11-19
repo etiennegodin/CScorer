@@ -7,6 +7,7 @@ ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS description INTEG
 WITH inat_inter AS (
 
 SELECT 
+observed_on,
 url, 
 image_url,
 num_identification_agreements,

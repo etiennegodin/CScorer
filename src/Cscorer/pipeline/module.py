@@ -33,8 +33,8 @@ class PipelineModule(Observable):
         else:
             key = submodule
         if key in self.submodules.keys():
-            self.modules.pop(key)
-            self.logger.info(f"Reseted submodule {key}")
+            self.submodules.pop(key)
+            self._parent.logger.info(f"Reseted submodule {key}")
             
     async def run(self):
         pipe = self._parent
