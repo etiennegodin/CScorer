@@ -1,8 +1,8 @@
-ALTER TABLE preprocessed.gbif_citizen ADD COLUMN url TEXT;
-ALTER TABLE preprocessed.gbif_citizen ADD COLUMN image_url TEXT;
-ALTER TABLE preprocessed.gbif_citizen ADD COLUMN num_identification_agreements INTEGER;
-ALTER TABLE preprocessed.gbif_citizen ADD COLUMN num_identification_disagreements INTEGER;
-ALTER TABLE preprocessed.gbif_citizen ADD COLUMN description INTEGER;
+ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS url TEXT;
+ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS num_identification_agreements INTEGER;
+ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS num_identification_disagreements INTEGER;
+ALTER TABLE preprocessed.gbif_citizen ADD COLUMN IF NOT EXISTS description INTEGER;
 
 WITH inat_inter AS (
 
