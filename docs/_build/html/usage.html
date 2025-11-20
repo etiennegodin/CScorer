@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="Cscorer documentation" href="index.html" /> 
 </head>
 
@@ -41,12 +42,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-recipes">Creating recipes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Cscorer.main.build_full_module"><code class="docutils literal notranslate"><span class="pre">build_full_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Cscorer.main.build_full_submodule"><code class="docutils literal notranslate"><span class="pre">build_full_submodule()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
         </div>
@@ -82,6 +88,59 @@
 </pre></div>
 </div>
 </section>
+<section id="creating-recipes">
+<h2>Creating recipes<a class="headerlink" href="#creating-recipes" title="Link to this heading"></a></h2>
+<p>To retrieve a list of random ingredients,
+you can use the <code class="docutils literal notranslate"><span class="pre">test.test()</span></code> function:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Cscorer.main.build_full_module">
+<span class="sig-prename descclassname"><span class="pre">Cscorer.main.</span></span><span class="sig-name descname"><span class="pre">build_full_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe_struct</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Cscorer.main.build_full_module" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>args</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>pipe</strong> (<a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline" title="Cscorer.pipeline.pipeline.Pipeline"><em>Pipeline</em></a>) – _description_</p></li>
+<li><p><strong>pipe_struct</strong> (<em>dict</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Cscorer.main.build_full_submodule">
+<span class="sig-prename descclassname"><span class="pre">Cscorer.main.</span></span><span class="sig-name descname"><span class="pre">build_full_submodule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe_struct</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Cscorer.main.build_full_submodule" title="Link to this definition"></a></dt>
+<dd><p>Return a list of random ingredients as strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kind</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>None</em>) – Optional “kind” of .</p></li>
+<li><p><strong>pipe</strong> (<a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline" title="Cscorer.pipeline.pipeline.Pipeline"><em>Pipeline</em></a>)</p></li>
+<li><p><strong>pipe_struct</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lumache.InvalidKindError</strong> – If the kind is invalid.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ingredients list.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -89,6 +148,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Cscorer documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
