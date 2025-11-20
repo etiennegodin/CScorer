@@ -18,18 +18,27 @@ class PipelineModule(Observable):
     status: StepStatus = StepStatus.init
     init:str = time.strftime("%Y-%m-%d %H:%M:%S")
         
-    def add_submodule(self, submodule:PipelineSubmodule):
-        if submodule.name not in self.submodules.keys():
+    def add_submodule(self, submodule:PipelineSubmodule, force:bool= False):
+        if submodule.name not in self.submodules.keys() or force:
             submodule.set_parent(self)
             self.submodules[submodule.name] = submodule
         
     def _child_updated(self, child, key, old, new):
         if self._parent:
             self._parent._child_updated(child, key, old, new)
+    
+    def remove_submodule(self, submodule:str/PipelineSubmodule):
+        if isinstance(submodule, PipelineSubmodule):
+            key = submodule.name
+        else:
+            key = submodule
+        if key in self.submodules.keys():
+            self.submodules.pop(key)
+            self._parent.logger.info(f"Reseted submodule {key}")
             
-    async def run(self):
+    async def run(self, submodules:list[PipelineSubmodule], force:bool = False):
         pipe = self._parent
-        pipe.logger.info(f'Running module : {self.name}')
+        pipe.logger.info(f"{'Forced' if force else ''}Running module : {self.name}")
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
@@ -37,12 +46,13 @@ class PipelineModule(Observable):
         else:
             func(pipe,self)
         
-        for sm in self.submodules.values():
-            if sm.status != StepStatus.completed:
+        for sm in submodules:
+            sm = self.submodules[sm.name]
+            if sm.status != StepStatus.completed or force:                
                 await sm.run(pipe)
                 self.status = StepStatus.incomplete
             else:
-                pipe.logger.info(f"{sm.name} submodule is completed")
+                pipe.logger.info(f"\t{sm.name} submodule is completed")
 
         if check_completion(self.submodules):
             self.status = StepStatus.completed
