@@ -1,8 +1,0 @@
-
-[dev]
-pytest
-black
-ipykernel
-python-dotenv
-rich
-pre-commit

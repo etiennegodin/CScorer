@@ -1,5 +1,0 @@
-*data/
-*.env
-*.vscode/
-*.duckdb
-!src/Cscorer/data/
