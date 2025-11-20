@@ -61,6 +61,3 @@ dependencies:
       - aiolimiter
       - earthengine-ap
       - geemap
-      - google
-      - beautifulsoup4
-      - selenium
