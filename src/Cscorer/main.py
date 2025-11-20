@@ -1,26 +1,12 @@
-from .data.main import data_submodules
-from .utils.debug import launch_debugger
-from .pipeline import Pipeline, PipelineModule, StepStatus
+from .pipeline import Pipeline, PipelineModule, PipelineSubmodule, StepStatus
 from .pipeline.yaml_support import read_config
-
+from .pipeline.core import load_function
+import Cscorer # to reload functions from string
 import yaml
 from pathlib import Path
-import argparse
-import subprocess
-import asyncio
-
 from pprint import pprint
-import logging
 import shutil
-
-# as meta config
-steps = ["get_gbif_data",
-         "get_inaturalist_occurence_data",
-         "get_inaturalist_observer_data",
-         "get_environmental_data"]
-
-modules = ['data', 'features', 'model']
-
+import asyncio
 
 def pipe_reconstructor(pipeline:Pipeline):
     for module in pipeline.modules.values():
@@ -29,23 +15,8 @@ def pipe_reconstructor(pipeline:Pipeline):
             sub._parent = module
             for step in sub.steps.values():
                 step._parent = sub
-                
-def init_pipeline(args)->Pipeline:
-    
-    # Check if required file, else try dev mode
-    if not args.file:
-        if not args.dev:
-            raise UserWarning("Missing config file")
-        #dev branch
-        config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
-        #config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
-
-    else:
-        config_path = args.file
-    
-    #Config as dict
-    config = read_config(config_path)
-    
+   
+def init_folder(config:dict, config_path:Path)->dict:
     folders = {}
     run_folder = Path(config_path).parent
     pipe_folder = (run_folder / 'pipeline')
@@ -72,79 +43,132 @@ def init_pipeline(args)->Pipeline:
     #Add to config dict
     config['folders'] = folders
     config['db_path'] = str(db_path)
+
+    return config  
+
+def create_folders(folders:dict):
+    # Create folders 
+    for folder in folders.values():
+        Path(folder).mkdir(exist_ok= True)
+        
+def build_full_pipeline(args, pipe:Pipeline, pipe_struct)->dict:
+    to_run = {}
+    for module_name, submodules in pipe_struct.items():
+        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        module = PipelineModule(module_name, func = mod_func)
+        submodules_list = []
+        for submodule_name in submodules.keys():
+            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            submodule = PipelineSubmodule(submodule_name, func= sub_func)
+            submodules_list.append(submodule)
+            module.add_submodule(submodule, args.force)
+        #Add back to pipe once all submodules are declaed
+        pipe.add_module(module, args.force)
+        to_run[module.name] = submodules_list 
+    return to_run
+        
+def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
+    to_run = {}
+    module_name = args.module
+    submodules_name = args.submodule
     
+    if submodules_name == "full":
+        submodules = pipe_struct[module_name].keys() # get all submodules 
+        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        module = PipelineModule(module_name, func = mod_func)
+        submodules_list = []
+        for submodule_name in submodules:
+            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            submodule = PipelineSubmodule(submodule_name, func= sub_func)
+            submodules_list.append(submodule)
+            module.add_submodule(submodule, args.force)
+
+        #Add back to pipe once all submodules are declaed
+        pipe.add_module(module, args.force)
+        to_run[module.name] = submodules_list
+    return to_run
+    
+    
+def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
+    to_run = {}
+    module_name = args.module
+    submodule_name = args.submodule
+    submodules = [] #need to be a list even if single submodule
+    
+    mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+    module = PipelineModule(module_name, func = mod_func)
+    submodules_list = []
+
+    sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+    submodule = PipelineSubmodule(submodule_name, func= sub_func)
+    submodules_list.append(submodule)
+    module.add_submodule(submodule, args.force)
+
+    #Add back to pipe once all submodules are declaed
+    pipe.add_module(module, args.force)
+    to_run[module.name] = submodules_list
+    return to_run
+   
+def run_pipeline(args, pipe_struct:dict)->Pipeline:
+    
+    # Check if required file, else try dev mode
+    if not args.file:
+        if not args.dev:
+            raise UserWarning("Missing config file")
+        #dev branch
+        config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
+        #config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
+
+    else:
+        config_path = args.file
+    
+    #Config as dict
+    config = read_config(config_path)
+    #Create folder structure
+    config = init_folder(config, config_path)
+    folders = config['folders']
+    pipe_folder = Path(folders['pipeline_folder'])
     
     # Force flag to wipe data
-    if args.force:
+    if args.force and args.module == 'full':
+        data_folder = Path(folders['data_folder'])
+        pipe_folder = Path(folders['pipeline_folder'])
         if data_folder.exists():
             shutil.rmtree(str(data_folder))
         if pipe_folder.exists():
             shutil.rmtree(str(pipe_folder))
-        
-    # Create folders 
-    for folder in folders.values():
-        Path(folder).mkdir(exist_ok= True)
-
-    #New instance if totally new run (or forced)
-    if not (pipe_folder/'pipe.yaml').exists() :
-        logging.info("No pipe data found, creating new instance from scratch")
-        # Create instance 
+            
+        # Re-create folders
+        create_folders(folders)        
         pipe = Pipeline(config = config)
-
+        pipe.logger.info("Forcing new instance from scratch")
+        
     #Read from disk 
     else:
-        try:
-            #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
-            pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
-            pipe_reconstructor(pipe)
-            logging.info("Previous pipe data found, creating new instance from data on disk")
+        # New instance if totally new run 
+        if not (pipe_folder /'pipe.yaml').exists() :
+            # Create instance 
+            create_folders(folders)
+            pipe = Pipeline(config = config)
+            pipe.logger.info("No pipe data found, creating new instance from scratch")
 
-        except Exception as e:
-            raise Exception(e)
+        else:
+            try:
+                #pipe = Pipeline.from_yaml_file(pipe_folder/'pipe.yaml')
+                pipe = yaml.load(open(pipe_folder/'pipe.yaml'), Loader=yaml.FullLoader)
+                pipe_reconstructor(pipe)
+                pipe.logger.info("Previous pipe data found, creating new instance from data on disk")
 
-    return pipe
+            except Exception as e:
+                raise Exception(e)
+            
+    if args.module == 'full':
+        to_run = build_full_pipeline(args, pipe, pipe_struct)
 
+    else:
+        if args.submodule == "full":
+            to_run = build_full_module(args, pipe, pipe_struct)
+        else:
+            to_run = build_full_submodule(args, pipe, pipe_struct)
 
-def main():
-    
-    parser = argparse.ArgumentParser(
-                    prog='BioCity',
-                    description='What the program does',
-                    epilog='Text at the bottom of help'
-    )
-    
-    parser.add_argument("--file", "-f",help = 'Config File')
-    parser.add_argument("--module", choices=modules, help = "Optionnal run only one module")
-    parser.add_argument("--step", choices=steps, help = "Optionnal run only one step")
-    parser.add_argument("--dev", "-d", action= 'store_true', help = 'Run dev')
-    parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
-    parser.add_argument("--force", action= 'store_true', help = 'Force re-run')
-
-    args = parser.parse_args()
-
-    # Debugger
-    if args.debug:
-        launch_debugger()
-    
-    # Init pipeline 
-    pipe = init_pipeline(args)
-    
-    #Add modules
-    data_module = PipelineModule('data',  func = data_submodules)
-    pipe.add_module(data_module)
-    
-    pprint(pipe.modules)
-    
-    asyncio.run(pipe.run())
-
-
-           
-        
-    
-    # eda 
-
-    
-    
-    
-    
-    
+    asyncio.run(pipe.run(to_run, args.force))

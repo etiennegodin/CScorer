@@ -7,8 +7,8 @@ import time
 import yaml
 import duckdb
 from .yaml_support import yaml_serializable
-from .core import Observable
-from .module import PipelineModule
+from .core import Observable, check_completion
+from .module import PipelineModule, PipelineSubmodule
 
 @yaml_serializable()
 @dataclass
@@ -36,11 +36,18 @@ class Pipeline(Observable):
         # Register handlers
         self._export()
 
-    def add_module(self, module:PipelineModule):
-        if module.name not in self.modules.keys():
+    def add_module(self, module:PipelineModule, force:bool = False):
+        if module.name not in self.modules.keys() or force:
             module.set_parent(self)
             self.modules[module.name] = module
             self._export()
+            
+    def remove_module(self, module:PipelineModule):
+        if module.name in self.modules.keys():
+            self.modules.pop(module.name)
+            self.logger.info(f"Reseted module {module.name}")
+        else:
+            self.logger.warning(f"Erro removing ,odule {module.name} from pipeline - Not found in pipeline's modules")
 
     def update(self):
         self._export()
@@ -59,14 +66,36 @@ class Pipeline(Observable):
             self.logger.error(f"Failed to persist pipeline storage : {e}") 
             return False
     
-    async def run(self):
+    async def run(self, to_run:dict[str:list[PipelineSubmodule]], force:bool = False):
+        """_summary_
+
+        Args:
+            to_run (dict): {PipelineModule : list[PipelineSubmodules]}
+        """
         from .enums import StepStatus
-        for m in self.modules.values():
-            print(m.status)
-            if m.status != StepStatus.completed:
-                await m.run()
+        for module_name, submodules in to_run.items():
+            module = self.modules[module_name]
+            if module.status == StepStatus.incomplete:
+                continue
+            for sm in submodules:
+                sm = module.submodules[sm.name]
+                if force:
+                    sm.status = StepStatus.incomplete
+                    module.status = StepStatus.incomplete
+                    continue
+                if sm.status == StepStatus.incomplete:
+                    continue
+                for st in sm.steps.values():
+                    if st.status != StepStatus.completed:
+                        sm.status = StepStatus.incomplete
+                        module.status = StepStatus.incomplete
+        
+        for module_name, submodules in to_run.items():
+            module = self.modules[module_name]
+            if module.status != StepStatus.completed:
+                await module.run(submodules, force)
             else:
-                self.logger.info(f"{m.name} module is completed")
+                self.logger.info(f"{module.name} module is completed")
             
     
     def rebuild_runtime(self):

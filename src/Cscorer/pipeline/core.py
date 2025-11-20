@@ -3,17 +3,21 @@ from dataclasses import dataclass, field
 import time
 import importlib
 
-def check_completion(items:dict):
+
+def check_completion(items:dict/list):
     from .enums import StepStatus
     completion = True
-    for item in items.values():
-        if item.status != StepStatus.completed:
-                completion = False
+    if isinstance(items,dict):
+        for item in items.values():
+            if item.status != StepStatus.completed:
+                    completion = False
+    elif isinstance(items, list):
+        for item in items:
+            if item.status != StepStatus.completed:
+                    completion = False
     return completion
 
 def load_function(path: str):
-    print(path)
-    print(type(path))
     mod_name, func_name = path.rsplit(".", 1)
     module = importlib.import_module(mod_name)
     return getattr(module, func_name)

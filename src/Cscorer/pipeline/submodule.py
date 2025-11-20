@@ -24,8 +24,8 @@ class PipelineSubmodule(Observable):
     def reset_steps(self):
         self.steps = {}
 
-    async def run(self,pipe:Pipeline):
-        pipe.logger.info(f'Running submodule : {self.name}')
+    async def run(self,pipe:Pipeline, force:bool= False):
+        pipe.logger.info(f"\t{'Forced' if force else ''} Running submodule : {self.name}")
         func = self.func
         #func = load_function(self.func)
         if inspect.iscoroutinefunction(func):
@@ -37,6 +37,7 @@ class PipelineSubmodule(Observable):
         
         if check_completion(self.steps):
             self.status = StepStatus.completed
+        return
 
         
     def _child_updated(self, child, key, old, new):

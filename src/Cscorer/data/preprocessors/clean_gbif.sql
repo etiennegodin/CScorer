@@ -25,7 +25,11 @@ g.geom,
 CASE
     WHEN coordinateUncertaintyInMeters IS NULL THEN 0
     ELSE coordinateUncertaintyInMeters
-END AS coordinateUncertaintyInMeters
+END AS coordinateUncertaintyInMeters,
+(
+    length(g.mediaType) 
+  - length(replace(g.mediaType, 'StillImage', ''))
+) / length('StillImage') AS media_count
 
 
 FROM {{source_table_name}} g
