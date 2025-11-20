@@ -1,0 +1,29 @@
+Results of doctest builder run on 2025-11-19 21:49:45
+=====================================================
+
+Document: usage
+---------------
+**********************************************************************
+File "usage.rst", line 44, in default
+Failed example:
+    Cscorer.test_docs()
+Exception raised:
+    Traceback (most recent call last):
+      File "/home/manat/miniconda3/envs/RScorerEnv/lib/python3.11/doctest.py", line 1355, in __run
+        exec(compile(example.source, filename, "single",
+      File "<doctest default[1]>", line 1, in <module>
+        Cscorer.test_docs()
+    TypeError: test_docs() missing 2 required positional arguments: 'x' and 'y'
+**********************************************************************
+1 items had failures:
+   1 of   2 in default
+2 tests in 1 items.
+1 passed and 1 failed.
+***Test Failed*** 1 failures.
+
+Doctest summary
+===============
+    2 tests
+    1 failure in tests
+    0 failures in setup code
+    0 failures in cleanup code

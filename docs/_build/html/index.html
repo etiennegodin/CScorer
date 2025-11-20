@@ -41,9 +41,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
         </div>
@@ -83,10 +83,280 @@ Facts database</a> and offers a <em>simple</em> and
 <p>This project is under active development.</p>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#creating-recipes">Creating recipes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#Cscorer.main.build_full_module"><code class="docutils literal notranslate"><span class="pre">build_full_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#Cscorer.main.build_full_submodule"><code class="docutils literal notranslate"><span class="pre">build_full_submodule()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/Cscorer.html">Cscorer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.cli.html">Cscorer.cli</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.cli.html#Cscorer.cli.dynamic_pipe_argparse"><code class="docutils literal notranslate"><span class="pre">dynamic_pipe_argparse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.cli.html#Cscorer.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.data.html">Cscorer.data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.data.loaders.html">Cscorer.data.loaders</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.base.html">Cscorer.data.loaders.base</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.base.html#Cscorer.data.loaders.base.BaseLoader"><code class="docutils literal notranslate"><span class="pre">BaseLoader</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.base.html#Cscorer.data.loaders.base.BaseLoader.run"><code class="docutils literal notranslate"><span class="pre">BaseLoader.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.factory.html">Cscorer.data.loaders.factory</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.factory.html#Cscorer.data.loaders.factory.create_query"><code class="docutils literal notranslate"><span class="pre">create_query()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html">Cscorer.data.loaders.gbif</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifLoader"><code class="docutils literal notranslate"><span class="pre">GbifLoader</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifLoader.__init__"><code class="docutils literal notranslate"><span class="pre">GbifLoader.__init__()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifLoader.run"><code class="docutils literal notranslate"><span class="pre">GbifLoader.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate"><code class="docutils literal notranslate"><span class="pre">GbifPredicate</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate.__init__"><code class="docutils literal notranslate"><span class="pre">GbifPredicate.__init__()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate.add_field"><code class="docutils literal notranslate"><span class="pre">GbifPredicate.add_field()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate.add_geometry"><code class="docutils literal notranslate"><span class="pre">GbifPredicate.add_geometry()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate.build"><code class="docutils literal notranslate"><span class="pre">GbifPredicate.build()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gbif.html#Cscorer.data.loaders.gbif.GbifPredicate.to_dict"><code class="docutils literal notranslate"><span class="pre">GbifPredicate.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.gee.html">Cscorer.data.loaders.gee</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.gee.html#Cscorer.data.loaders.gee.GeeLoader"><code class="docutils literal notranslate"><span class="pre">GeeLoader</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gee.html#Cscorer.data.loaders.gee.GeeLoader.__init__"><code class="docutils literal notranslate"><span class="pre">GeeLoader.__init__()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.gee.html#Cscorer.data.loaders.gee.GeeLoader.run"><code class="docutils literal notranslate"><span class="pre">GeeLoader.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.gee.html#Cscorer.data.loaders.gee.upload_points"><code class="docutils literal notranslate"><span class="pre">upload_points()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html">Cscorer.data.loaders.inat</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatObsLoader"><code class="docutils literal notranslate"><span class="pre">iNatObsLoader</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatObsLoader.__init__"><code class="docutils literal notranslate"><span class="pre">iNatObsLoader.__init__()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatObsLoader.run"><code class="docutils literal notranslate"><span class="pre">iNatObsLoader.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatOccLoader"><code class="docutils literal notranslate"><span class="pre">iNatOccLoader</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatOccLoader.__init__"><code class="docutils literal notranslate"><span class="pre">iNatOccLoader.__init__()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.data.loaders.inat.html#Cscorer.data.loaders.inat.iNatOccLoader.run"><code class="docutils literal notranslate"><span class="pre">iNatOccLoader.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html">Cscorer.data.loaders.main</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_loaders"><code class="docutils literal notranslate"><span class="pre">data_loaders()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_load_gbif_main"><code class="docutils literal notranslate"><span class="pre">data_load_gbif_main()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_load_inat_occurence"><code class="docutils literal notranslate"><span class="pre">data_load_inat_occurence()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_load_inat_observer"><code class="docutils literal notranslate"><span class="pre">data_load_inat_observer()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_load_points"><code class="docutils literal notranslate"><span class="pre">data_load_points()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.loaders.main.html#Cscorer.data.loaders.main.data_load_sample_gee"><code class="docutils literal notranslate"><span class="pre">data_load_sample_gee()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.data.main.html">Cscorer.data.main</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.main.html#Cscorer.data.main.data_submodules"><code class="docutils literal notranslate"><span class="pre">data_submodules()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.data.preprocessors.html">Cscorer.data.preprocessors</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.data.preprocessors.main.html">Cscorer.data.preprocessors.main</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.preprocessors.main.html#Cscorer.data.preprocessors.main.data_preprocessors"><code class="docutils literal notranslate"><span class="pre">data_preprocessors()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.preprocessors.main.html#Cscorer.data.preprocessors.main.data_prepro_template"><code class="docutils literal notranslate"><span class="pre">data_prepro_template()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.data.preprocessors.main.html#Cscorer.data.preprocessors.main.clean_gbif_occurences"><code class="docutils literal notranslate"><span class="pre">clean_gbif_occurences()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.features.html">Cscorer.features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.community.html">Cscorer.features.community</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.ecological.html">Cscorer.features.ecological</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.main.html">Cscorer.features.main</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.features.main.html#Cscorer.features.main.features_submodules"><code class="docutils literal notranslate"><span class="pre">features_submodules()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.observer.html">Cscorer.features.observer</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.features.observer.main.html">Cscorer.features.observer.main</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.features.observer.main.html#Cscorer.features.observer.main.features_observer"><code class="docutils literal notranslate"><span class="pre">features_observer()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.features.observer.main.html#Cscorer.features.observer.main.test"><code class="docutils literal notranslate"><span class="pre">test()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.spatial.html">Cscorer.features.spatial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.features.temporal.html">Cscorer.features.temporal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.main.html">Cscorer.main</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.pipe_reconstructor"><code class="docutils literal notranslate"><span class="pre">pipe_reconstructor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.init_folder"><code class="docutils literal notranslate"><span class="pre">init_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.create_folders"><code class="docutils literal notranslate"><span class="pre">create_folders()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.build_full_pipeline"><code class="docutils literal notranslate"><span class="pre">build_full_pipeline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.build_full_module"><code class="docutils literal notranslate"><span class="pre">build_full_module()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.build_full_submodule"><code class="docutils literal notranslate"><span class="pre">build_full_submodule()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.main.html#Cscorer.main.run_pipeline"><code class="docutils literal notranslate"><span class="pre">run_pipeline()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.pipeline.html">Cscorer.pipeline</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.core.html">Cscorer.pipeline.core</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.core.html#Cscorer.pipeline.core.check_completion"><code class="docutils literal notranslate"><span class="pre">check_completion()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.core.html#Cscorer.pipeline.core.load_function"><code class="docutils literal notranslate"><span class="pre">load_function()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.core.html#Cscorer.pipeline.core.init_data"><code class="docutils literal notranslate"><span class="pre">init_data()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.core.html#Cscorer.pipeline.core.Observable"><code class="docutils literal notranslate"><span class="pre">Observable</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.core.html#Cscorer.pipeline.core.Observable.set_parent"><code class="docutils literal notranslate"><span class="pre">Observable.set_parent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html">Cscorer.pipeline.enums</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus"><code class="docutils literal notranslate"><span class="pre">StepStatus</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.init"><code class="docutils literal notranslate"><span class="pre">StepStatus.init</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.requested"><code class="docutils literal notranslate"><span class="pre">StepStatus.requested</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.pending"><code class="docutils literal notranslate"><span class="pre">StepStatus.pending</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.ready"><code class="docutils literal notranslate"><span class="pre">StepStatus.ready</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.local"><code class="docutils literal notranslate"><span class="pre">StepStatus.local</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.completed"><code class="docutils literal notranslate"><span class="pre">StepStatus.completed</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.failed"><code class="docutils literal notranslate"><span class="pre">StepStatus.failed</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.StepStatus.incomplete"><code class="docutils literal notranslate"><span class="pre">StepStatus.incomplete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.stepstatus_representer"><code class="docutils literal notranslate"><span class="pre">stepstatus_representer()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.enums.html#Cscorer.pipeline.enums.stepstatus_constructor"><code class="docutils literal notranslate"><span class="pre">stepstatus_constructor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.module.html">Cscorer.pipeline.module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule"><code class="docutils literal notranslate"><span class="pre">PipelineModule</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.name"><code class="docutils literal notranslate"><span class="pre">PipelineModule.name</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.func"><code class="docutils literal notranslate"><span class="pre">PipelineModule.func</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.submodules"><code class="docutils literal notranslate"><span class="pre">PipelineModule.submodules</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.status"><code class="docutils literal notranslate"><span class="pre">PipelineModule.status</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.init"><code class="docutils literal notranslate"><span class="pre">PipelineModule.init</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.add_submodule"><code class="docutils literal notranslate"><span class="pre">PipelineModule.add_submodule()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.remove_submodule"><code class="docutils literal notranslate"><span class="pre">PipelineModule.remove_submodule()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.run"><code class="docutils literal notranslate"><span class="pre">PipelineModule.run()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.module.html#Cscorer.pipeline.module.PipelineModule.__init__"><code class="docutils literal notranslate"><span class="pre">PipelineModule.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html">Cscorer.pipeline.pipeline</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline"><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.modules"><code class="docutils literal notranslate"><span class="pre">Pipeline.modules</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.config"><code class="docutils literal notranslate"><span class="pre">Pipeline.config</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.logger"><code class="docutils literal notranslate"><span class="pre">Pipeline.logger</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.con"><code class="docutils literal notranslate"><span class="pre">Pipeline.con</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.init"><code class="docutils literal notranslate"><span class="pre">Pipeline.init</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.from_yaml_file"><code class="docutils literal notranslate"><span class="pre">Pipeline.from_yaml_file()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.add_module"><code class="docutils literal notranslate"><span class="pre">Pipeline.add_module()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.remove_module"><code class="docutils literal notranslate"><span class="pre">Pipeline.remove_module()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.update"><code class="docutils literal notranslate"><span class="pre">Pipeline.update()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.run"><code class="docutils literal notranslate"><span class="pre">Pipeline.run()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.rebuild_runtime"><code class="docutils literal notranslate"><span class="pre">Pipeline.rebuild_runtime()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.pipeline.html#Cscorer.pipeline.pipeline.Pipeline.__init__"><code class="docutils literal notranslate"><span class="pre">Pipeline.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.step.html">Cscorer.pipeline.step</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep"><code class="docutils literal notranslate"><span class="pre">PipelineStep</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus</span></code></a><ul>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.init"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.init</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.requested"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.requested</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.pending"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.pending</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.ready"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.ready</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.local"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.local</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.completed"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.completed</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.failed"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.failed</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.StepStatus.incomplete"><code class="docutils literal notranslate"><span class="pre">PipelineStep.StepStatus.incomplete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.name"><code class="docutils literal notranslate"><span class="pre">PipelineStep.name</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.func"><code class="docutils literal notranslate"><span class="pre">PipelineStep.func</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.storage"><code class="docutils literal notranslate"><span class="pre">PipelineStep.storage</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.config"><code class="docutils literal notranslate"><span class="pre">PipelineStep.config</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.status"><code class="docutils literal notranslate"><span class="pre">PipelineStep.status</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.init"><code class="docutils literal notranslate"><span class="pre">PipelineStep.init</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.run"><code class="docutils literal notranslate"><span class="pre">PipelineStep.run()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.step.html#Cscorer.pipeline.step.PipelineStep.__init__"><code class="docutils literal notranslate"><span class="pre">PipelineStep.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html">Cscorer.pipeline.submodule</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.name"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.name</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.func"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.func</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.steps"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.steps</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.status"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.status</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.init"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.init</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.add_step"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.add_step()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.reset_steps"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.reset_steps()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.run"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.run()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.pipeline.submodule.html#Cscorer.pipeline.submodule.PipelineSubmodule.__init__"><code class="docutils literal notranslate"><span class="pre">PipelineSubmodule.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.pipeline.yaml_support.html">Cscorer.pipeline.yaml_support</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.yaml_support.html#Cscorer.pipeline.yaml_support.yaml_serializable"><code class="docutils literal notranslate"><span class="pre">yaml_serializable()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.pipeline.yaml_support.html#Cscorer.pipeline.yaml_support.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.test_docs.html">Cscorer.test_docs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.test_docs.html#Cscorer.test_docs.test"><code class="docutils literal notranslate"><span class="pre">test()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/Cscorer.utils.html">Cscorer.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.utils.core.html">Cscorer.utils.core</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.core.html#Cscorer.utils.core.convert_df_to_gdf"><code class="docutils literal notranslate"><span class="pre">convert_df_to_gdf()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.core.html#Cscorer.utils.core.rename_col_df"><code class="docutils literal notranslate"><span class="pre">rename_col_df()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.core.html#Cscorer.utils.core.to_Path"><code class="docutils literal notranslate"><span class="pre">to_Path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.utils.debug.html">Cscorer.utils.debug</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.debug.html#Cscorer.utils.debug.launch_debugger"><code class="docutils literal notranslate"><span class="pre">launch_debugger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html">Cscorer.utils.duckdb</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.load_spatial_extension"><code class="docutils literal notranslate"><span class="pre">load_spatial_extension()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.import_csv_to_db"><code class="docutils literal notranslate"><span class="pre">import_csv_to_db()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.export_to_shp"><code class="docutils literal notranslate"><span class="pre">export_to_shp()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.set_geom_bbox"><code class="docutils literal notranslate"><span class="pre">set_geom_bbox()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.create_schema"><code class="docutils literal notranslate"><span class="pre">create_schema()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.create_table"><code class="docutils literal notranslate"><span class="pre">create_table()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.get_all_tables"><code class="docutils literal notranslate"><span class="pre">get_all_tables()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.register_df"><code class="docutils literal notranslate"><span class="pre">register_df()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.create_table_from_view"><code class="docutils literal notranslate"><span class="pre">create_table_from_view()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.assign_table_alias"><code class="docutils literal notranslate"><span class="pre">assign_table_alias()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.gdf_to_duckdb"><code class="docutils literal notranslate"><span class="pre">gdf_to_duckdb()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.duckdb.html#Cscorer.utils.duckdb.get_table_columns"><code class="docutils literal notranslate"><span class="pre">get_table_columns()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/Cscorer.utils.sql.html">Cscorer.utils.sql</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/Cscorer.utils.sql.sql.html">Cscorer.utils.sql.sql</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.utils.sql.sql.html#Cscorer.utils.sql.sql.who_called_me"><code class="docutils literal notranslate"><span class="pre">who_called_me()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.utils.sql.sql.html#Cscorer.utils.sql.sql.read_sql_template"><code class="docutils literal notranslate"><span class="pre">read_sql_template()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.utils.sql.sql.html#Cscorer.utils.sql.sql.read_sql_file"><code class="docutils literal notranslate"><span class="pre">read_sql_file()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="generated/Cscorer.utils.sql.sql.html#Cscorer.utils.sql.sql.simple_sql_query"><code class="docutils literal notranslate"><span class="pre">simple_sql_query()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

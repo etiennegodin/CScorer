@@ -51,7 +51,7 @@ def create_folders(folders:dict):
     for folder in folders.values():
         Path(folder).mkdir(exist_ok= True)
         
-def build_full_pipeline(args, pipe:Pipeline, pipe_struct)->dict:
+def build_full_pipeline(args, pipe:"Pipeline", pipe_struct)->dict:
     to_run = {}
     for module_name, submodules in pipe_struct.items():
         mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
@@ -67,7 +67,17 @@ def build_full_pipeline(args, pipe:Pipeline, pipe_struct)->dict:
         to_run[module.name] = submodules_list 
     return to_run
         
-def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
+def build_full_module(args, pipe:"Pipeline", pipe_struct:dict)->dict:
+    """_summary_
+
+    Args:
+        args (_type_): _description_
+        pipe (Pipeline): _description_
+        pipe_struct (dict): _description_
+
+    Returns:
+        dict: _description_
+    """
     to_run = {}
     module_name = args.module
     submodules_name = args.submodule
@@ -90,6 +100,16 @@ def build_full_module(args, pipe:Pipeline, pipe_struct:dict)->dict:
     
     
 def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
+    """
+    Return a list of random ingredients as strings.
+
+    :param kind: Optional "kind" of .
+    :type kind: list[str] or None
+    :raise lumache.InvalidKindError: If the kind is invalid.
+    :return: The ingredients list.
+    :rtype: list[str]
+
+    """
     to_run = {}
     module_name = args.module
     submodule_name = args.submodule
