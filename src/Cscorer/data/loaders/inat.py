@@ -22,14 +22,12 @@ class iNatObsLoader(BaseLoader):
         self.limiter = AsyncLimiter(pipe.config['inat_api']['max_calls_per_minute'], 60)
         step_name = self.name
         self.queue  = Queue()
-        self.table_name = "inat.observers"
-        self.schema = 'inat'
+        self.table_name = "raw.inat_observers"
         if step.status == StepStatus.completed:
             logger.info(f"{step_name} already completed")
             #SKip 
             return self.table_name
          
-        create_schema(con, self.schema)
         
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id INTEGER, user_login TEXT, json JSON)")
@@ -162,7 +160,7 @@ class iNatOccLoader(BaseLoader):
                     
             occ_tables = []
             for f in files:
-                occ_table = await import_csv_to_db(pipe.con,f,'inat','occurences', replace= False)
+                occ_table = await import_csv_to_db(pipe.con,f,'raw','inat_occurences', replace= False)
                 occ_tables.append(occ_table)
                 
             if occ_tables == len(files):
@@ -217,7 +215,7 @@ async def _get_occurenceIDs(con):
 async def _get_observers(con)->list[tuple]:
     query = """
             SELECT DISTINCT recordedBy,
-            FROM gbif_raw.citizen
+            FROM raw.gbif_citizen
             WHERE institutionCode = 'iNaturalist'
             ORDER BY recordedBy ASC;
     """

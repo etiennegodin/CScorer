@@ -45,7 +45,7 @@ class GeeLoader(BaseLoader):
         #Main
         if step.status == StepStatus.init:
             logger.info(f'Launching sampling procees for {self.name}')
-            step.storage['db'] = f"gee.{table_name}"
+            step.storage['db'] = f"raw_.gee_{table_name}"
             #Set chunks
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
@@ -97,7 +97,7 @@ class GeeLoader(BaseLoader):
     async def _save_to_db(self, con, table_name, logger):
         #Savng to db
         df = self.df
-        con.execute(f"CREATE OR REPLACE TABLE gee.{table_name} AS SELECT * FROM df")
+        con.execute(f"CREATE OR REPLACE TABLE raw.gee_{table_name} AS SELECT * FROM df")
             
         logger.info(f"Successfully saved {table_name} samples to disk")
         return table_name
@@ -224,7 +224,7 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
         table = s.storage['db']
         tables.append(table)
         #Make folder 
-        data_name = table.split(sep='.')[1]
+        data_name = table.split(sep='_')[1]
         sub_folder = Path(f"{output_folder}/{data_name}")
         sub_folder.mkdir(exist_ok= True)
         files.append(sub_folder / f"{data_name}_occurences.shp")
@@ -238,7 +238,7 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
 
     if step.status == StepStatus.local:
         #Upload these points to gee 
-        uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step))  for file in files]
+        uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step)) for file in files]
         await asyncio.gather(*uploads)
         step.status = StepStatus.completed
         pipe.logger.info('Successfully upload all files to gee')

@@ -10,13 +10,13 @@ from pprint import pprint
 ### Create instances for each class of data and run their queries
 
 async def data_loaders(pipe:Pipeline, submodule:PipelineSubmodule):
-    
+    create_schema(pipe.con, "raw")
     submodule.add_step(PipelineStep( "data_load_gbif_citizen", func = data_load_gbif_main))
     submodule.add_step(PipelineStep("data_load_gbif_expert", func = data_load_gbif_main))
     #pipe.add_step(submodule, "data_load_inat_occurence", func = data_load_inat_occurence)
     submodule.add_step(PipelineStep("data_load_inat_observer", func = data_load_inat_observer))
     submodule.add_step(PipelineStep("data_load_points", func = data_load_points))
-
+    
     
     async with asyncio.TaskGroup() as tg:
         tg.create_task(submodule.steps["data_load_gbif_citizen"].run(pipe))
@@ -34,7 +34,9 @@ async def data_loaders(pipe:Pipeline, submodule:PipelineSubmodule):
         await submodule.steps[f"data_load_sample_gee_{name}"].run(pipe, points = points)
     
 async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
-    subcategory = step.name.split(sep="_")[-1]
+    table_name = step.name.split(sep="_", maxsplit=2)[-1]
+    subcategory = table_name.split(sep="_")[-1]
+    
     #Temp assignement for async tasks 
     task = None
     if subcategory == "citizen":
@@ -57,7 +59,7 @@ async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
         result = await query.run(pipe,step)
         
     # Commit local .csv to db 
-    table = await import_csv_to_db(pipe.con, result, schema= 'gbif_raw', table= subcategory, geo = True)
+    table = await import_csv_to_db(pipe.con, result, schema= 'raw', table= table_name, geo = True)
 
     # Flag as completed
     if table:
@@ -100,8 +102,6 @@ async def data_load_inat_observer(pipe:Pipeline, step:PipelineStep):
 
 async def data_load_points(pipe:Pipeline, step:PipelineStep):
     #Create table schema on db 
-    create_schema(pipe.con, schema = 'gee')
-        # Get point to gee
     points_list = await upload_points(pipe,step)
     return points_list
     
