@@ -100,13 +100,13 @@ modules:
     func: !!python/name:Cscorer.data.main.data_submodules ''
     init: '2025-11-18 10:02:47'
     name: data
-    status: !StepStatus 'completed'
+    status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
         init: '2025-11-18 10:02:47'
         name: loaders
-        status: !StepStatus 'completed'
+        status: !StepStatus 'incomplete'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
@@ -115,7 +115,7 @@ modules:
             name: data_load_gbif_citizen
             status: !StepStatus 'completed'
             storage:
-              db: gbif_raw.citizen
+              db: raw.gbif_citizen
               key: 0027014-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027014-251025141854904.csv
           data_load_gbif_expert: !PipelineStep
@@ -125,7 +125,7 @@ modules:
             name: data_load_gbif_expert
             status: !StepStatus 'completed'
             storage:
-              db: gbif_raw.expert
+              db: raw.gbif_expert
               key: 0027013-251025141854904
               raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027013-251025141854904.csv
           data_load_inat_observer: !PipelineStep
