@@ -106,7 +106,7 @@ modules:
         func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
         init: '2025-11-23 16:46:13'
         name: loaders
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
@@ -153,12 +153,18 @@ modules:
             name: data_load_sample_gee_citizen_occurences
             status: !StepStatus 'init'
             storage:
-              db: raw_.gee_data_load_sample_gee_citizen_occurences
+              db: raw_.gee_load_sample_gee_citizen_occurences
           data_load_sample_gee_expert_occurences: !PipelineStep
             config: {}
             func: *id002
             init: '2025-11-23 16:53:28'
             name: data_load_sample_gee_expert_occurences
-            status: !StepStatus 'init'
+            status: !StepStatus 'completed'
             storage:
-              db: raw_.gee_data_load_sample_gee_expert_occurences
+              db: raw_.gee_expert_occurences
+      preprocessors: !PipelineSubmodule
+        func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
+        init: '2025-11-23 17:11:34'
+        name: preprocessors
+        status: !StepStatus 'init'
+        steps: {}

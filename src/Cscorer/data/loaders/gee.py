@@ -40,12 +40,13 @@ class GeeLoader(BaseLoader):
         chunk_size = pipe.config['gee']['chunk_size']
         logger = pipe.logger
         con = pipe.con
-        table_name = str(self.name.split(sep='_', maxsplit=3 )[-1])
+        self.name
+        table_name = str(self.name.split(sep='_', maxsplit=5 )[-1])
         self.df = pd.DataFrame()
         #Main
         if step.status == StepStatus.init:
             logger.info(f'Launching sampling procees for {self.name}')
-            step.storage['db'] = f"raw_.gee_{table_name}"
+            step.storage['db'] = f"raw_.{table_name}"
             #Set chunks
             num_chunks = (self.point_count + chunk_size - 1) // chunk_size
             # Convert to list for indexing
@@ -97,7 +98,7 @@ class GeeLoader(BaseLoader):
     async def _save_to_db(self, con, table_name, logger):
         #Savng to db
         df = self.df
-        con.execute(f"CREATE OR REPLACE TABLE raw.gee_{table_name} AS SELECT * FROM df")
+        con.execute(f"CREATE OR REPLACE TABLE raw.{table_name} AS SELECT * FROM df")
             
         logger.info(f"Successfully saved {table_name} samples to disk")
         return table_name
