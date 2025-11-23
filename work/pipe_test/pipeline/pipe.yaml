@@ -94,35 +94,117 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-init: '2025-11-19 14:23:31'
+init: '2025-11-23 16:46:13'
 modules:
   data: !PipelineModule
     func: !!python/name:Cscorer.data.main.data_submodules ''
-    init: '2025-11-19 14:23:31'
+    init: '2025-11-23 16:46:13'
     name: data
-    status: !StepStatus 'completed'
+    status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
-        init: '2025-11-19 14:23:31'
+        init: '2025-11-23 16:46:13'
         name: loaders
         status: !StepStatus 'completed'
-        steps: {}
+        steps:
+          data_load_gbif_citizen: !PipelineStep
+            config: {}
+            func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+            init: '2025-11-23 16:46:13'
+            name: data_load_gbif_citizen
+            status: !StepStatus 'completed'
+            storage:
+              db: raw.gbif_citizen
+              key: 0004606-251120083545085
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0004606-251120083545085.csv
+          data_load_gbif_expert: !PipelineStep
+            config: {}
+            func: *id001
+            init: '2025-11-23 16:46:13'
+            name: data_load_gbif_expert
+            status: !StepStatus 'completed'
+            storage:
+              db: raw.gbif_expert
+              key: 0004621-251120083545085
+              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0004621-251120083545085.csv
+          data_load_inat_observer: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            init: '2025-11-23 16:46:13'
+            name: data_load_inat_observer
+            status: !StepStatus 'completed'
+            storage:
+              db: raw.inat_observers
+          data_load_points: !PipelineStep
+            config: {}
+            func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
+            init: '2025-11-23 16:46:13'
+            name: data_load_points
+            status: !StepStatus 'completed'
+            storage:
+              points:
+                citizen_occurences: projects/observationscorer/assets/citizen_occurences
+                expert_occurences: projects/observationscorer/assets/expert_occurences
+          data_load_sample_gee_citizen_occurences: !PipelineStep
+            config: {}
+            func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            init: '2025-11-23 16:58:14'
+            name: data_load_sample_gee_citizen_occurences
+            status: !StepStatus 'completed'
+            storage:
+              db: raw_.gee_data_load_sample_gee_citizen_occurences
+          data_load_sample_gee_expert_occurences: !PipelineStep
+            config: {}
+            func: *id002
+            init: '2025-11-23 16:53:28'
+            name: data_load_sample_gee_expert_occurences
+            status: !StepStatus 'completed'
+            storage:
+              db: raw_.gee_data_load_sample_gee_expert_occurences
       preprocessors: !PipelineSubmodule
         func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
-        init: '2025-11-19 14:23:31'
+        init: '2025-11-23 16:46:13'
         name: preprocessors
-        status: !StepStatus 'completed'
-        steps: {}
+        status: !StepStatus 'incomplete'
+        steps:
+          clean_gbif_citizen: !PipelineStep
+            config: {}
+            func: &id003 !!python/name:Cscorer.data.preprocessors.main.clean_gbif_occurences ''
+            init: '2025-11-23 17:02:12'
+            name: clean_gbif_citizen
+            status: !StepStatus 'completed'
+            storage: {}
+          clean_gbif_expert: !PipelineStep
+            config: {}
+            func: *id003
+            init: '2025-11-23 17:02:12'
+            name: clean_gbif_expert
+            status: !StepStatus 'completed'
+            storage: {}
+          matchGbifDatasets: !PipelineStep
+            config: {}
+            func: &id004 !!python/name:Cscorer.utils.sql.sql.simple_sql_query ''
+            init: '2025-11-23 17:02:12'
+            name: matchGbifDatasets
+            status: !StepStatus 'init'
+            storage: {}
+          merge_inatOccurences: !PipelineStep
+            config: {}
+            func: *id004
+            init: '2025-11-23 17:02:12'
+            name: merge_inatOccurences
+            status: !StepStatus 'failed'
+            storage: {}
   features: !PipelineModule
     func: !!python/name:Cscorer.features.main.features_submodules ''
-    init: '2025-11-19 14:23:31'
+    init: '2025-11-23 16:46:13'
     name: features
-    status: !StepStatus 'completed'
+    status: !StepStatus 'incomplete'
     submodules:
       observer: !PipelineSubmodule
         func: !!python/name:Cscorer.features.observer.main.features_observer ''
-        init: '2025-11-19 14:23:31'
+        init: '2025-11-23 16:46:13'
         name: observer
-        status: !StepStatus 'completed'
+        status: !StepStatus 'incomplete'
         steps: {}

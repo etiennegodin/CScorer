@@ -29,6 +29,7 @@ class Pipeline(Observable):
     
     def __post_init__(self):
         #Init logger if empty
+        print(self.logger)
         self.logger.info("Pipeline data post_init")
         # Init db_connection 
         from ..utils.duckdb import _open_connection   

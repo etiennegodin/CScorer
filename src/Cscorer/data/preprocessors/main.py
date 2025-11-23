@@ -4,6 +4,7 @@ from ...utils.sql import read_sql_template, read_sql_file, simple_sql_query
 import duckdb
 import asyncio
 from pathlib import Path
+
 async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     schema = "preprocessed"
     create_schema(pipe.con, schema)
@@ -46,6 +47,7 @@ async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep, sql_folder:Pat
         pipe.logger.error(f"Failed to run query : {e}")
         step.status = StepStatus.failed
     step.status = StepStatus.completed
+    
 
 
 
