@@ -2,9 +2,4 @@ pipe_struct:
   data:
     loaders:
       Load data to disk
-    preprocessors:
-      Clean and preprocess data
-  features:
-    observer:
-      Process observer features
 
