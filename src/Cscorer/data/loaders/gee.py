@@ -40,7 +40,7 @@ class GeeLoader(BaseLoader):
         chunk_size = pipe.config['gee']['chunk_size']
         logger = pipe.logger
         con = pipe.con
-        table_name = str(self.name.split(sep='_', maxsplit=2 )[-1])
+        table_name = str(self.name.split(sep='_', maxsplit=3 )[-1])
         self.df = pd.DataFrame()
         #Main
         if step.status == StepStatus.init:

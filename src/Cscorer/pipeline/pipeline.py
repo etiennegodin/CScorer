@@ -76,8 +76,6 @@ class Pipeline(Observable):
         from .enums import StepStatus
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
-            if module.status == StepStatus.incomplete:
-                continue
             for sm in submodules:
                 sm = module.submodules[sm.name]
                 if force:
@@ -90,6 +88,7 @@ class Pipeline(Observable):
                     if st.status != StepStatus.completed:
                         sm.status = StepStatus.incomplete
                         module.status = StepStatus.incomplete
+                        break
         
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
