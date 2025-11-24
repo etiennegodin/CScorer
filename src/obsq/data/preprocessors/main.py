@@ -12,22 +12,31 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     sql_folder = Path(__file__).parent
     clean_gbif_citizen = PipelineStep( "clean_gbif_citizen", func = clean_gbif_occurences)
     clean_gbif_expert = PipelineStep( "clean_gbif_expert", func = clean_gbif_occurences)
-    merge_inatOccurences = PipelineStep( "merge_inatOccurences", func = simple_sql_query)
+        
+    extract_inat_expert = PipelineStep( "extract_inat_expert", func = simple_sql_query)
     
-    #matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
+    merge_inatOccurences = PipelineStep( "merge_inatOccurences", func = simple_sql_query)
 
+    shuffle_inat_expert_obs = PipelineStep( "shuffle_inat_expert_obs", func = simple_sql_query)
+    matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
+    
     submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
+    submodule.add_step(extract_inat_expert)
+    submodule.add_step(merge_inatOccurences)
+    submodule.add_step(shuffle_inat_expert_obs)
+    submodule.add_step(matchGbifDatasets)
+
     
     async with asyncio.TaskGroup() as tg:
         tg.create_task(submodule.steps['clean_gbif_citizen'].run(pipe, sql_folder = sql_folder))
         tg.create_task(submodule.steps['clean_gbif_expert'].run(pipe, sql_folder = sql_folder))
-    
-    submodule.add_step(merge_inatOccurences)
-    #submodule.add_step(matchGbifDatasets)
-    
-    await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
-    #await submodule.steps['matchGbifDatasets'].run(pipe, sql_folder = sql_folder)
+        
+    await merge_inatOccurences.run(pipe, sql_folder = sql_folder)
+    await extract_inat_expert.run(pipe, sql_folder = sql_folder)
+    await shuffle_inat_expert_obs.run(pipe, sql_folder = sql_folder)
+    await matchGbifDatasets.run(pipe, sql_folder = sql_folder)
+
 
 async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
     pass

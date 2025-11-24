@@ -98,73 +98,55 @@ init: '2025-11-18 10:02:47'
 modules:
   data: !PipelineModule
     func: !!python/name:obsq.data.main.data_submodules ''
-    init: '2025-11-23 21:35:14'
+    init: '2025-11-23 23:21:20'
     name: data
     status: !StepStatus 'completed'
     submodules:
       preprocessors: !PipelineSubmodule
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
-        init: '2025-11-23 21:35:14'
+        init: '2025-11-23 23:21:20'
         name: preprocessors
         status: !StepStatus 'completed'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
             func: &id001 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
-            init: '2025-11-23 21:35:14'
+            init: '2025-11-23 23:21:20'
             name: clean_gbif_citizen
             status: !StepStatus 'completed'
             storage: {}
           clean_gbif_expert: !PipelineStep
             config: {}
             func: *id001
-            init: '2025-11-23 21:35:14'
+            init: '2025-11-23 23:21:20'
             name: clean_gbif_expert
+            status: !StepStatus 'completed'
+            storage: {}
+          extract_inat_expert: !PipelineStep
+            config: {}
+            func: &id002 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
+            init: '2025-11-23 23:21:20'
+            name: extract_inat_expert
+            status: !StepStatus 'completed'
+            storage: {}
+          matchGbifDatasets: !PipelineStep
+            config: {}
+            func: *id002
+            init: '2025-11-23 23:21:20'
+            name: matchGbifDatasets
             status: !StepStatus 'completed'
             storage: {}
           merge_inatOccurences: !PipelineStep
             config: {}
-            func: &id002 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
-            init: '2025-11-23 21:35:14'
+            func: *id002
+            init: '2025-11-23 23:21:20'
             name: merge_inatOccurences
-            status: !StepStatus 'completed'
-            storage: {}
-  features: !PipelineModule
-    func: !!python/name:obsq.features.main.features_submodules ''
-    init: '2025-11-23 22:22:54'
-    name: features
-    status: !StepStatus 'completed'
-    submodules:
-      extractors: !PipelineSubmodule
-        func: !!python/name:obsq.features.extractors.main.features_extractors ''
-        init: '2025-11-23 22:22:54'
-        name: extractors
-        status: !StepStatus 'completed'
-        steps:
-          extract_inat_expert: !PipelineStep
-            config: {}
-            func: *id002
-            init: '2025-11-23 22:22:54'
-            name: extract_inat_expert
-            status: !StepStatus 'completed'
-            storage: {}
-          observer_features: !PipelineStep
-            config: {}
-            func: *id002
-            init: '2025-11-23 22:22:54'
-            name: observer_features
             status: !StepStatus 'completed'
             storage: {}
           shuffle_inat_expert_obs: !PipelineStep
             config: {}
             func: *id002
-            init: '2025-11-23 22:22:54'
+            init: '2025-11-23 23:21:20'
             name: shuffle_inat_expert_obs
             status: !StepStatus 'completed'
             storage: {}
-      transformers: !PipelineSubmodule
-        func: !!python/name:obsq.features.transformers.main.features_transformers ''
-        init: '2025-11-23 22:22:54'
-        name: transformers
-        status: !StepStatus 'completed'
-        steps: {}
