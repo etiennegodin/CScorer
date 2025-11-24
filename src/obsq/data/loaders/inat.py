@@ -227,6 +227,7 @@ class inatApiLoader(BaseLoader):
     def __init__(self, pipe:Pipeline, name:str):
         self.limit = pipe.config['inat_api']['limit']
         self.overwrite = pipe.config['inat_api']['overwrite']
+        self.per_page = pipe.config['inat_api']['per_page']
         self.limiter = AsyncLimiter(pipe.config['inat_api']['max_calls_per_minute'], 60)
         self.queue  = Queue()
         self.table_name = f"raw.{name}"
@@ -238,19 +239,21 @@ class inatApiLoader(BaseLoader):
         limit = pipe.config['inat_api']['limit']
         con = pipe.con
         logger = pipe.logger
+        chunk_size = 100  # Process items in batches
+        
         if step.status == StepStatus.completed:
             logger.info(f"{self.name} already completed")
             #SKip 
             return self.table_name
          
         # Create table for data
-        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id INTEGER, key TEXT, json JSON)")
+        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id TEXT, json JSON)")
         last_id = con.execute(f"SELECT MAX(id) FROM {self.table_name}").fetchone()[0] 
 
         if self.overwrite and self.table_name in get_all_tables(con):
             if last_id is not None:
                 if await _ask_yes_no(f'Found existing table data on disk for {self.table_name}, do you want to overwrite all ? (y/n)'):
-                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (id INTEGER, key TEXT, json JSON)")
+                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (id TEXT, json JSON)")
                     last_id = None
         
         #Start from previously saved pipe:
@@ -271,11 +274,28 @@ class inatApiLoader(BaseLoader):
                 items = items[last_id:limit+last_id]
                 self.item_count = limit+last_id
         
+        # Chunk items for batch processing
+        items_chunks = [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+        logger.info(f"Processing {self.item_count} items in {len(items_chunks)} chunks of {chunk_size}")
+        
         #Store count of observers (for logger)
         async with aiohttp.ClientSession() as session:
             writer_task = asyncio.create_task(self._write_data(con, logger))
             
-            fetchers = [asyncio.create_task(self._fetch_data(session, endpoint, fields, key, idx, logger)) for idx, key in enumerate(items) ]
+            # Create fetchers with batched IDs
+            fetchers = []
+            for chunk_idx, chunk in enumerate(items_chunks):
+                # Batch IDs into groups for API requests (e.g., 10 IDs per request)
+                ids_per_request = self.per_page
+                for batch_start in range(0, len(chunk), ids_per_request):
+                    batch_end = min(batch_start + ids_per_request, len(chunk))
+                    batch_keys = chunk[batch_start:batch_end]
+                    # Create comma-separated ID string
+                    id_string = ','.join(str(key) for key in batch_keys)
+                    fetchers.append(asyncio.create_task(
+                        self._fetch_data(session, endpoint, fields, id_string, batch_start, logger, chunk_idx)
+                    ))
+            
             await asyncio.gather(*fetchers)
             await self.queue.join()
             await self.queue.put(None)
@@ -290,50 +310,69 @@ class inatApiLoader(BaseLoader):
         loop = asyncio.get_event_loop()
         executor = ThreadPoolExecutor(max_workers=1)
         processed_count = 0
+        batch_size = 50  # Insert multiple rows in a batch
 
         while True:
             item = await self.queue.get()
-            logger.debug(f"Writer got item from queue, is None: {item is None}, queue size: {self.queue.qsize()}")
             if item is None:
                 logger.info(f'Writer done, processed {processed_count} items')
                 self.queue.task_done()
                 break
-            idx, data = item
+            
+            # Collect a batch of items
+            batch = [item]
+            while not self.queue.empty() and len(batch) < batch_size:
+                try:
+                    batch.append(self.queue.get_nowait())
+                except:
+                    break
+            
             try:
-                # Run blocking database call in thread pool to avoid blocking event loop
-                def db_insert():
-                    con.execute(
-                        f"INSERT INTO {self.table_name} VALUES (?, ?, ?)",
-                        (idx, data['id'], json.dumps(data))
-                    )
+                # Run blocking database batch insert in thread pool
+                def batch_insert():
+                    for idx, data in batch:
+                        con.execute(
+                            f"INSERT INTO {self.table_name} VALUES (?, ?)",
+                            (data['id'], json.dumps(data))
+                        )
+                    con.commit()  # Commit batch
                 
-                await loop.run_in_executor(executor, db_insert)
-                processed_count += 1
-                logger.debug(f'Inserted item {idx}')
-                logger.info(f"Data saved for {data['id']} ({idx+1}/{self.item_count})")
+                await loop.run_in_executor(executor, batch_insert)
+                processed_count += len(batch)
+                logger.debug(f'Inserted batch of {len(batch)} items')
 
             except Exception as e:
-                logger.error(f"Failed to insert data for idx {idx}: {e}")
+                logger.error(f"Failed to insert batch: {e}")
             
-            self.queue.task_done()
+            # Mark all items in batch as done
+            for _ in batch:
+                self.queue.task_done()
+        
         executor.shutdown(wait=True)
         
-    async def _fetch_data(self,session, endpoint:str, fields:str, key:int, idx:int, logger ):
+    async def _fetch_data(self, session, endpoint:str, fields:str, id_string:str, batch_idx:int, logger, chunk_idx:int=0):
+        """Fetch data for multiple IDs in a single request using comma-separated ID string"""
         url = f"https://api.inaturalist.org/v2/{endpoint}"
-        params = {'id' : str(key),
-                  "fields" : fields}
+        params = {'id': id_string, "fields": fields}
+        
         async with self.limiter:
             try:
-                async with session.get(url, params = params, timeout = 10) as r:
+                async with session.get(url, params=params, timeout=10) as r:
                     r.raise_for_status()
                     data = await r.json()    
-                    if data:
-                        try:
-                            await self.queue.put((idx,data["results"][0]))
-                        except Exception as e:
-                            logger.error(e)
+                    if data and "results" in data:
+                        # Put all results from this multi-ID request into queue
+                        for result in data["results"]:
+                            try:
+                                await self.queue.put((batch_idx, result))
+                                logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
+                            except Exception as e:
+                                logger.error(f"Failed to queue result: {e}")
+                        logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string}")
+                    else:
+                        logger.warning(f"No results found for IDs {id_string}")
             except Exception as e:
-                logger.error(f" {params['id']} failed: {e}")
+                logger.error(f"API request failed for IDs {id_string}: {e}")
 
 
 

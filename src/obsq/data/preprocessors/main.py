@@ -108,7 +108,7 @@ async def get_inatOccMetadata(pipe:Pipeline, step:PipelineStep):
     """
     occurenceURLs = pipe.con.execute(get_occurencesIDs).df()[key]
     occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
-    occurenceIDs = occurenceIDs[:10]
+    occurenceIDs = occurenceIDs[:1000]
     
     fields_string = f"({fields_to_string(fields)})"
 
