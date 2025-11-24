@@ -10,16 +10,30 @@ async def features_extractors(pipe:Pipeline, submodule:PipelineSubmodule):
     
     submodule.reset_steps()
     
-    observer_features = PipelineStep( "all_observer_features", func = simple_sql_query)
+    observer_features = PipelineStep( "observer_features", func = simple_sql_query)
+    occurrence_features = PipelineStep( "occurrence_features", func = simple_sql_query)
+    metadata_features = PipelineStep( "metadata_features", func = simple_sql_query)
 
     submodule.add_step(observer_features)
     await observer_features.run(pipe, sql_folder = folder)
 
-
+    submodule.add_step(occurrence_features)
+    await occurrence_features.run(pipe, sql_folder = folder)
+    
+    
+    submodule.add_step(metadata_features)
+    await metadata_features.run(pipe, sql_folder = folder)
     #tasks = [asyncio.create_task(step.run(pipe, sql_folder = folder)) for step in submodule.steps.values()]
     #await asyncio.gather(*tasks)
     
     
     
-async def test(pipe:Pipeline, step:PipelineStep):
-    print('test')
+async def features_extractors_dfs(pipe:Pipeline, step:PipelineStep):
+    import featuretools as ft
+    con = pipe.con
+    dataframes = []
+    
+    observations_df = con.execute("SELECT * FROM preprocessed.gbif_citizen").df()
+    env_df = con.execute("SELECT * FROM raw.gee_citizen_occurences").df()
+
+    

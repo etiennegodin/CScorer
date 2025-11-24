@@ -20,12 +20,16 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     shuffle_inat_expert_obs = PipelineStep( "shuffle_inat_expert_obs", func = simple_sql_query)
     matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
     
+    extract_observer_json = PipelineStep( "extract_observer_json", func = simple_sql_query)
+
+    
     submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
     submodule.add_step(extract_inat_expert)
     submodule.add_step(merge_inatOccurences)
     submodule.add_step(shuffle_inat_expert_obs)
     submodule.add_step(matchGbifDatasets)
+    submodule.add_step(extract_observer_json)
 
     
     async with asyncio.TaskGroup() as tg:
@@ -36,10 +40,25 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     await extract_inat_expert.run(pipe, sql_folder = sql_folder)
     await shuffle_inat_expert_obs.run(pipe, sql_folder = sql_folder)
     await matchGbifDatasets.run(pipe, sql_folder = sql_folder)
+    await extract_observer_json.run(pipe, sql_folder = sql_folder)
 
 
-async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
-    pass
+
+async def data_preprocessors_extract_observer_json(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
+    con = pipe.con
+    table_name = "raw.inat_observers"
+    keys = con.execute(f"SELECT DISTINCT json_extract(json) FROM {table_name}").fetchone()[0]
+    
+    cols = ",\n".join(
+        f"json_extract(json_col, '$.{k}') AS {k}" for k in keys
+    )
+    
+    query = f""" CREATE OR REPLACE TABLE preprocessed.inat_observers AS
+                SELECT
+                    id,
+                    {cols}
+                FROM {table_name};
+                """
 
     
 async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
