@@ -7,7 +7,7 @@ from pathlib import Path
 from ..loaders.factory import create_query
 from ..loaders.inat import fields_to_string
 
-async def data_post_preprocess(pipe:Pipeline, submodule:PipelineSubmodule):
+async def data_post_loaders(pipe:Pipeline, submodule:PipelineSubmodule):
 
     sql_folder = Path(__file__).parent
     submodule.reset_steps()
@@ -28,8 +28,6 @@ async def data_post_preprocess(pipe:Pipeline, submodule:PipelineSubmodule):
 
     #submodule.add_step(merge_inatOccurences)
     submodule.add_step(matchGbifDatasets)
-
-
     
     async with asyncio.TaskGroup() as tg:
         tg.create_task(inatSpeciesData.run(pipe))
@@ -77,6 +75,8 @@ async def get_inatOccMetadata(pipe:Pipeline, step:PipelineStep):
     get_occurencesIDs = f"""
             SELECT {key},
             FROM preprocessed.gbif_citizen_filtered
+            ORDER BY occurrenceID ASC;
+
     """
     occurenceURLs = pipe.con.execute(get_occurencesIDs).df()[key]
     occurenceIDs = occurenceURLs.apply(lambda x: x.split(sep='/')[-1]).to_list()
