@@ -1,5 +1,5 @@
 
-
+-- obs count per species per obs
 CREATE OR REPLACE VIEW features.observer_species_obs AS (
 
 WITH species_count AS(
@@ -20,6 +20,7 @@ FROM species_count
 GROUP BY "recordedBy"
 );
 
+-- main features
 CREATE OR REPLACE TABLE features.observer AS
 
 
@@ -73,10 +74,10 @@ COUNT(DISTINCT g."year") as unique_year_count,
 COUNT(DISTINCT cast(eventDate AS DATE)) as unique_dates,
 MAX(y.yearly_observations) as max_yearly_observations,
 MAX(m.monthly_observations) as max_monthly_observations,
-MIN(y.yearly_observations) as min_yearly_observations,
-MIN(m.monthly_observations) as min_monthly_observations,
 ROUND(AVG(y.yearly_observations),2) as avg_yearly_observations,
 ROUND(AVG(m.monthly_observations),2) as avg_monthly_observations,
+COUNT(*) FILTER (WHERE "coordinateUncertaintyInMeters" > 1000 ) as high_cood_un_obs, -- count obs with high uncer
+ROUND(high_cood_un_obs / observations_count, 2) as high_cood_un_pct,
 ROUND(AVG(coordinateUncertaintyInMeters),2) as avg_coord_un,
 MAX(coordinateUncertaintyInMeters) as max_coord_un,
 ROUND(AVG(media_count),2) as avg_media_count,
@@ -96,12 +97,11 @@ JOIN monthly_observations m
     ON g.recordedBy = m.recordedBy
 GROUP BY g.recordedBy;
 
+--adding back species obs count
 ALTER TABLE features.observer ADD COLUMN avg_species_obs_count FLOAT;
 ALTER TABLE features.observer ADD COLUMN max_species_obs_count INT;
-
 UPDATE features.observer o
 SET avg_species_obs_count = s.avg_species_obs_count,
     max_species_obs_count = s.max_species_obs_count
-
 FROM features.observer_species_obs s
 WHERE o.recordedBy = s.recordedBy;
