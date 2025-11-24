@@ -4,7 +4,7 @@ pipe_struct:
       Load data to disk
     preprocessors:
       Preprocess data 
-    post_preprocess:
+    post_loaders:
       Load new data with reduced initial data
   features:
     extractors:

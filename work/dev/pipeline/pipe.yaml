@@ -163,26 +163,12 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
-      post_preprocess: !PipelineSubmodule
-        func: !!python/name:obsq.data.post_preprocess.main.data_post_preprocess ''
+      post_loaders: !PipelineSubmodule
+        func: !!python/name:obsq.data.post_loaders.main.data_post_loaders ''
         init: '2025-11-24 17:43:27'
-        name: post_preprocess
+        name: post_loaders
         status: !StepStatus 'incomplete'
-        steps:
-          get_inatOccMetadata: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.data.post_preprocess.main.get_inatOccMetadata ''
-            init: '2025-11-24 17:43:27'
-            name: get_inatOccMetadata
-            status: !StepStatus 'failed'
-            storage: {}
-          matchGbifDatasets: !PipelineStep
-            config: {}
-            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
-            init: '2025-11-24 17:43:27'
-            name: matchGbifDatasets
-            status: !StepStatus 'init'
-            storage: {}
+        steps: {}
       preprocessors: !PipelineSubmodule
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-24 17:22:49'
@@ -205,7 +191,7 @@ modules:
             storage: {}
           extract_inat_expert: !PipelineStep
             config: {}
-            func: *id004
+            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
             init: '2025-11-24 17:22:49'
             name: extract_inat_expert
             status: !StepStatus 'completed'

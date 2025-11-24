@@ -256,23 +256,22 @@ class inatApiLoader(BaseLoader):
                     con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (id TEXT, json JSON)")
                     last_id = None
         
-        #Start from previously saved pipe:
-
-        if last_id is None:
-            #Optionnal limit
-            if limit is not None:
-                items = items[:limit]
-            
-            self.item_count = len(items)
-        else:
-            logger.info(f"Last processed item : {items[last_id]} with id : {last_id}")
-            #Optionnal limit
-            if limit is None:
-                items = items[last_id:]
-                self.item_count = len(items)
-            else:
-                items = items[last_id:limit+last_id]
-                self.item_count = limit+last_id
+        # Filter items based on last processed ID (idempotent resume)
+        if last_id is not None:
+            logger.info(f"Resuming from last processed ID: {last_id}")
+            # Filter items: keep only those > last_id (since ordered ASC)
+            items = [item for item in items if str(item) > str(last_id)]
+            if not items:
+                logger.info(f"All items already processed")
+                step.status = StepStatus.completed
+                return self.table_name
+        
+        # Apply limit if set
+        if limit is not None:
+            items = items[:limit]
+        
+        self.item_count = len(items)
+        logger.info(f"Processing {self.item_count} items, starting from: {items[0] if items else 'N/A'}")
         
         # Chunk items for batch processing
         items_chunks = [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
