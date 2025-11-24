@@ -3,6 +3,7 @@ from .utils.debug import launch_debugger
 from .pipeline.yaml_support import read_config
 import argparse
 import asyncio
+from pathlib import Path
 
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
     parsers = []
@@ -25,7 +26,8 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
 
 def main():
     
-    pipe_config = read_config("/home/manat/projects/obsq/config.yaml")
+    root_folder = Path(__file__).resolve().parents[2] 
+    pipe_config = read_config(root_folder / "pipe_config.yaml")
     pipe_struct = pipe_config['pipe_struct']
     
     

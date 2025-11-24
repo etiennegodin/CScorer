@@ -98,102 +98,34 @@ init: '2025-11-18 10:02:47'
 modules:
   data: !PipelineModule
     func: !!python/name:obsq.data.main.data_submodules ''
-    init: '2025-11-18 10:02:47'
+    init: '2025-11-23 19:33:17'
     name: data
-    status: !StepStatus 'completed'
+    status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:obsq.data.loaders.main.data_loaders ''
-        init: '2025-11-18 10:02:47'
+        init: '2025-11-23 19:33:17'
         name: loaders
-        status: !StepStatus 'completed'
-        steps:
-          data_load_gbif_citizen: !PipelineStep
-            config: {}
-            func: &id001 !!python/name:obsq.data.loaders.main.data_load_gbif_main ''
-            init: '2025-11-18 10:02:47'
-            name: data_load_gbif_citizen
-            status: !StepStatus 'completed'
-            storage:
-              db: raw.gbif_citizen
-              key: 0027014-251025141854904
-              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0027014-251025141854904.csv
-          data_load_gbif_expert: !PipelineStep
-            config: {}
-            func: *id001
-            init: '2025-11-18 10:02:47'
-            name: data_load_gbif_expert
-            status: !StepStatus 'completed'
-            storage:
-              db: raw.gbif_expert
-              key: 0027013-251025141854904
-              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0027013-251025141854904.csv
-          data_load_inat_observer: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.data.loaders.main.data_load_inat_observer ''
-            init: '2025-11-18 10:02:47'
-            name: data_load_inat_observer
-            status: !StepStatus 'completed'
-            storage:
-              db: inat.observers
-          data_load_points: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.data.loaders.main.data_load_points ''
-            init: '2025-11-18 10:09:30'
-            name: data_load_points
-            status: !StepStatus 'completed'
-            storage:
-              points:
-                citizen_occurences: projects/observationscorer/assets/citizen_occurences
-                expert_occurences: projects/observationscorer/assets/expert_occurences
-          data_load_sample_gee_citizen_occurences: !PipelineStep
-            config: {}
-            func: &id002 !!python/name:obsq.data.loaders.main.data_load_sample_gee ''
-            init: '2025-11-18 10:12:57'
-            name: data_load_sample_gee_citizen_occurences
-            status: !StepStatus 'completed'
-            storage:
-              db: gee.data_load_sample_gee_citizen_occurences
-          data_load_sample_gee_expert_occurences: !PipelineStep
-            config: {}
-            func: *id002
-            init: '2025-11-18 10:12:57'
-            name: data_load_sample_gee_expert_occurences
-            status: !StepStatus 'completed'
-            storage:
-              db: gee.data_load_sample_gee_expert_occurences
+        status: !StepStatus 'init'
+        steps: {}
       preprocessors: !PipelineSubmodule
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
-        init: '2025-11-19 00:58:09'
+        init: '2025-11-23 19:33:17'
         name: preprocessors
         status: !StepStatus 'completed'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
-            func: &id003 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
-            init: '2025-11-19 00:58:09'
+            func: &id001 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
+            init: '2025-11-23 19:33:17'
             name: clean_gbif_citizen
             status: !StepStatus 'completed'
             storage: {}
           clean_gbif_expert: !PipelineStep
             config: {}
-            func: *id003
-            init: '2025-11-19 00:58:09'
+            func: *id001
+            init: '2025-11-23 19:33:17'
             name: clean_gbif_expert
-            status: !StepStatus 'completed'
-            storage: {}
-          matchGbifDatasets: !PipelineStep
-            config: {}
-            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
-            init: '2025-11-19 00:58:09'
-            name: matchGbifDatasets
-            status: !StepStatus 'completed'
-            storage: {}
-          merge_inatOccurences: !PipelineStep
-            config: {}
-            func: *id004
-            init: '2025-11-19 00:58:09'
-            name: merge_inatOccurences
             status: !StepStatus 'completed'
             storage: {}
   features: !PipelineModule
@@ -210,7 +142,7 @@ modules:
         steps:
           observer: !PipelineStep
             config: {}
-            func: *id004
+            func: !!python/name:obsq.utils.sql.sql.simple_sql_query ''
             init: '2025-11-19 14:49:27'
             name: observer
             status: !StepStatus 'completed'
