@@ -1,13 +1,13 @@
 !Pipeline
 config:
-  db_path: /home/manat/projects/CScorer/work/dev/data/data.duckdb
+  db_path: /home/manat/projects/obsq/work/dev/data/data.duckdb
   folders:
-    data_folder: /home/manat/projects/CScorer/work/dev/data
-    gbif_folder: /home/manat/projects/CScorer/work/dev/data/gbif
-    gee_folder: /home/manat/projects/CScorer/work/dev/data/gee
-    inat_folder: /home/manat/projects/CScorer/work/dev/data/inat
-    pipeline_folder: /home/manat/projects/CScorer/work/dev/pipeline
-    run_folder: /home/manat/projects/CScorer/work/dev
+    data_folder: /home/manat/projects/obsq/work/dev/data
+    gbif_folder: /home/manat/projects/obsq/work/dev/data/gbif
+    gee_folder: /home/manat/projects/obsq/work/dev/data/gee
+    inat_folder: /home/manat/projects/obsq/work/dev/data/inat
+    pipeline_folder: /home/manat/projects/obsq/work/dev/pipeline
+    run_folder: /home/manat/projects/obsq/work/dev
   gbif:
     COUNTRY: CA
     GADM_GID: CAN.11_1
@@ -97,27 +97,27 @@ config:
 init: '2025-11-18 10:02:47'
 modules:
   data: !PipelineModule
-    func: !!python/name:Cscorer.data.main.data_submodules ''
+    func: !!python/name:obsq.data.main.data_submodules ''
     init: '2025-11-18 10:02:47'
     name: data
     status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
-        func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
+        func: !!python/name:obsq.data.loaders.main.data_loaders ''
         init: '2025-11-18 10:02:47'
         name: loaders
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
-            func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+            func: &id001 !!python/name:obsq.data.loaders.main.data_load_gbif_main ''
             init: '2025-11-18 10:02:47'
             name: data_load_gbif_citizen
             status: !StepStatus 'completed'
             storage:
               db: raw.gbif_citizen
               key: 0027014-251025141854904
-              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027014-251025141854904.csv
+              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0027014-251025141854904.csv
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
@@ -127,10 +127,10 @@ modules:
             storage:
               db: raw.gbif_expert
               key: 0027013-251025141854904
-              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0027013-251025141854904.csv
+              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0027013-251025141854904.csv
           data_load_inat_observer: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            func: !!python/name:obsq.data.loaders.main.data_load_inat_observer ''
             init: '2025-11-18 10:02:47'
             name: data_load_inat_observer
             status: !StepStatus 'completed'
@@ -138,7 +138,7 @@ modules:
               db: inat.observers
           data_load_points: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
+            func: !!python/name:obsq.data.loaders.main.data_load_points ''
             init: '2025-11-18 10:09:30'
             name: data_load_points
             status: !StepStatus 'completed'
@@ -148,7 +148,7 @@ modules:
                 expert_occurences: projects/observationscorer/assets/expert_occurences
           data_load_sample_gee_citizen_occurences: !PipelineStep
             config: {}
-            func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            func: &id002 !!python/name:obsq.data.loaders.main.data_load_sample_gee ''
             init: '2025-11-18 10:12:57'
             name: data_load_sample_gee_citizen_occurences
             status: !StepStatus 'completed'
@@ -163,14 +163,14 @@ modules:
             storage:
               db: gee.data_load_sample_gee_expert_occurences
       preprocessors: !PipelineSubmodule
-        func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
+        func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-19 00:58:09'
         name: preprocessors
         status: !StepStatus 'completed'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
-            func: &id003 !!python/name:Cscorer.data.preprocessors.main.clean_gbif_occurences ''
+            func: &id003 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
             init: '2025-11-19 00:58:09'
             name: clean_gbif_citizen
             status: !StepStatus 'completed'
@@ -184,7 +184,7 @@ modules:
             storage: {}
           matchGbifDatasets: !PipelineStep
             config: {}
-            func: &id004 !!python/name:Cscorer.utils.sql.sql.simple_sql_query ''
+            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
             init: '2025-11-19 00:58:09'
             name: matchGbifDatasets
             status: !StepStatus 'completed'
@@ -197,13 +197,13 @@ modules:
             status: !StepStatus 'completed'
             storage: {}
   features: !PipelineModule
-    func: !!python/name:Cscorer.features.main.features_submodules ''
+    func: !!python/name:obsq.features.main.features_submodules ''
     init: '2025-11-19 14:49:27'
     name: features
     status: !StepStatus 'completed'
     submodules:
       observer: !PipelineSubmodule
-        func: !!python/name:Cscorer.features.observer.main.features_observer ''
+        func: !!python/name:obsq.features.observer.main.features_observer ''
         init: '2025-11-19 14:49:27'
         name: observer
         status: !StepStatus 'completed'
