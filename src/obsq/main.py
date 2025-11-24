@@ -141,9 +141,13 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
 
     else:
         config_path = args.file
-    
+        
     #Config as dict
-    config = read_config(config_path)
+    try:
+        config = read_config(config_path)
+    except FileNotFoundError:
+        raise FileNotFoundError("Please provide a valid config file")
+
     #Create folder structure
     config = init_folder(config, config_path)
     folders = config['folders']

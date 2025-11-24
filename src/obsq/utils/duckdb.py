@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
+    print(db_path)
     try:
         con = duckdb.connect(database=db_path)
         if load_spatial_extension(con):

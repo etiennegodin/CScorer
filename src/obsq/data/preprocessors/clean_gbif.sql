@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE preprocessed.{{target_table_name}} AS 
+CREATE OR REPLACE VIEW preprocessed.{{target_table_name}} AS 
 
 SELECT g.gbifID,
 g.occurrenceID,

@@ -21,11 +21,11 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
         tg.create_task(submodule.steps['clean_gbif_citizen'].run(pipe, sql_folder = sql_folder))
         tg.create_task(submodule.steps['clean_gbif_expert'].run(pipe, sql_folder = sql_folder))
     
-    submodule.add_step(merge_inatOccurences)
-    submodule.add_step(matchGbifDatasets)
+    #submodule.add_step(merge_inatOccurences)
+    #submodule.add_step(matchGbifDatasets)
     
-    await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
-    await submodule.steps['matchGbifDatasets'].run(pipe, sql_folder = sql_folder)
+    #await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
+    #await submodule.steps['matchGbifDatasets'].run(pipe, sql_folder = sql_folder)
 
 async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
     pass
@@ -34,7 +34,7 @@ async def data_prepro_template(pipe:Pipeline, step:PipelineStep):
 async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
     con = pipe.con
     target_table_name = step.name.split(sep='_', maxsplit=1)[-1]
-    source_table_name =  f"gbif_raw.{step.name.split(sep='_')[-1]}"
+    source_table_name =  f"raw.{step.name.split(sep='_',maxsplit=1)[-1]}"
     file_name = 'clean_gbif'
     file_path = sql_folder / f"{file_name}.sql"
     
