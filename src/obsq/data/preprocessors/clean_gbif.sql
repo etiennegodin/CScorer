@@ -1,5 +1,6 @@
 CREATE OR REPLACE VIEW preprocessed.{{target_table_name}} AS 
 
+WITH main_cleanup AS(
 SELECT g.gbifID,
 g.occurrenceID,
 g.publishingOrgKey,
@@ -33,21 +34,13 @@ END AS coordinateUncertaintyInMeters,
 
 
 FROM {{source_table_name}} g
-WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL;
+WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL
 
+)
 
--- FILTERS 
+SELECT * FROM main_cleanup m
 
--- species only
-DELETE FROM preprocessed.{{target_table_name}} t
-WHERE NOT t.taxonRank = 'SPECIES';
-
--- growing season
-DELETE FROM preprocessed.{{target_table_name}} t
-WHERE t.month < 4;
-
-DELETE FROM preprocessed.{{target_table_name}} t
-WHERE t.month > 9;
+WHERE m.taxonRank = 'SPECIES' AND m.month > 4 AND m.month < 9;
 
 
 
