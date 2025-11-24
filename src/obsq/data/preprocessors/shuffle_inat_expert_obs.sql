@@ -1,8 +1,8 @@
 -- create gbif_citizen table
-CREATE OR REPLACE TABLE preprocessed.gbif_citizen AS
+CREATE OR REPLACE VIEW preprocessed.gbif_citizen_filtered AS
 SELECT *
 FROM raw.gbif_citizen
-WHERE recordedBy NOT IN (SELECT inat_name FROM preprocessed.inat_expert);
+WHERE recordedBy NOT IN (SELECT inat_name FROM preprocessed.inat_expert) AND institutionCode = 'iNaturalist';
 
 -- create gbif_expert_table
 CREATE OR REPLACE TABLE preprocessed.gbif_expert AS
