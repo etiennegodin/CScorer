@@ -55,4 +55,8 @@ FROM gbif_metadata g
 JOIN inat_data i
     ON g.recordedBy = i.inat_name;
 
+CREATE OR REPLACE TABLE features.observers AS
+SELECT * FROM features.all_observers WHERE orcid is NULL;
+
+
 
