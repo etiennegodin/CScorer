@@ -1,14 +1,14 @@
 !Pipeline
 config:
-  db_path: /home/manat/projects/CScorer/work/pipe_test/data/data.duckdb
+  db_path: /home/manat/projects/obsq/work/pipe_test/data/data.duckdb
   folders:
-    data_folder: /home/manat/projects/CScorer/work/pipe_test/data
-    eda_folder: /home/manat/projects/CScorer/work/pipe_test/data/eda
-    gbif_folder: /home/manat/projects/CScorer/work/pipe_test/data/gbif
-    gee_folder: /home/manat/projects/CScorer/work/pipe_test/data/gee
-    inat_folder: /home/manat/projects/CScorer/work/pipe_test/data/inat
-    pipeline_folder: /home/manat/projects/CScorer/work/pipe_test/pipeline
-    run_folder: /home/manat/projects/CScorer/work/pipe_test
+    data_folder: /home/manat/projects/obsq/work/pipe_test/data
+    eda_folder: /home/manat/projects/obsq/work/pipe_test/data/eda
+    gbif_folder: /home/manat/projects/obsq/work/pipe_test/data/gbif
+    gee_folder: /home/manat/projects/obsq/work/pipe_test/data/gee
+    inat_folder: /home/manat/projects/obsq/work/pipe_test/data/inat
+    pipeline_folder: /home/manat/projects/obsq/work/pipe_test/pipeline
+    run_folder: /home/manat/projects/obsq/work/pipe_test
   gbif:
     COUNTRY: CA
     GADM_GID: CAN.11_1
@@ -97,27 +97,27 @@ config:
 init: '2025-11-23 16:46:13'
 modules:
   data: !PipelineModule
-    func: !!python/name:Cscorer.data.main.data_submodules ''
+    func: !!python/name:obsq.data.main.data_submodules ''
     init: '2025-11-23 16:46:13'
     name: data
     status: !StepStatus 'incomplete'
     submodules:
       loaders: !PipelineSubmodule
-        func: !!python/name:Cscorer.data.loaders.main.data_loaders ''
+        func: !!python/name:obsq.data.loaders.main.data_loaders ''
         init: '2025-11-23 16:46:13'
         name: loaders
         status: !StepStatus 'completed'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
-            func: &id001 !!python/name:Cscorer.data.loaders.main.data_load_gbif_main ''
+            func: &id001 !!python/name:obsq.data.loaders.main.data_load_gbif_main ''
             init: '2025-11-23 16:46:13'
             name: data_load_gbif_citizen
             status: !StepStatus 'completed'
             storage:
               db: raw.gbif_citizen
               key: 0004606-251120083545085
-              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0004606-251120083545085.csv
+              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0004606-251120083545085.csv
           data_load_gbif_expert: !PipelineStep
             config: {}
             func: *id001
@@ -127,10 +127,10 @@ modules:
             storage:
               db: raw.gbif_expert
               key: 0004621-251120083545085
-              raw_data: /home/manat/projects/CScorer/work/pipe_test/data/gbif/0004621-251120083545085.csv
+              raw_data: /home/manat/projects/obsq/work/pipe_test/data/gbif/0004621-251120083545085.csv
           data_load_inat_observer: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.loaders.main.data_load_inat_observer ''
+            func: !!python/name:obsq.data.loaders.main.data_load_inat_observer ''
             init: '2025-11-23 16:46:13'
             name: data_load_inat_observer
             status: !StepStatus 'completed'
@@ -138,7 +138,7 @@ modules:
               db: raw.inat_observers
           data_load_points: !PipelineStep
             config: {}
-            func: !!python/name:Cscorer.data.loaders.main.data_load_points ''
+            func: !!python/name:obsq.data.loaders.main.data_load_points ''
             init: '2025-11-23 16:46:13'
             name: data_load_points
             status: !StepStatus 'completed'
@@ -148,7 +148,7 @@ modules:
                 expert_occurences: projects/observationscorer/assets/expert_occurences
           data_load_sample_gee_citizen_occurences: !PipelineStep
             config: {}
-            func: &id002 !!python/name:Cscorer.data.loaders.main.data_load_sample_gee ''
+            func: &id002 !!python/name:obsq.data.loaders.main.data_load_sample_gee ''
             init: '2025-11-23 16:58:14'
             name: data_load_sample_gee_citizen_occurences
             status: !StepStatus 'init'
@@ -163,7 +163,7 @@ modules:
             storage:
               db: raw_.gee_expert_occurences
       preprocessors: !PipelineSubmodule
-        func: !!python/name:Cscorer.data.preprocessors.main.data_preprocessors ''
+        func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-23 17:11:34'
         name: preprocessors
         status: !StepStatus 'init'

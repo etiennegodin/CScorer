@@ -25,7 +25,7 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
 
 def main():
     
-    pipe_config = read_config("/home/manat/projects/CScorer/config.yaml")
+    pipe_config = read_config("/home/manat/projects/obsq/config.yaml")
     pipe_struct = pipe_config['pipe_struct']
     
     
@@ -36,7 +36,7 @@ def main():
     global_parser.add_argument("--force", action= 'store_true', help = 'Force to run')
 
     parser = argparse.ArgumentParser(
-                    prog='Cscorer',
+                    prog='obsq',
                     description='Citizen Science Observation Quality Scorer',
                     epilog='Text at the bottom of help',
                     parents=[global_parser]

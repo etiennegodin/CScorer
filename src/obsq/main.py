@@ -54,11 +54,11 @@ def create_folders(folders:dict):
 def build_full_pipeline(args, pipe:"Pipeline", pipe_struct)->dict:
     to_run = {}
     for module_name, submodules in pipe_struct.items():
-        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
         module = PipelineModule(module_name, func = mod_func)
         submodules_list = []
         for submodule_name in submodules.keys():
-            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
             module.add_submodule(submodule, args.force)
@@ -84,11 +84,11 @@ def build_full_module(args, pipe:"Pipeline", pipe_struct:dict)->dict:
     
     if submodules_name == "full":
         submodules = pipe_struct[module_name].keys() # get all submodules 
-        mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+        mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
         module = PipelineModule(module_name, func = mod_func)
         submodules_list = []
         for submodule_name in submodules:
-            sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+            sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
             module.add_submodule(submodule, args.force)
@@ -115,11 +115,11 @@ def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
     submodule_name = args.submodule
     submodules = [] #need to be a list even if single submodule
     
-    mod_func = load_function(f"Cscorer.{module_name}.main.{module_name}_submodules")
+    mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
     module = PipelineModule(module_name, func = mod_func)
     submodules_list = []
 
-    sub_func = load_function(f"Cscorer.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
+    sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
     submodule = PipelineSubmodule(submodule_name, func= sub_func)
     submodules_list.append(submodule)
     module.add_submodule(submodule, args.force)
