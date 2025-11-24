@@ -1,5 +1,5 @@
 
-CREATE OR REPLACE TABLE features.observers AS
+CREATE OR REPLACE VIEW features.all_observers AS
 
 
 WITH inat_data AS (
@@ -13,7 +13,7 @@ SELECT
     "json" ->> 'species_count' AS inat_species_count,
 
 
-FROM inat.observers
+FROM raw.inat_observers
 
 ),
 
@@ -39,27 +39,20 @@ ROUND(SUM(num_identification_agreements) / COUNT(num_identification_agreements),
 SUM(num_identification_disagreements) as id_disagree_count,
 ROUND((SUM(num_identification_disagreements) / COUNT(num_identification_disagreements)), 2) as id_disagree_pct,
 ROUND(AVG(description_length),2) as avg_description_len,
-SUM(expert_match) AS expert_match_count,
-ROUND(100 * (SUM(expert_match) / observations_count),2) as expert_match_pct,
-ROUND(100.0000 * (SUM(expert_match) / SUM(COUNT(*)) OVER ()), 3) AS expert_match_total_pct,
+
 
 recordedBy
 
-FROM preprocessed.citizen_matched
+FROM preprocessed.gbif_citizen_prep
 
 GROUP BY recordedBy
 
 )
 
-SELECT g.*, i.* 
+SELECT g.*, i.* EXCLUDE (i.inat_name)
 
 FROM gbif_metadata g
 JOIN inat_data i
     ON g.recordedBy = i.inat_name;
-
-ALTER TABLE features.observers
-DROP COLUMN inat_name;
-
-
 
 
