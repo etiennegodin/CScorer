@@ -163,11 +163,31 @@ modules:
             status: !StepStatus 'completed'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
+      post_preprocess: !PipelineSubmodule
+        func: !!python/name:obsq.data.post_preprocess.main.data_post_preprocess ''
+        init: '2025-11-24 17:43:27'
+        name: post_preprocess
+        status: !StepStatus 'incomplete'
+        steps:
+          get_inatOccMetadata: !PipelineStep
+            config: {}
+            func: !!python/name:obsq.data.post_preprocess.main.get_inatOccMetadata ''
+            init: '2025-11-24 17:43:27'
+            name: get_inatOccMetadata
+            status: !StepStatus 'failed'
+            storage: {}
+          matchGbifDatasets: !PipelineStep
+            config: {}
+            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
+            init: '2025-11-24 17:43:27'
+            name: matchGbifDatasets
+            status: !StepStatus 'init'
+            storage: {}
       preprocessors: !PipelineSubmodule
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-24 17:22:49'
         name: preprocessors
-        status: !StepStatus 'incomplete'
+        status: !StepStatus 'completed'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
@@ -185,7 +205,7 @@ modules:
             storage: {}
           extract_inat_expert: !PipelineStep
             config: {}
-            func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
+            func: *id004
             init: '2025-11-24 17:22:49'
             name: extract_inat_expert
             status: !StepStatus 'completed'
@@ -197,49 +217,10 @@ modules:
             name: extract_observer_json
             status: !StepStatus 'completed'
             storage: {}
-          get_inatOccMetadata: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.data.preprocessors.main.get_inatOccMetadata ''
-            init: '2025-11-24 17:22:49'
-            name: get_inatOccMetadata
-            status: !StepStatus 'init'
-            storage: {}
-          matchGbifDatasets: !PipelineStep
-            config: {}
-            func: *id004
-            init: '2025-11-24 17:22:49'
-            name: matchGbifDatasets
-            status: !StepStatus 'init'
-            storage: {}
           shuffle_inat_expert_obs: !PipelineStep
             config: {}
             func: *id004
-            init: '2025-11-24 17:22:49'
+            init: '2025-11-24 17:39:39'
             name: shuffle_inat_expert_obs
             status: !StepStatus 'completed'
             storage: {}
-  features: !PipelineModule
-    func: !!python/name:obsq.features.main.features_submodules ''
-    init: '2025-11-24 16:01:47'
-    name: features
-    status: !StepStatus 'incomplete'
-    submodules:
-      extractors: !PipelineSubmodule
-        func: !!python/name:obsq.features.extractors.main.features_extractors ''
-        init: '2025-11-24 16:01:47'
-        name: extractors
-        status: !StepStatus 'incomplete'
-        steps:
-          observer_features: !PipelineStep
-            config: {}
-            func: *id004
-            init: '2025-11-24 16:01:47'
-            name: observer_features
-            status: !StepStatus 'failed'
-            storage: {}
-      transformers: !PipelineSubmodule
-        func: !!python/name:obsq.features.transformers.main.features_transformers ''
-        init: '2025-11-24 16:01:47'
-        name: transformers
-        status: !StepStatus 'incomplete'
-        steps: {}
