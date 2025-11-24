@@ -4,6 +4,7 @@ WITH main_cleanup AS(
 SELECT g.gbifID,
 g.occurrenceID,
 g.publishingOrgKey,
+g.eventDate,
 g.kingdom,
 g.phylum,
 g.class,
@@ -34,13 +35,11 @@ END AS coordinateUncertaintyInMeters,
 
 
 FROM {{source_table_name}} g
-WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL -- removing uncertain coords
-
 )
 
 SELECT * FROM main_cleanup m
 
-WHERE m.taxonRank = 'SPECIES' AND m.month > 4 AND m.month < 9;
+WHERE m.taxonRank = 'SPECIES' AND m.month > 4 AND m.month < 9 AND m.publishingOrgKey = '28eb1a3f-1c15-4a95-931a-4af90ecb574d';
 
 
 
