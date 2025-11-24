@@ -15,7 +15,7 @@ class PipelineSubmodule(Observable):
     steps: Dict[str, PipelineStep] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
     init:str = time.strftime("%Y-%m-%d %H:%M:%S")
-    
+        
     def add_step(self, step:PipelineStep):
         if step.name not in self.steps.keys():
             step.set_parent(self)
@@ -39,7 +39,7 @@ class PipelineSubmodule(Observable):
             self.status = StepStatus.completed
         return
 
-        
+
     def _child_updated(self, child, key, old, new):
         if self._parent:
             self._parent._child_updated(child, key, old, new)

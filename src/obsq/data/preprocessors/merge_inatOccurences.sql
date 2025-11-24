@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE preprocessed.gbif_citizen AS 
+CREATE OR REPLACE VIEW preprocessed.gbif_citizen_prep AS 
 
 WITH inat_inter AS (
 

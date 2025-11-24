@@ -104,4 +104,5 @@ class Pipeline(Observable):
             for sm in mod.submodules.values():
                 sm.set_parent(mod)
                 for step in sm.steps.values():
+                    print('yay')
                     step.set_parent(sm)

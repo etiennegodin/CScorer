@@ -17,7 +17,9 @@ def pipe_reconstructor(pipeline:Pipeline):
                 step._parent = sub
    
 def init_folder(config:dict, config_path:Path)->dict:
+    
     folders = {}
+    package_folder = Path(__file__).parent
     run_folder = Path(config_path).parent
     pipe_folder = (run_folder / 'pipeline')
     
@@ -30,6 +32,7 @@ def init_folder(config:dict, config_path:Path)->dict:
     db_path = data_folder / 'data.duckdb'
 
     #Set folder paths to config
+    folders["package_folder"] = str(package_folder)
     folders["run_folder"] = str(run_folder)
     folders["pipeline_folder"] = str(pipe_folder)
 
@@ -56,12 +59,15 @@ def build_full_pipeline(args, pipe:"Pipeline", pipe_struct)->dict:
     for module_name, submodules in pipe_struct.items():
         mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
         module = PipelineModule(module_name, func = mod_func)
+        module.set_parent(pipe)
         submodules_list = []
         for submodule_name in submodules.keys():
             sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
             module.add_submodule(submodule, args.force)
+            submodule.set_parent(module)
+
         #Add back to pipe once all submodules are declaed
         pipe.add_module(module, args.force)
         to_run[module.name] = submodules_list 
@@ -86,12 +92,15 @@ def build_full_module(args, pipe:"Pipeline", pipe_struct:dict)->dict:
         submodules = pipe_struct[module_name].keys() # get all submodules 
         mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
         module = PipelineModule(module_name, func = mod_func)
+        module.set_parent(pipe)
+
         submodules_list = []
         for submodule_name in submodules:
             sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
             submodule = PipelineSubmodule(submodule_name, func= sub_func)
             submodules_list.append(submodule)
             module.add_submodule(submodule, args.force)
+            submodule.set_parent(module)
 
         #Add back to pipe once all submodules are declaed
         pipe.add_module(module, args.force)
@@ -117,11 +126,14 @@ def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
     
     mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
     module = PipelineModule(module_name, func = mod_func)
+    module.set_parent(pipe)
+
     submodules_list = []
 
     sub_func = load_function(f"obsq.{module_name}.{submodule_name}.main.{module_name}_{submodule_name}")
     submodule = PipelineSubmodule(submodule_name, func= sub_func)
     submodules_list.append(submodule)
+    submodule.set_parent(module)
     module.add_submodule(submodule, args.force)
 
     #Add back to pipe once all submodules are declaed

@@ -52,9 +52,7 @@ def main():
     # Debugger
     if args.debug:
         launch_debugger()
-        
-    print(args)
-    
+            
     # Init pipeline 
     pipe = run_pipeline(args, pipe_struct)
 
