@@ -144,11 +144,8 @@ def build_full_submodule(args, pipe:Pipeline, pipe_struct:dict)->dict:
 def run_pipeline(args, pipe_struct:dict)->Pipeline:
     
     # Check if required file, else try dev mode
-    if not args.file:
-        if not args.dev:
-            raise UserWarning("Missing config file")
+    if args.dev:
         #dev branch
-        #config_path = Path(__file__).parent.parent.parent / "work/dev/config.yaml"
         config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
 
     else:
