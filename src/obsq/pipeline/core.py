@@ -1,10 +1,12 @@
 from __future__ import annotations
+from typing import Callable, List, Dict, Any, Optional
+
 from dataclasses import dataclass, field
 import time
 import importlib
 
 
-def check_completion(items:dict/list):
+def check_completion(items:Any):
     from .enums import StepStatus
     completion = True
     if isinstance(items,dict):

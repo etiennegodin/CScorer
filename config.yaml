@@ -4,7 +4,6 @@ pipe_struct:
       Load data to disk
     preprocessors:
       Preprocess data 
-
   features:
     extractors:
       Extract features from data

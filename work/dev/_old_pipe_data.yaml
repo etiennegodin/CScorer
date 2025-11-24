@@ -4,12 +4,12 @@ data_load_gbif_citizen:
   db: gbif_raw.citizen
   init: 1762872918.0885973
   key: 0027014-251025141854904
-  raw_pipe: /home/manat/projects/CScorer/work/dev/data/0027014-251025141854904.csv
+  raw_pipe: /home/manat/projects/obsq/work/dev/data/0027014-251025141854904.csv
 data_load_gbif_expert:
   db: gbif_raw.expert
   init: 1762872918.0967045
   key: 0027013-251025141854904
-  raw_pipe: /home/manat/projects/CScorer/work/dev/data/0027013-251025141854904.csv
+  raw_pipe: /home/manat/projects/obsq/work/dev/data/0027013-251025141854904.csv
 gee_query_citizen_occurences:
   db: gee.citizen_occurences
   init: 1763157247.058232

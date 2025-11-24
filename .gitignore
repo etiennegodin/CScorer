@@ -2,4 +2,4 @@
 *.env
 *.vscode/
 *.duckdb
-!src/Cscorer/data/
+!src/obsq/data/

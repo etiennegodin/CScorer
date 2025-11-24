@@ -100,7 +100,7 @@ modules:
     func: !!python/name:obsq.data.main.data_submodules ''
     init: '2025-11-18 10:02:47'
     name: data
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'completed'
     submodules:
       loaders: !PipelineSubmodule
         func: !!python/name:obsq.data.loaders.main.data_loaders ''
