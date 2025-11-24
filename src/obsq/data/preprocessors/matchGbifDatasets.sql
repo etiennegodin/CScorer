@@ -1,6 +1,5 @@
 CREATE INDEX IF NOT EXISTS idx_c_geom  ON preprocessed.gbif_citizen USING RTREE (geom);
 CREATE INDEX IF NOT EXISTS idx_e_geom  ON preprocessed.gbif_expert USING RTREE (geom);
-
 CREATE OR REPLACE TABLE preprocessed.citizen_matched AS
 
 WITH c3857 AS(

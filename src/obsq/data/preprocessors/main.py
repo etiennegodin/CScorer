@@ -6,13 +6,15 @@ import asyncio
 from pathlib import Path
 
 async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
-    schema = "preprocessed"
-    create_schema(pipe.con, schema)
+    create_schema(pipe.con, 'clean')
+    create_schema(pipe.con, 'preprocessed')
+
     sql_folder = Path(__file__).parent
     clean_gbif_citizen = PipelineStep( "clean_gbif_citizen", func = clean_gbif_occurences)
     clean_gbif_expert = PipelineStep( "clean_gbif_expert", func = clean_gbif_occurences)
     merge_inatOccurences = PipelineStep( "merge_inatOccurences", func = simple_sql_query)
-    matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
+    
+    #matchGbifDatasets = PipelineStep( "matchGbifDatasets", func = simple_sql_query)
 
     submodule.add_step(clean_gbif_citizen)
     submodule.add_step(clean_gbif_expert)
@@ -21,10 +23,10 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
         tg.create_task(submodule.steps['clean_gbif_citizen'].run(pipe, sql_folder = sql_folder))
         tg.create_task(submodule.steps['clean_gbif_expert'].run(pipe, sql_folder = sql_folder))
     
-    #submodule.add_step(merge_inatOccurences)
+    submodule.add_step(merge_inatOccurences)
     #submodule.add_step(matchGbifDatasets)
     
-    #await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
+    await submodule.steps['merge_inatOccurences'].run(pipe, sql_folder = sql_folder)
     #await submodule.steps['matchGbifDatasets'].run(pipe, sql_folder = sql_folder)
 
 async def data_prepro_template(pipe:Pipeline, step:PipelineStep):

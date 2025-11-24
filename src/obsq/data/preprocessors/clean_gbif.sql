@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW preprocessed.{{target_table_name}} AS 
+CREATE OR REPLACE VIEW clean.{{target_table_name}} AS 
 
 WITH main_cleanup AS(
 SELECT g.gbifID,
@@ -34,7 +34,7 @@ END AS coordinateUncertaintyInMeters,
 
 
 FROM {{source_table_name}} g
-WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL
+WHERE g.coordinateUncertaintyInMeters < 1000 OR g.coordinateUncertaintyInMeters IS NULL -- removing uncertain coords
 
 )
 
