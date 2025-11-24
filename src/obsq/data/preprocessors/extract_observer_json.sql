@@ -1,4 +1,4 @@
-  CREATE OR REPLACE TABLE preprocessed.inat_observers AS
+  CREATE OR REPLACE VIEW preprocessed.inat_observers_prep AS
   SELECT 
   json_extract(json, '$.id') AS id,
   json_extract(json, '$.login') AS login,
@@ -21,4 +21,12 @@
   json_extract(json, '$.site_id') AS site_id,
   json_extract(json, '$.icon_url') AS icon_url
 
-FROM raw.inat_observers 
+FROM raw.inat_observers;
+
+-- remove duplicates
+CREATE OR REPLACE TABLE preprocessed.inat_observers AS
+SELECT * FROM preprocessed.inat_observers_prep
+WHERE id NOT IN (
+  SELECT MIN(id)
+  FROM preprocessed.inat_observers 
+);
