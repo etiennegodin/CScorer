@@ -1,4 +1,4 @@
-name: RScorerEnv
+name: obsq
 channels:
   - conda-forge
   - defaults
@@ -47,17 +47,13 @@ dependencies:
       - duckdb
       - duckdb-extensions
       - duckdb-extension-spatial
-      - streamlit
-      - streamlit-folium
-      - streamlit_autorefresh
       - shapely
       - requests
       - folium
       - jinja2
-      - snakemake
       - pygbif
       - xgboost
-      - aiohttp
-      - aiolimiter
-      - earthengine-ap
       - geemap
+      - aiohttp
+      - aiofiles
+      - aiolimiter
