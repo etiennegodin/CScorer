@@ -39,7 +39,7 @@ FROM {{source_table_name}} g
 
 SELECT * FROM main_cleanup m
 
-WHERE m.coordinateUncertaintyInMeters < 5000 
+WHERE m.coordinateUncertaintyInMeters < 3000 
 AND m.taxonRank = 'SPECIES' 
 AND m.month > 4 
 AND m.month < 9 

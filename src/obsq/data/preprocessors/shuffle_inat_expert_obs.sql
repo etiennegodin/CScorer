@@ -1,7 +1,7 @@
 -- create gbif_citizen table
 CREATE OR REPLACE TABLE preprocessed.gbif_citizen AS
 SELECT *
-FROM preprocessed.gbif_citizen_prep
+FROM raw.gbif_citizen
 WHERE recordedBy NOT IN (SELECT inat_name FROM preprocessed.inat_expert);
 
 -- create gbif_expert_table
