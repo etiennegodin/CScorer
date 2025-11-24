@@ -27,7 +27,7 @@ JOIN c3857 c
         (SELECT geom FROM preprocessed.gbif_citizen WHERE gbifID = c.gbifID),  -- index hit
         0.1
     )
-WHERE ST_DWithin(e.geom, c.geom, 5000) AND e_taxon = c_taxon
+WHERE ST_DWithin(e.geom, c.geom, 3000) AND e_taxon = c_taxon
 
 )
 

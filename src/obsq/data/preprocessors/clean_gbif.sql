@@ -39,7 +39,11 @@ FROM {{source_table_name}} g
 
 SELECT * FROM main_cleanup m
 
-WHERE m.taxonRank = 'SPECIES' AND m.month > 4 AND m.month < 9 AND m.publishingOrgKey = '28eb1a3f-1c15-4a95-931a-4af90ecb574d';
+WHERE m.coordinateUncertaintyInMeters < 5000 
+AND m.taxonRank = 'SPECIES' 
+AND m.month > 4 
+AND m.month < 9 
+AND m.publishingOrgKey = '28eb1a3f-1c15-4a95-931a-4af90ecb574d';
 
 
 
