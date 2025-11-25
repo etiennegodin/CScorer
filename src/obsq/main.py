@@ -1,6 +1,6 @@
 from .pipeline import Pipeline, PipelineModule, PipelineSubmodule, StepStatus
 from .pipeline.yaml_support import read_config
-from .pipeline.core import load_function
+from .pipeline.old_core import load_function
 import obsq # to reload functions from string
 import yaml
 from pathlib import Path
@@ -57,8 +57,8 @@ def create_folders(folders:dict):
 def build_full_pipeline(args, pipe:"Pipeline", pipe_struct)->dict:
     to_run = {}
     for module_name, submodules in pipe_struct.items():
-        mod_func = load_function(f"obsq.{module_name}.main.{module_name}_submodules")
-        module = PipelineModule(module_name, func = mod_func)
+        print(submodules)
+        module = PipelineModule(module_name)
         module.set_parent(pipe)
         submodules_list = []
         for submodule_name in submodules.keys():

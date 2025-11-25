@@ -64,6 +64,7 @@ class StepResult:
 @dataclass
 class PipelineContext:
     """Shared context passed between pipeline steps"""
+    config: Dict[str, Any ] = field(default_factory=dict)
     data: Dict[str, Any] = field(default_factory=dict)
     results: Dict[str, StepResult] = field(default_factory=dict)
     checkpoint_dir: Optional[Path] = None
@@ -371,6 +372,7 @@ class Pipeline:
     
     def run(
         self,
+        config: Dict,
         initial_data: Optional[Dict[str, Any]] = None,
         from_module: Optional[str] = None,
         to_module: Optional[str] = None,
@@ -394,6 +396,7 @@ class Pipeline:
         """
         # Initialize context
         context = PipelineContext(
+            config = config,
             data=initial_data or {},
             checkpoint_dir=self.checkpoint_dir
         )

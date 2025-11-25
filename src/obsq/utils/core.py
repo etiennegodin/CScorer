@@ -34,3 +34,12 @@ async def _ask_yes_no(msg:str):
         return True
     else:
         return False
+
+
+def read_config(path:Path):
+    from ..utils.core import to_Path
+
+    import yaml
+    path = to_Path(path)
+    with open(path, 'r') as file:
+        return yaml.load(file, Loader=yaml.FullLoader)
