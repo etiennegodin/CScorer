@@ -598,8 +598,6 @@ class Pipeline:
        
             try:
                 module.run(context)
-                pprint(context)
-                print('debug')
                 self._save_checkpoint(context)
             except Exception as e:
                 self.logger.error(
