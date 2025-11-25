@@ -67,7 +67,7 @@ class GeeLoader(BaseLoader):
             #Save final samples to db
             table = await self._save_to_db(con, table_name, logger)
             logger.info(f"Finished getting gee data for {self.name}")
-            step.status = StepStatus.COMPLETED
+            step.status = StepStatus.completed
             pipe.update()
             
     def _chunk_samples(self, fc:FeatureCollection, logger, size:int = 2500):
@@ -210,8 +210,8 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
     tables = []
     files = []
     
-    if step.status == StepStatus.COMPLETED:
-        pipe.logger.info(f"Step {step_name} COMPLETED")
+    if step.status == StepStatus.completed:
+        pipe.logger.info(f"Step {step_name} completed")
         return step.storage['points'] 
        
     #Init step if not done 
@@ -235,13 +235,13 @@ async def upload_points(pipe:Pipeline, step :PipelineStep):
         #Export table points to disk
         exports = [asyncio.create_task(export_to_shp(con = pipe.con, file_path = file, table_name = table, table_fields= 'gbifID', logger = pipe.logger)) for file, table in zip(files,tables)]
         await asyncio.gather(*exports)
-        step.status = StepStatus.LOCAL
+        step.status = StepStatus.local
 
-    if step.status == StepStatus.LOCAL:
+    if step.status == StepStatus.local:
         #Upload these points to gee 
         uploads = [asyncio.create_task(_check_asset_upload(file, pipe, step)) for file in files]
         await asyncio.gather(*uploads)
-        step.status = StepStatus.COMPLETED
+        step.status = StepStatus.completed
         pipe.logger.info('Successfully upload all files to gee')
     
     return step.storage['points']

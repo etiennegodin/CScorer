@@ -3,7 +3,7 @@
 
 
 
-def launch_debugger(host="LOCALhost", port=5678, wait=True, max_port_tries=5):
+def launch_debugger(host="localhost", port=5678, wait=True, max_port_tries=5):
     """
     Robustly start debugpy listener.
     - If a client is already connected, do nothing.
@@ -52,7 +52,7 @@ def launch_debugger(host="LOCALhost", port=5678, wait=True, max_port_tries=5):
         return
     except Exception as e:
         # nothing worked -> raise the original error for visibility
-        print("FAILED to start debugpy listener:", e)
+        print("Failed to start debugpy listener:", e)
         if last_exc:
             raise last_exc
         raise

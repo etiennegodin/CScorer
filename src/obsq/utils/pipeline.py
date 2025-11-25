@@ -13,6 +13,11 @@ def create_folders(parent_folder:Path)->dict:
     
     folders = {}
     
+    modules_folder = (parent_folder / 'modules')
+    steps_folder = (parent_folder / 'steps')
+    checkpoints_folder = (parent_folder / 'checkpoints')
+
+
     data_folder = (parent_folder / 'data')
     gbif_folder = (data_folder / 'gbif')
     inat_folder = data_folder/ 'inat'
@@ -22,6 +27,11 @@ def create_folders(parent_folder:Path)->dict:
 
     # Set folder paths to config
     folders["root_folder"] = str(parent_folder)
+    
+    folders["modules_folder"] = str(modules_folder)
+    folders["steps_folder"] = str(steps_folder)
+    folders["checkpoints_folder"] = str(checkpoints_folder)
+
     folders["data_folder"] = str(data_folder)
     folders["eda_folder"] = str(eda_folder)
     folders["gbif_folder"] = str(gbif_folder)
@@ -30,7 +40,6 @@ def create_folders(parent_folder:Path)->dict:
 
     # Create folders   
     for folder in folders.values():
-        
         Path(folder).mkdir(exist_ok= True)
         
     # Append db_path
