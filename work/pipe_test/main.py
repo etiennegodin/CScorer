@@ -5,7 +5,10 @@ from obsq.modules import myModule, m_collect_gbif
 from obsq.steps import DataBaseConnection
 
 def main(root_folder, args):
-
+    resume = True
+    if args.force:
+        resume = False
+    
     #Config as dict
     try:
         config = read_config(root_folder / args.config)
@@ -21,7 +24,7 @@ def main(root_folder, args):
 
     pipeline = Pipeline('pipe_test', [init, m_collect_gbif,myModule], root_folder/ "checkpoints")
     
-    pipeline.run(config, resume_from_checkpoint= args.resume)
+    pipeline.run(config, resume_from_checkpoint = resume)
 
     
 if __name__ == "__main__":

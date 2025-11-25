@@ -32,7 +32,7 @@ def main():
     global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
     global_parser.add_argument("--skip_modules","-s", help = "Skip these modules (list of module names)")
-    global_parser.add_argument("--resume", "-r", action= 'store_true', help = "Resume from last checkpoint")
+    global_parser.add_argument("--force", action= 'store_true', help = "Ignore last checkpoint")
     global_parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
 
     parser = argparse.ArgumentParser(
