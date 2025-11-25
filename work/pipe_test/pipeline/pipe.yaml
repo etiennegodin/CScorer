@@ -95,31 +95,47 @@ config:
   time:
     end: 2025-11-01
     start: 2010-01-01
-init: '2025-11-24 17:43:27'
+init: '2025-11-24 19:43:17'
 modules:
   data: !PipelineModule
     func: !!python/name:obsq.data.main.data_submodules ''
-    init: '2025-11-24 17:43:27'
+    init: '2025-11-24 19:43:17'
     name: data
-    status: !StepStatus 'incomplete'
+    status: !StepStatus 'init'
     submodules:
-      post_preprocess: !PipelineSubmodule
-        func: !!python/name:obsq.data.post_preprocess.main.data_post_preprocess ''
-        init: '2025-11-24 17:43:27'
-        name: post_preprocess
-        status: !StepStatus 'incomplete'
-        steps:
-          get_inatOccMetadata: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.data.post_preprocess.main.get_inatOccMetadata ''
-            init: '2025-11-24 17:43:27'
-            name: get_inatOccMetadata
-            status: !StepStatus 'failed'
-            storage: {}
-          matchGbifDatasets: !PipelineStep
-            config: {}
-            func: !!python/name:obsq.utils.sql.sql.simple_sql_query ''
-            init: '2025-11-24 17:43:27'
-            name: matchGbifDatasets
-            status: !StepStatus 'init'
-            storage: {}
+      loaders: !PipelineSubmodule
+        func: !!python/name:obsq.data.loaders.main.data_loaders ''
+        init: '2025-11-24 19:43:17'
+        name: loaders
+        status: !StepStatus 'init'
+        steps: {}
+      post_loaders: !PipelineSubmodule
+        func: !!python/name:obsq.data.post_loaders.main.data_post_loaders ''
+        init: '2025-11-24 19:43:17'
+        name: post_loaders
+        status: !StepStatus 'init'
+        steps: {}
+      preprocessors: !PipelineSubmodule
+        func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
+        init: '2025-11-24 19:43:17'
+        name: preprocessors
+        status: !StepStatus 'init'
+        steps: {}
+  features: !PipelineModule
+    func: !!python/name:obsq.features.main.features_submodules ''
+    init: '2025-11-24 19:43:17'
+    name: features
+    status: !StepStatus 'init'
+    submodules:
+      extractors: !PipelineSubmodule
+        func: !!python/name:obsq.features.extractors.main.features_extractors ''
+        init: '2025-11-24 19:43:17'
+        name: extractors
+        status: !StepStatus 'init'
+        steps: {}
+      transformers: !PipelineSubmodule
+        func: !!python/name:obsq.features.transformers.main.features_transformers ''
+        init: '2025-11-24 19:43:17'
+        name: transformers
+        status: !StepStatus 'init'
+        steps: {}

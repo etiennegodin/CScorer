@@ -36,9 +36,13 @@ class GbifLoader(BaseLoader):
             gbif_raw_data = await self._download_and_unpack(step,ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
             step.storage['raw_data'] = gbif_raw_data
             step.status = StepStatus.local
+            for f in gbif_raw_data:
+                if "verbatim.txt" in f:
+                    output = f
+                    break
             pipe.update()
 
-        return gbif_raw_data
+        return output
     
     async def _submit_request(self, pipe:Pipeline, step:PipelineStep):  
         logger = pipe.logger
@@ -49,7 +53,7 @@ class GbifLoader(BaseLoader):
             query = self.predicate.to_dict() # build 
             #threaded as returns tuples 
             response = await asyncio.to_thread(lambda: occ.download(query,
-                    format="SIMPLE_CSV",
+                    format="DWCA",
                     user= str(os.getenv("GBIF_USERNAME")),
                     pwd=str(os.getenv("GBIF_PASSWORD")),
                     email=str(os.getenv("GBIF_EMAIL"))))
@@ -109,7 +113,12 @@ class GbifLoader(BaseLoader):
             logger.info("Unpacked ZIP.")
         
         # Save data path
-        output = f"{dest_dir}/{response['key']}.csv"
+        #output = f"{dest_dir}/{response['key']}.csv"
+        output = []
+        files = os.listdir(dest_dir)
+        for f in files:
+            output.append(f"{dest_dir}/{f}")
+            
         os.remove(zip_path)
         return output
     
