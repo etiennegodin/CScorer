@@ -21,34 +21,24 @@ class GbifLoader(ClassStep):
         #Add additonnal predicates
         for key, value in self.custom_predicates.items():
             self.predicate.add_field(key = key, value = value)
-            
-        step_name = self.name
+                    
         # Set dict for self outputs \
         if not self._validate_has_no_download_key(context):
-            print('here')
-            download_key = 'xxxx'
-            #download_key = await self._submit_request()
-            self.logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
-            context.set_intermediate_step_result(self.name, 'download_key', download_key )
+            download_key = await self._submit_request()
+            self.logger.info(f"- {self.name} Gbif request made. Key : {download_key}")
+            context.set_intermediate_step_result(self.name, {'download_key' : download_key} )
             
         if self._validate_has_no_download_key(context):
             download_key = context.get_step_output(self.name)['download_key']
-            print(download_key)
-            print('there')
-            return {'x':'y'}
-
             ready_key = await self._poll_gbif_until_ready(self,download_key)
-        return {'x':'y'}
-        if self.status == StepStatus.ready:
-            gbif_raw_data = await self._download_and_unpack(self,ready_key, dest_dir= context.config['paths']['gbif_folder'])
-            self.storage['raw_data'] = gbif_raw_data
-            self.status = StepStatus.LOCAL
-            for f in gbif_raw_data:
-                if "verbatim.txt" in f:
-                    output = f
-                    break
+        
+        file_list = await self._download_and_unpack(self,ready_key, dest_dir= context.config['paths']['gbif_folder'])
+        context.set_intermediate_step_result(self.name, {"files", file_list} )
 
-        return output
+        for f in file_list:
+            if "verbatim.txt" in f:
+                return {"output":f}
+
     # Validation functions (optional)
     def _validate_has_no_download_key(self,context: PipelineContext) -> bool:
         step_output = context.get_step_output(self.name)
@@ -125,13 +115,13 @@ class GbifLoader(ClassStep):
         
         # Save data path
         #output = f"{dest_dir}/{response['key']}.csv"
-        output = []
+        file_list = []
         files = os.listdir(dest_dir)
         for f in files:
-            output.append(f"{dest_dir}/{f}")
+            file_list.append(f"{dest_dir}/{f}")
             
         os.remove(zip_path)
-        return output
+        return file_list
     
     
     def _predicate_builder(self,config:dict):
