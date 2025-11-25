@@ -3,8 +3,17 @@ from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
 from .yaml_support import yaml_serializable
-from .core import Observable, init_data
+from .old_core import Observable, init_data
 import time
+
+
+
+
+
+
+
+
+
 
 @yaml_serializable()
 @dataclass
@@ -20,23 +29,23 @@ class PipelineStep(Observable):
     
     async def run(self, pipe:Pipeline, *args, **kwargs):
         from .enums import StepStatus
-        if self.status != StepStatus.completed:
+        if self.status != StepStatus.COMPLETED:
             pipe.logger.info(f'\t\tRunning step : {self.name}')
             func = self.func
             #func = load_function(self.func)
             if inspect.iscoroutinefunction(func):
                 try:
                     result = await func(pipe, *args, step = self, **kwargs)
-                    self.status = StepStatus.completed
+                    self.status = StepStatus.COMPLETED
                     return result
                 except Exception as e:
-                    self.status = StepStatus.failed
+                    self.status = StepStatus.FAILED
                     pipe.logger.error(e)
                     raise Exception(e)
                     
             else:
                 return func(pipe, *args, step = self, **kwargs)
         else:
-            pipe.logger.info(f"\t\t{self.name} step is completed")
+            pipe.logger.info(f"\t\t{self.name} step is COMPLETED")
 
         

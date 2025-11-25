@@ -7,7 +7,7 @@ import time
 import yaml
 import duckdb
 from .yaml_support import yaml_serializable
-from .core import Observable, check_completion
+from .old_core import Observable, check_completion
 from .module import PipelineModule, PipelineSubmodule
 
 @yaml_serializable()
@@ -64,7 +64,7 @@ class Pipeline(Observable):
             return True
         except Exception as e:
             # do not raise from storage persistence
-            self.logger.error(f"Failed to persist pipeline storage : {e}") 
+            self.logger.error(f"FAILED to persist pipeline storage : {e}") 
             return False
     
     async def run(self, to_run:dict[str:list[PipelineSubmodule]], force:bool = False):
@@ -85,17 +85,17 @@ class Pipeline(Observable):
                 if sm.status == StepStatus.incomplete:
                     continue
                 for st in sm.steps.values():
-                    if st.status != StepStatus.completed:
+                    if st.status != StepStatus.COMPLETED:
                         sm.status = StepStatus.incomplete
                         module.status = StepStatus.incomplete
                         break
         
         for module_name, submodules in to_run.items():
             module = self.modules[module_name]
-            if module.status != StepStatus.completed:
+            if module.status != StepStatus.COMPLETED:
                 await module.run(submodules, force)
             else:
-                self.logger.info(f"{module.name} module is completed")
+                self.logger.info(f"{module.name} module is COMPLETED")
             
     
     def rebuild_runtime(self):

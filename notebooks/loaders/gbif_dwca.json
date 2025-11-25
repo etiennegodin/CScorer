@@ -542,15 +542,15 @@
         "nullable": true
       },
       {
-        "name": "locality",
+        "name": "LOCALity",
         "type": "STRING",
-        "term": "http://rs.tdwg.org/dwc/terms/locality",
+        "term": "http://rs.tdwg.org/dwc/terms/LOCALity",
         "nullable": true
       },
       {
-        "name": "verbatimLocality",
+        "name": "verbatimLOCALity",
         "type": "STRING",
-        "term": "http://rs.tdwg.org/dwc/terms/verbatimLocality",
+        "term": "http://rs.tdwg.org/dwc/terms/verbatimLOCALity",
         "nullable": true
       },
       {
@@ -1778,15 +1778,15 @@
         "nullable": true
       },
       {
-        "name": "locality",
+        "name": "LOCALity",
         "type": "STRING",
-        "term": "http://rs.tdwg.org/dwc/terms/locality",
+        "term": "http://rs.tdwg.org/dwc/terms/LOCALity",
         "nullable": true
       },
       {
-        "name": "verbatimLocality",
+        "name": "verbatimLOCALity",
         "type": "STRING",
-        "term": "http://rs.tdwg.org/dwc/terms/verbatimLocality",
+        "term": "http://rs.tdwg.org/dwc/terms/verbatimLOCALity",
         "nullable": true
       },
       {

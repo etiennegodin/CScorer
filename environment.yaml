@@ -57,4 +57,4 @@ dependencies:
       - aiohttp
       - aiofiles
       - aiolimiter
-      - featuretools
+      - tenacity

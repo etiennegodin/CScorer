@@ -58,7 +58,7 @@ async def clean_gbif_occurences(pipe:Pipeline, step:PipelineStep, sql_folder:Pat
     try:
         con.execute(query)
     except Exception as e:
-        pipe.logger.error(f"Failed to run query : {e}")
-        step.status = StepStatus.failed
-    step.status = StepStatus.completed
+        pipe.logger.error(f"FAILED to run query : {e}")
+        step.status = StepStatus.FAILED
+    step.status = StepStatus.COMPLETED
     

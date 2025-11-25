@@ -7,9 +7,9 @@ class StepStatus(str, Enum):
     requested = "requested" 
     pending = 'pending'
     ready = "ready"
-    local = 'local'
-    completed = "completed"
-    failed = "failed"
+    LOCAL = 'LOCAL'
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
     incomplete = 'incomplete'
     
 # Custom YAML handlers

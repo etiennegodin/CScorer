@@ -107,14 +107,14 @@ modules:
         func: !!python/name:obsq.data.loaders.main.data_loaders ''
         init: '2025-11-18 10:02:47'
         name: loaders
-        status: !StepStatus 'completed'
+        status: !StepStatus 'COMPLETED'
         steps:
           data_load_gbif_citizen: !PipelineStep
             config: {}
             func: &id001 !!python/name:obsq.data.loaders.main.data_load_gbif_main ''
             init: '2025-11-18 10:02:47'
             name: data_load_gbif_citizen
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               db: gbif_raw.citizen
               key: 0027014-251025141854904
@@ -124,7 +124,7 @@ modules:
             func: *id001
             init: '2025-11-18 10:02:47'
             name: data_load_gbif_expert
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               db: gbif_raw.expert
               key: 0027013-251025141854904
@@ -134,7 +134,7 @@ modules:
             func: !!python/name:obsq.data.loaders.main.data_load_inat_observer ''
             init: '2025-11-18 10:02:47'
             name: data_load_inat_observer
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               db: inat.observers
           data_load_points: !PipelineStep
@@ -142,7 +142,7 @@ modules:
             func: !!python/name:obsq.data.loaders.main.data_load_points ''
             init: '2025-11-18 10:09:30'
             name: data_load_points
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               points:
                 citizen_occurences: projects/observationscorer/assets/citizen_occurences
@@ -152,7 +152,7 @@ modules:
             func: &id002 !!python/name:obsq.data.loaders.main.data_load_sample_gee ''
             init: '2025-11-18 10:12:57'
             name: data_load_sample_gee_citizen_occurences
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               db: gee.data_load_sample_gee_citizen_occurences
           data_load_sample_gee_expert_occurences: !PipelineStep
@@ -160,7 +160,7 @@ modules:
             func: *id002
             init: '2025-11-18 10:12:57'
             name: data_load_sample_gee_expert_occurences
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage:
               db: gee.data_load_sample_gee_expert_occurences
       post_loaders: !PipelineSubmodule
@@ -173,40 +173,40 @@ modules:
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-24 17:22:49'
         name: preprocessors
-        status: !StepStatus 'completed'
+        status: !StepStatus 'COMPLETED'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
             func: &id003 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
             init: '2025-11-24 17:22:49'
             name: clean_gbif_citizen
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
           clean_gbif_expert: !PipelineStep
             config: {}
             func: *id003
             init: '2025-11-24 17:22:49'
             name: clean_gbif_expert
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
           extract_inat_expert: !PipelineStep
             config: {}
             func: &id004 !!python/name:obsq.utils.sql.sql.simple_sql_query ''
             init: '2025-11-24 17:22:49'
             name: extract_inat_expert
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
           extract_observer_json: !PipelineStep
             config: {}
             func: *id004
             init: '2025-11-24 17:22:49'
             name: extract_observer_json
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
           shuffle_inat_expert_obs: !PipelineStep
             config: {}
             func: *id004
             init: '2025-11-24 17:39:39'
             name: shuffle_inat_expert_obs
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
