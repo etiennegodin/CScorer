@@ -1,12 +1,14 @@
 import logging
 import json
 import asyncio
+import inspect
 from pathlib import Path
 from enum import Enum
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Callable
 from datetime import datetime
 from abc import ABC, abstractmethod
+import types
 
 from tenacity import (
     retry,
@@ -88,8 +90,16 @@ class PipelineContext:
             if name.startswith(f"{module_name}.")
         }
 
-class Step(ABC):
-    """Base class for pipeline steps"""
+# ============================================================================
+# BASE STEP CLASS (for orchestration, not data transformation)
+# ============================================================================
+
+class BaseStep(ABC):
+    """
+    Base class for step orchestration.
+    Handles retry logic, logging, status tracking - NOT data transformation.
+    """
+    
     def __init__(
         self,
         name: str,
@@ -104,16 +114,18 @@ class Step(ABC):
         self.retry_wait_max = retry_wait_max
         self.skip_on_failure = skip_on_failure
         self.logger = logging.getLogger(f"{__name__}.{self.name}")
-        
+    
     @abstractmethod
-    def execute(self, context: PipelineContext) -> Any:
+    def _execute(self, context: PipelineContext) -> Any:
+        """Override this in subclasses for class-based steps"""
         pass
     
     def validate_inputs(self, context: PipelineContext) -> bool:
+        """Optional: validate that required inputs exist"""
         return True
     
     def run(self, context: PipelineContext) -> StepResult:
-        
+        """Orchestration logic - same for all steps"""
         result = StepResult(
             step_name=self.name,
             status=StepStatus.RUNNING,
@@ -133,11 +145,12 @@ class Step(ABC):
                     max=self.retry_wait_max
                 ),
                 reraise=True
-            )   
+            )
             def _execute_with_retry():
-                return self.execute(context)        
+                return self._execute(context)
             
             output = _execute_with_retry()
+            
             result.output = output
             result.status = StepStatus.COMPLETED
             result.end_time = datetime.now()
@@ -146,20 +159,6 @@ class Step(ABC):
                 f"Completed step: {self.name} "
                 f"(duration: {result.duration:.2f}s)"
             )
-            
-        except RetryError as e:
-            result.status = StepStatus.FAILED
-            result.error = f"All retry attempts failed: {str(e)}"
-            result.end_time = datetime.now()
-            result.attempt_number = self.retry_attempts
-            
-            self.logger.error(
-                f"Step failed after {self.retry_attempts} attempts: {self.name}",
-                exc_info=True
-            )
-            
-            if not self.skip_on_failure:
-                raise
             
         except Exception as e:
             result.status = StepStatus.FAILED
@@ -170,10 +169,83 @@ class Step(ABC):
             
             if not self.skip_on_failure:
                 raise
-            
+        
         context.results[self.name] = result
         return result
+
+
+class FunctionStep(BaseStep):
+    """
+    Wraps a pure function as a step.
     
+    This is the RECOMMENDED approach for data transformations.
+    Keep your transformation logic as simple, testable functions.
+    
+    Example:
+        def clean_data(context):
+            df = context.get("raw_data")
+            return df.dropna()
+        
+        step = FunctionStep("clean", clean_data)
+    """
+    
+    def __init__(
+        self,
+        name: str,
+        func: Callable[[PipelineContext], Any],
+        validate_func: Optional[Callable[[PipelineContext], bool]] = None,
+        **kwargs
+    ):
+        super().__init__(name=name, **kwargs)
+        self.func = func
+        self.validate_func = validate_func
+        
+        # Auto-detect if function is async
+        self.is_async = inspect.iscoroutinefunction(func)
+    
+    def validate_inputs(self, context: PipelineContext) -> bool:
+        if self.validate_func:
+            return self.validate_func(context)
+        return True
+    
+    def _execute(self, context: PipelineContext) -> Any:
+        if self.is_async:
+            import asyncio
+            return asyncio.run(self.func(context))
+        return self.func(context)
+
+# ============================================================================
+# CLASS-BASED STEP (USE FOR COMPLEX STATE OR EXTERNAL SYSTEMS)
+# ============================================================================
+
+class ClassStep(BaseStep):
+    """
+    Traditional class-based step.
+    
+    Use this when you need:
+    - Complex initialization (DB connections, API clients)
+    - Stateful operations
+    - Inheritance/composition patterns
+    
+    Example:
+        class DatabaseLoader(ClassStep):
+            def __init__(self, conn_string):
+                super().__init__(name="db_load")
+                self.conn = create_connection(conn_string)
+            
+            def _execute(self, context):
+                return self.conn.query("SELECT * FROM table")
+    """
+    
+    def __init__(self, name: str, **kwargs):
+        super().__init__(name=name, **kwargs)
+    
+    @abstractmethod
+    def _execute(self, context: PipelineContext) -> Any:
+        """Implement your step logic here"""
+        pass
+    
+        
 class SubModule:
     """
     Container for related steps that form a logical sub-unit.
@@ -182,7 +254,7 @@ class SubModule:
     "time_features" and "categorical_features" as submodules.
     """
     
-    def __init__(self, name: str, steps: List[Step]):
+    def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]]):
         self.name = name
         self.steps = {step.name: step for step in steps}
         self.step_order = [step.name for step in steps]
@@ -239,7 +311,7 @@ class Module:
     def __init__(
         self,
         name: str,
-        components: List[Union[Step, SubModule]],
+        components: List[Union[Union[FunctionStep, ClassStep], SubModule]],
         skip_on_module_failure: bool = False
     ):
         self.name = name
@@ -260,6 +332,11 @@ class Module:
                 if isinstance(component, SubModule):
                     submodule_results = component.run(context, parent_name=self.name)
                     results.update(submodule_results)
+                elif isinstance(component, types.FunctionType):
+                    raise ValueError(f"""
+            Component {component.__name__} of {self.name} is a function and not a step.
+            Please use the step decorator or provide a valid StepClass
+            """)
                 else:  # It's a Step
                     component.name = f"{self.name}.{component.name}"
                     result = component.run(context)
@@ -498,3 +575,35 @@ class Pipeline:
             'progress': f"{completed_steps}/{total_steps}",
             'modules': module_summaries
         }
+
+
+# ============================================================================
+# CONVENIENCE BUILDERS
+# ============================================================================
+
+def step(
+    func: Callable[[PipelineContext], Any],
+    name: Optional[str] = None,
+    retry_attempts: int = 3,
+    validate: Optional[Callable[[PipelineContext], bool]] = None,
+    **kwargs
+) -> FunctionStep:
+    """
+    Decorator/builder for creating function-based steps.
+    
+    Usage as decorator:
+        @step
+        def clean_data(context):
+            return context.get("raw_data").dropna()
+    
+    Usage as builder:
+        clean_step = step(clean_data, name="clean", retry_attempts=5)
+    """
+    step_name = name or func.__name__
+    return FunctionStep(
+        name=step_name,
+        func=func,
+        validate_func=validate,
+        retry_attempts=retry_attempts,
+        **kwargs
+    )
