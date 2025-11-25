@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Union, Callable
 from datetime import datetime
 from abc import ABC, abstractmethod
 import types
+from pprint import pprint
 
 from tenacity import (
     retry,
@@ -68,6 +69,8 @@ class StepResult:
                 data['output'] = f"<{type(self.output).__name__} object>"
         return data
     
+    
+    
 @dataclass
 class PipelineContext:
     """Shared context passed between pipeline steps"""
@@ -82,6 +85,11 @@ class PipelineContext:
     def set(self, key: str, value: Any):
         self.data[key] = value
     
+    def set_inter_step_result(self,step_name, key:str,value:Any):
+        if step_name in self.results:
+            return self.results[step_name].output
+        return None
+    
     def get_step_output(self, step_name: str) -> Any:
         if step_name in self.results:
             return self.results[step_name].output
@@ -94,6 +102,13 @@ class PipelineContext:
             for name, result in self.results.items()
             if name.startswith(f"{module_name}.")
         }
+        
+    def restore_StepResults_from_checkpoint(self,checkpoint:dict):
+        if self.results == {}:
+            for step_name, step_results in checkpoint['results'].items():
+                self.results[step_name] = StepResult(**step_results)
+        return self
+            
 
 # ============================================================================
 # BASE STEP CLASS (for orchestration, not data transformation)
@@ -454,7 +469,7 @@ class Pipeline:
         
         with open(checkpoint_path, 'r') as f:
             checkpoint = json.load(f)
-        
+                
         self.logger.info(f"Checkpoint loaded: {checkpoint_path}")
         return checkpoint
     
@@ -500,6 +515,9 @@ class Pipeline:
                     f"Resuming from checkpoint with {len(completed_steps)} "
                     f"completed steps"
                 )
+
+                #Reload results from previous run (if steps failed)
+                context.restore_StepResults_from_checkpoint(checkpoint)
                 
         # Determine which modules to run
         if only_modules:
@@ -536,12 +554,14 @@ class Pipeline:
                     1 for step_name in completed_steps
                     if step_name.startswith(f"{module_name}.")
                 )
-                
+
                 # If all steps are completed, skip the module
                 total_module_steps = self._count_module_steps(module)
                 if module_steps_completed == total_module_steps:
                     self.logger.info(f"Skipping completed module: {module_name}")
                     continue
+                
+       
             try:
                 module.run(context)
                 self._save_checkpoint(context)
