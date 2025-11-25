@@ -3,7 +3,7 @@ from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
 from .yaml_support import yaml_serializable
-from .core import Observable, init_data, check_completion
+from .old_core import Observable, init_data, check_completion
 from .submodule import PipelineSubmodule
 from .enums import StepStatus
 import time
@@ -13,7 +13,6 @@ import time
 @dataclass
 class PipelineModule(Observable):
     name: str
-    func: str
     submodules: Dict[str, PipelineSubmodule] = field(default_factory=dict)
     status: StepStatus = StepStatus.init
     init:str = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -48,11 +47,11 @@ class PipelineModule(Observable):
         
         for sm in submodules:
             sm = self.submodules[sm.name]
-            if sm.status != StepStatus.completed or force:                
+            if sm.status != StepStatus.COMPLETED or force:                
                 await sm.run(pipe)
                 self.status = StepStatus.incomplete
             else:
-                pipe.logger.info(f"\t{sm.name} submodule is completed")
+                pipe.logger.info(f"\t{sm.name} submodule is COMPLETED")
 
         if check_completion(self.submodules):
-            self.status = StepStatus.completed
+            self.status = StepStatus.COMPLETED

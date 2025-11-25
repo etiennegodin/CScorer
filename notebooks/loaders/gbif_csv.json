@@ -97,9 +97,9 @@
       "nullable": true
     },
     {
-      "name": "locality",
+      "name": "LOCALity",
       "type": "STRING",
-      "term": "http://rs.tdwg.org/dwc/terms/locality",
+      "term": "http://rs.tdwg.org/dwc/terms/LOCALity",
       "nullable": true
     },
     {

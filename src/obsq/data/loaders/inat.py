@@ -25,8 +25,8 @@ class iNatObsLoader(BaseLoader):
         step_name = self.name
         self.queue  = Queue()
         self.table_name = "raw.inat_observers"
-        if step.status == StepStatus.completed:
-            logger.info(f"{step_name} already completed")
+        if step.status == StepStatus.COMPLETED:
+            logger.info(f"{step_name} already COMPLETED")
             #SKip 
             return self.table_name
          
@@ -74,7 +74,7 @@ class iNatObsLoader(BaseLoader):
             await writer_task
         
         step.storage['db'] = self.table_name
-        step.status = StepStatus.completed
+        step.status = StepStatus.COMPLETED
 
         
     async def _write_data(self, con, logger):
@@ -103,7 +103,7 @@ class iNatObsLoader(BaseLoader):
                     if data:
                         await self.queue.put((idx,data["results"][0]))
             except Exception as e:
-                logger.warning(f"[{user_login}] failed: {e}")
+                logger.warning(f"[{user_login}] FAILED: {e}")
     async def _get_observers(self,con)->list[tuple]:
         query = """
                 SELECT DISTINCT occurrenceID,
@@ -131,8 +131,8 @@ class iNatObsLoader(BaseLoader):
         step_name = self.name
         self.queue  = Queue()
         self.table_name = "raw.inat_observers"
-        if step.status == StepStatus.completed:
-            logger.info(f"{step_name} already completed")
+        if step.status == StepStatus.COMPLETED:
+            logger.info(f"{step_name} already COMPLETED")
             #SKip 
             return self.table_name
          
@@ -180,7 +180,7 @@ class iNatObsLoader(BaseLoader):
             await writer_task
         
         step.storage['db'] = self.table_name
-        step.status = StepStatus.completed
+        step.status = StepStatus.COMPLETED
 
         
     async def _write_data(self, con, logger):
@@ -209,7 +209,7 @@ class iNatObsLoader(BaseLoader):
                     if data:
                         await self.queue.put((idx,data["results"][0]))
             except Exception as e:
-                logger.warning(f"[{user_login}] failed: {e}")
+                logger.warning(f"[{user_login}] FAILED: {e}")
     async def _get_observers(self,con)->list[tuple]:
         query = """
                 SELECT DISTINCT occurrenceID,
@@ -241,8 +241,8 @@ class inatApiLoader(BaseLoader):
         logger = pipe.logger
         chunk_size = 100  # Process items in batches
         
-        if step.status == StepStatus.completed:
-            logger.info(f"{self.name} already completed")
+        if step.status == StepStatus.COMPLETED:
+            logger.info(f"{self.name} already COMPLETED")
             #SKip 
             return self.table_name
          
@@ -263,7 +263,7 @@ class inatApiLoader(BaseLoader):
             items = [item for item in items if str(item) > str(last_id)]
             if not items:
                 logger.info(f"All items already processed")
-                step.status = StepStatus.completed
+                step.status = StepStatus.COMPLETED
                 return self.table_name
         
         # Apply limit if set
@@ -301,7 +301,7 @@ class inatApiLoader(BaseLoader):
             await writer_task
         
         step.storage['db'] = self.table_name
-        step.status = StepStatus.completed
+        step.status = StepStatus.COMPLETED
 
         
     async def _write_data(self, con, logger):
@@ -341,7 +341,7 @@ class inatApiLoader(BaseLoader):
                 logger.debug(f'Inserted batch of {len(batch)} items')
 
             except Exception as e:
-                logger.error(f"Failed to insert batch: {e}")
+                logger.error(f"FAILED to insert batch: {e}")
             
             # Mark all items in batch as done
             for _ in batch:
@@ -366,12 +366,12 @@ class inatApiLoader(BaseLoader):
                                 await self.queue.put((batch_idx, result))
                                 logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
                             except Exception as e:
-                                logger.error(f"Failed to queue result: {e}")
+                                logger.error(f"FAILED to queue result: {e}")
                         logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string}")
                     else:
                         logger.warning(f"No results found for IDs {id_string}")
             except Exception as e:
-                logger.error(f"API request failed for IDs {id_string}: {e}")
+                logger.error(f"API request FAILED for IDs {id_string}: {e}")
 
 
 

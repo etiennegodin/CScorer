@@ -38,16 +38,16 @@ async def data_load_gbif_main(pipe:Pipeline, step:PipelineStep):
     query = await _create_gbif_loader(pipe, step, name= subcategory, predicates= predicates)
     
     #Lauch async concurrent queries 
-    if not step.status == StepStatus.local:
+    if not step.status == StepStatus.LOCAL:
         result = await query.run(pipe,step)
         
-    # Commit local .csv to db 
+    # Commit LOCAL .csv to db 
     table = await import_csv_to_db(pipe.con, result, schema= 'raw', table= table_name, geo = True)
 
-    # Flag as completed
+    # Flag as COMPLETED
     if table:
         step.storage["db"] = table
-        step.status = StepStatus.completed   
+        step.status = StepStatus.COMPLETED   
 
         
 async def _create_gbif_loader(pipe:Pipeline, step:PipelineStep, name:str, predicates:dict = None):

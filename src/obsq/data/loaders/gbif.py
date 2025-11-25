@@ -35,7 +35,7 @@ class GbifLoader(BaseLoader):
         if step.status == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(step,ready_key, dest_dir= pipe.config['folders']['gbif_folder'], logger= pipe.logger)
             step.storage['raw_data'] = gbif_raw_data
-            step.status = StepStatus.local
+            step.status = StepStatus.LOCAL
             for f in gbif_raw_data:
                 if "verbatim.txt" in f:
                     output = f
@@ -60,7 +60,7 @@ class GbifLoader(BaseLoader):
             
         except Exception as e:
             logger.error(f"Error running gbif request: {e}")
-            step.status = StepStatus.failed
+            step.status = StepStatus.FAILED
             raise RuntimeError(e)
         if response:   
             return response[0]
@@ -84,10 +84,10 @@ class GbifLoader(BaseLoader):
                 logger.info("GBIF download ready.")
                 return download_key
             if status and status.upper() in ("KILLED", "FAILED", "ERROR"):
-                step.status = StepStatus.failed
-                raise RuntimeError(f"GBIF download failed: {meta}")
+                step.status = StepStatus.FAILED
+                raise RuntimeError(f"GBIF download FAILED: {meta}")
             if time.time() - start > timeout_seconds:
-                step.status = StepStatus.failed
+                step.status = StepStatus.FAILED
                 raise TimeoutError("Timed out waiting for GBIF download.")
             
             step.status = StepStatus.pending
@@ -96,7 +96,7 @@ class GbifLoader(BaseLoader):
     async def _download_and_unpack(step,self, download_key:str, dest_dir: str, logger = logging.Logger):
         """
         Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
-        pygbif.occurrence.download_get can write the file locally.
+        pygbif.occurrence.download_get can write the file LOCALly.
         """
  
         os.makedirs(dest_dir, exist_ok=True)

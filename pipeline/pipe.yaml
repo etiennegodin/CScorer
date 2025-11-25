@@ -34,19 +34,19 @@ modules:
         func: !!python/name:obsq.data.preprocessors.main.data_preprocessors ''
         init: '2025-11-23 19:59:07'
         name: preprocessors
-        status: !StepStatus 'completed'
+        status: !StepStatus 'COMPLETED'
         steps:
           clean_gbif_citizen: !PipelineStep
             config: {}
             func: &id001 !!python/name:obsq.data.preprocessors.main.clean_gbif_occurences ''
             init: '2025-11-23 19:59:07'
             name: clean_gbif_citizen
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}
           clean_gbif_expert: !PipelineStep
             config: {}
             func: *id001
             init: '2025-11-23 19:59:07'
             name: clean_gbif_expert
-            status: !StepStatus 'completed'
+            status: !StepStatus 'COMPLETED'
             storage: {}

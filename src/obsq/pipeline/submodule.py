@@ -3,7 +3,7 @@ from typing import Callable, List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import inspect
 from .yaml_support import yaml_serializable
-from .core import Observable, init_data, check_completion
+from .old_core import Observable, init_data, check_completion
 from .enums import StepStatus
 import time
             
@@ -36,7 +36,7 @@ class PipelineSubmodule(Observable):
             self.status = StepStatus.incomplete
         
         if check_completion(self.steps):
-            self.status = StepStatus.completed
+            self.status = StepStatus.COMPLETED
         return
 
 
