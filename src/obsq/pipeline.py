@@ -85,7 +85,7 @@ class PipelineContext:
     def set(self, key: str, value: Any):
         self.data[key] = value
     
-    def set_intermediate_step_result(self,step_name,input:Any):
+    def set_intermediate_step_result(self,step_name, input:Any):
         if step_name in self.results.keys():
             intermediate_output = self.results[step_name].output
             #Check if already intermediate output
@@ -123,6 +123,7 @@ class PipelineContext:
     def restore_StepResults_from_checkpoint(self,checkpoint:dict):
         if self.results == {}:
             for step_name, step_results in checkpoint['results'].items():
+                step_results['status'] = StepStatus(step_results['status']) #re-instantiate as StepResult
                 self.results[step_name] = StepResult(**step_results)
         return self
             
@@ -398,7 +399,6 @@ class Module:
             """)
                 else:  # It's a Step
                     component.name = f"{self.name}.{component.name}"
-                    print(component.name)
                     result = component.run(context)
                     results[component.name] = result
             
@@ -515,7 +515,7 @@ class Pipeline:
         to_module: Optional[str] = None,
         only_modules: Optional[List[str]] = None,
         skip_modules: Optional[List[str]] = None,
-        resume_from_checkpoint: bool = False
+        resume_from_checkpoint: bool = True
     ) -> PipelineContext:
         """
         Run the pipeline with flexible module selection.
@@ -598,6 +598,8 @@ class Pipeline:
        
             try:
                 module.run(context)
+                pprint(context)
+                print('debug')
                 self._save_checkpoint(context)
             except Exception as e:
                 self.logger.error(

@@ -7,7 +7,7 @@ from pprint import pprint
 class GbifLoader(ClassStep):
     
     def __init__(self, name:str, predicates:dict, **kwargs):
-        super().__init__(name, **kwargs)
+        super().__init__(name, retry_attempts = 1,**kwargs)
         self.name = name
         if not isinstance(predicates, (dict, None)):
                 raise ValueError("Pedicates must be dict")
@@ -22,29 +22,29 @@ class GbifLoader(ClassStep):
         for key, value in self.custom_predicates.items():
             self.predicate.add_field(key = key, value = value)
                     
-        # Set dict for self outputs \
-        if not self._validate_has_no_download_key(context):
+        # Set dict for self outputs
+        if not self._validate_has_download_key(context):
             download_key = await self._submit_request()
             self.logger.info(f"- {self.name} Gbif request made. Key : {download_key}")
             context.set_intermediate_step_result(self.name, {'download_key' : download_key} )
             
-        if self._validate_has_no_download_key(context):
+        if self._validate_has_download_key(context):
             download_key = context.get_step_output(self.name)['download_key']
-            ready_key = await self._poll_gbif_until_ready(self,download_key)
+            ready_key = await self._poll_gbif_until_ready(download_key)
         
-        file_list = await self._download_and_unpack(self,ready_key, dest_dir= context.config['paths']['gbif_folder'])
-        context.set_intermediate_step_result(self.name, {"files", file_list} )
+        file_list = await self._download_and_unpack(ready_key, dest_dir= context.config['paths']['gbif_folder'])
+        context.set_intermediate_step_result(self.name, {"files": file_list} )
 
         for f in file_list:
             if "verbatim.txt" in f:
                 return {"output":f}
 
     # Validation functions (optional)
-    def _validate_has_no_download_key(self,context: PipelineContext) -> bool:
+    def _validate_has_download_key(self,context: PipelineContext) -> bool:
         step_output = context.get_step_output(self.name)
         if step_output is not None:
             return "download_key" in step_output.keys()
-        return None
+        return False
     
     async def _submit_request(self):  
         from dotenv import load_dotenv
@@ -61,7 +61,6 @@ class GbifLoader(ClassStep):
             
         except Exception as e:
             self.logger.error(f"Error running gbif request: {e}")
-            self.status = StepStatus.FAILED
             raise RuntimeError(e)
         if response:   
             return response[0]
