@@ -21,8 +21,9 @@ def main(root_folder, args):
 
     pipeline = Pipeline('pipe_test', [init, m_collect_gbif,myModule], root_folder/ "checkpoints")
     
-    pipeline.run(config, resume_from_checkpoint= True)
-    
+    #pipeline.run(config, resume_from_checkpoint= False)
+    pipeline.run(config, resume_from_checkpoint= False)
+
     
 if __name__ == "__main__":
     print('main')

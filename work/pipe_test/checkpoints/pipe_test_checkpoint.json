@@ -1,6 +1,50 @@
 {
-  "timestamp": "2025-11-25T14:57:08.166272",
+  "timestamp": "2025-11-25T15:08:02.839208",
   "pipeline_name": "pipe_test",
-  "completed_steps": [],
-  "results": {}
+  "completed_steps": [
+    "init.db_connection",
+    "collect_gbif.collect_citizen_data",
+    "my_module.step1",
+    "my_module.step2"
+  ],
+  "results": {
+    "init.db_connection": {
+      "step_name": "init.db_connection",
+      "status": "completed",
+      "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
+      "error": null,
+      "start_time": "2025-11-25T15:08:02.194179",
+      "end_time": "2025-11-25T15:08:02.194601",
+      "attempt_number": 1
+    },
+    "collect_gbif.collect_citizen_data": {
+      "step_name": "collect_gbif.collect_citizen_data",
+      "status": "completed",
+      "output": {
+        "x": "y"
+      },
+      "error": null,
+      "start_time": "2025-11-25T15:08:02.195461",
+      "end_time": "2025-11-25T15:08:02.836598",
+      "attempt_number": 1
+    },
+    "my_module.step1": {
+      "step_name": "my_module.step1",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T15:08:02.838223",
+      "end_time": "2025-11-25T15:08:02.838573",
+      "attempt_number": 1
+    },
+    "my_module.step2": {
+      "step_name": "my_module.step2",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T15:08:02.838718",
+      "end_time": "2025-11-25T15:08:02.839034",
+      "attempt_number": 1
+    }
+  }
 }

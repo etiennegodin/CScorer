@@ -60,7 +60,12 @@ class StepResult:
         data['start_time'] = self.start_time.isoformat() if self.start_time else None
         data['end_time'] = self.end_time.isoformat() if self.end_time else None
         if self.output is not None:
-            data['output'] = f"<{type(self.output).__name__} object>"
+            if isinstance(self.output, str):
+                data['output'] = self.output
+            elif isinstance(self.output, dict):
+                data['output'] = self.output
+            else:
+                data['output'] = f"<{type(self.output).__name__} object>"
         return data
     
 @dataclass
@@ -346,9 +351,6 @@ class Module:
                     component.name = f"{self.name}.{component.name}"
                     print(component.name)
                     result = component.run(context)
-                    print("\n"*10)
-                    print(result)
-                    quit()
                     results[component.name] = result
             
             self.logger.info(f"Completed module: {self.name}")
