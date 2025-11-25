@@ -1,6 +1,28 @@
 {
-  "timestamp": "2025-11-25T13:33:45.772152",
+  "timestamp": "2025-11-25T13:36:01.219875",
   "pipeline_name": "pipe_test",
-  "completed_steps": [],
-  "results": {}
+  "completed_steps": [
+    "my_module.step1",
+    "my_module.step2"
+  ],
+  "results": {
+    "my_module.step1": {
+      "step_name": "my_module.step1",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T13:36:01.218893",
+      "end_time": "2025-11-25T13:36:01.219175",
+      "attempt_number": 1
+    },
+    "my_module.step2": {
+      "step_name": "my_module.step2",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T13:36:01.219575",
+      "end_time": "2025-11-25T13:36:01.219763",
+      "attempt_number": 1
+    }
+  }
 }

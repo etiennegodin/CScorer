@@ -1,8 +1,9 @@
-from obsq.pipeline import FunctionStep, step
+from obsq.pipeline import FunctionStep, step, PipelineContext
 
-
-def step1():
+@step
+def step1(context:PipelineContext):
     print('1')
     
-def step2():
+@step
+def step2(context:PipelineContext):
     print(2)
