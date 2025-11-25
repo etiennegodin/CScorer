@@ -114,7 +114,9 @@ class BaseStep(ABC):
         self.retry_wait_max = retry_wait_max
         self.skip_on_failure = skip_on_failure
         self.logger = logging.getLogger(f"{__name__}.{self.name}")
-    
+        # Auto-detect if function is async
+        self.is_async = inspect.iscoroutinefunction(self._execute)
+
     @abstractmethod
     def _execute(self, context: PipelineContext) -> Any:
         """Override this in subclasses for class-based steps"""
@@ -147,6 +149,9 @@ class BaseStep(ABC):
                 reraise=True
             )
             def _execute_with_retry():
+                if self.is_async:
+                    import asyncio
+                    return asyncio.run(self._execute(context))
                 return self._execute(context)
             
             output = _execute_with_retry()
@@ -339,7 +344,11 @@ class Module:
             """)
                 else:  # It's a Step
                     component.name = f"{self.name}.{component.name}"
+                    print(component.name)
                     result = component.run(context)
+                    print("\n"*10)
+                    print(result)
+                    quit()
                     results[component.name] = result
             
             self.logger.info(f"Completed module: {self.name}")
@@ -462,6 +471,7 @@ class Pipeline:
         
         Args:
             initial_data: Initial data to populate context
+            config: Pipeline's config passed to PipelineContext
             from_module: Start from this module (inclusive)
             to_module: Stop at this module (inclusive)
             only_modules: Run only these modules (list of module names)

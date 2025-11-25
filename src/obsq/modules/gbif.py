@@ -1,6 +1,7 @@
 from obsq.pipeline import Module
-from ..steps 
+from ..steps import GbifLoader
 
-collect_gbif = Module("collect_gbif")
 
-ingest_gbif = Module("ingest_gbif")
+collect_citizen_data = GbifLoader('collect_citizen_data', predicates = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'})
+
+m_collect_gbif = Module("collect_gbif",[collect_citizen_data])
