@@ -70,4 +70,4 @@ def main():
         # when a module is imported or reloaded.
         spec.loader.exec_module(pipe_main)
         
-        pipe_main.main(args)
+        pipe_main.main(root_folder, args)
