@@ -85,9 +85,14 @@ class PipelineContext:
     def set(self, key: str, value: Any):
         self.data[key] = value
     
-    def set_inter_step_result(self,step_name, key:str,value:Any):
-        if step_name in self.results:
-            return self.results[step_name].output
+    def set_intermediate_step_result(self,step_name, key:str,value:Any):
+        if step_name in self.results.keys():
+            print('yes')
+            if self.results[step_name].output is not None:
+                print('uyess')
+                previous_output = [self.results[step_name].output]
+                previous_output.append({key:value})
+            self.results[step_name].output = {key : value}
         return None
     
     def get_step_output(self, step_name: str) -> Any:
@@ -145,7 +150,7 @@ class BaseStep(ABC):
     def validate_inputs(self, context: PipelineContext) -> bool:
         """Optional: validate that required inputs exist"""
         return True
-    
+        
     def run(self, context: PipelineContext) -> StepResult:
         """Orchestration logic - same for all steps"""
         result = StepResult(
@@ -153,6 +158,9 @@ class BaseStep(ABC):
             status=StepStatus.RUNNING,
             start_time=datetime.now()
         )
+        
+        #Init step to context 
+        context.results[self.name] = result
         
         try:
             if not self.validate_inputs(context):
@@ -176,7 +184,21 @@ class BaseStep(ABC):
             
             output = _execute_with_retry()
             
+            if output is not None:
+                # Check if intermediate output, if so add to list
+                intermediate_output = context.get_step_output(self.name)
+                if intermediate_output is not None:
+                    if isinstance(intermediate_output, dict) and isinstance(output, dict):
+                        for k, v in intermediate_output.items():
+                            output[k] = v
+                    elif isinstance(intermediate_output, list):
+                        intermediate_output.append(output)
+                        output = intermediate_output
+                    else: #fall back
+                        output = [intermediate_output, output]
+                
             result.output = output
+            
             result.status = StepStatus.COMPLETED
             result.end_time = datetime.now()
             
@@ -194,7 +216,7 @@ class BaseStep(ABC):
             
             if not self.skip_on_failure:
                 raise
-        
+
         context.results[self.name] = result
         return result
 
