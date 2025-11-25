@@ -28,9 +28,9 @@ def create_folders(parent_folder:Path)->dict:
     # Set folder paths to config
     folders["root_folder"] = str(parent_folder)
     
-    folders["modules_folder"] = str(modules_folder)
-    folders["steps_folder"] = str(steps_folder)
-    folders["checkpoints_folder"] = str(checkpoints_folder)
+    #folders["modules_folder"] = str(modules_folder)
+    #folders["steps_folder"] = str(steps_folder)
+    #folders["checkpoints_folder"] = str(checkpoints_folder)
 
     folders["data_folder"] = str(data_folder)
     folders["eda_folder"] = str(eda_folder)
