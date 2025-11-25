@@ -3,7 +3,7 @@ import os
 import asyncio
 import logging
 from pygbif import occurrences as occ
-
+from pprint import pprint
 class GbifLoader(ClassStep):
     
     def __init__(self, name:str, predicates:dict, **kwargs):
@@ -23,18 +23,21 @@ class GbifLoader(ClassStep):
             self.predicate.add_field(key = key, value = value)
             
         step_name = self.name
-        # Set dict for self outputs 
+        # Set dict for self outputs \
         if not self._validate_has_no_download_key(context):
             print('here')
-            download_key = await self._submit_request()
+            download_key = 'xxxx'
+            #download_key = await self._submit_request()
             self.logger.info(f"- {step_name} Gbif request made. Key : {download_key}")
-            context.set(f'{self.name}_download_key', download_key )
+            context.set_intermediate_step_result(self.name, 'download_key', download_key )
+            
         if self._validate_has_no_download_key(context):
-            download_key = context.get('{self.name}_download_key')
+            download_key = context.get_step_output(self.name)['download_key']
+            print(download_key)
             print('there')
-        
+            return {'x':'y'}
+
             ready_key = await self._poll_gbif_until_ready(self,download_key)
-            self.status = StepStatus.ready
         return {'x':'y'}
         if self.status == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(self,ready_key, dest_dir= context.config['paths']['gbif_folder'])
@@ -48,7 +51,10 @@ class GbifLoader(ClassStep):
         return output
     # Validation functions (optional)
     def _validate_has_no_download_key(self,context: PipelineContext) -> bool:
-        return context.get('{self.name}_download_key') is not None
+        step_output = context.get_step_output(self.name)
+        if step_output is not None:
+            return "download_key" in step_output.keys()
+        return None
     
     async def _submit_request(self):  
         from dotenv import load_dotenv
