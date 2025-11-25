@@ -585,7 +585,7 @@ def step(
     func: Callable[[PipelineContext], Any],
     name: Optional[str] = None,
     retry_attempts: int = 3,
-    validate: Optional[Callable[[PipelineContext], bool]] = None,
+    validate_func: Optional[Callable[[PipelineContext], bool]] = None,
     **kwargs
 ) -> FunctionStep:
     """
@@ -603,7 +603,7 @@ def step(
     return FunctionStep(
         name=step_name,
         func=func,
-        validate_func=validate,
+        validate_func=validate_func,
         retry_attempts=retry_attempts,
         **kwargs
     )
