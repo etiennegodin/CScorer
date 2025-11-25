@@ -1,18 +1,28 @@
 {
-  "timestamp": "2025-11-25T13:36:01.219875",
+  "timestamp": "2025-11-25T14:03:36.838246",
   "pipeline_name": "pipe_test",
   "completed_steps": [
+    "init.db_connection",
     "my_module.step1",
     "my_module.step2"
   ],
   "results": {
+    "init.db_connection": {
+      "step_name": "init.db_connection",
+      "status": "completed",
+      "output": "<str object>",
+      "error": null,
+      "start_time": "2025-11-25T14:03:36.836253",
+      "end_time": "2025-11-25T14:03:36.836502",
+      "attempt_number": 1
+    },
     "my_module.step1": {
       "step_name": "my_module.step1",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-25T13:36:01.218893",
-      "end_time": "2025-11-25T13:36:01.219175",
+      "start_time": "2025-11-25T14:03:36.837634",
+      "end_time": "2025-11-25T14:03:36.837886",
       "attempt_number": 1
     },
     "my_module.step2": {
@@ -20,8 +30,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-25T13:36:01.219575",
-      "end_time": "2025-11-25T13:36:01.219763",
+      "start_time": "2025-11-25T14:03:36.837958",
+      "end_time": "2025-11-25T14:03:36.838092",
       "attempt_number": 1
     }
   }
