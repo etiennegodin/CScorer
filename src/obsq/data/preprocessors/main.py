@@ -15,6 +15,9 @@ async def data_preprocessors(pipe:Pipeline, submodule:PipelineSubmodule):
     #Clean gbif occurrences
     clean_gbif_citizen = PipelineStep( "clean_gbif_citizen", func = clean_gbif_occurences)
     clean_gbif_expert = PipelineStep( "clean_gbif_expert", func = clean_gbif_occurences)
+    
+    clean_gbif_expert = PipelineStep( "clean_gbif_expert", func = clean_gbif_occurences)
+
         
     # Get additionnal expert users from inat
     extract_inat_expert = PipelineStep( "extract_inat_expert", func = simple_sql_query)

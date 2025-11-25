@@ -148,9 +148,6 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
         #dev branch
         config_path = Path(__file__).parent.parent.parent / "work/pipe_test/config.yaml"
 
-    else:
-        config_path = args.file
-        
     #Config as dict
     try:
         config = read_config(config_path)
@@ -204,4 +201,6 @@ def run_pipeline(args, pipe_struct:dict)->Pipeline:
         else:
             to_run = build_full_submodule(args, pipe, pipe_struct)
 
+    pprint(pipe.modules)
+    quit()
     asyncio.run(pipe.run(to_run, args.force))
