@@ -85,14 +85,26 @@ class PipelineContext:
     def set(self, key: str, value: Any):
         self.data[key] = value
     
-    def set_intermediate_step_result(self,step_name, key:str,value:Any):
+    def set_intermediate_step_result(self,step_name,input:Any):
         if step_name in self.results.keys():
-            print('yes')
-            if self.results[step_name].output is not None:
-                print('uyess')
-                previous_output = [self.results[step_name].output]
-                previous_output.append({key:value})
-            self.results[step_name].output = {key : value}
+            intermediate_output = self.results[step_name].output
+            #Check if already intermediate output
+            if intermediate_output is None:
+                if isinstance(input, dict):
+                    self.results[step_name].output = {k : v for k,v in input.items()}
+                else: #fallback
+                    self.results[step_name].output = [input]
+            else:
+                if isinstance(intermediate_output, dict) and isinstance(input, dict):
+                    for k, v in input.items():
+                        intermediate_output[k] = v
+                elif isinstance(intermediate_output, list):
+                    intermediate_output.append(input)
+                else: #fall back
+                    intermediate_output = [intermediate_output, input]
+                    
+                self.results[step_name].output = intermediate_output
+
         return None
     
     def get_step_output(self, step_name: str) -> Any:
