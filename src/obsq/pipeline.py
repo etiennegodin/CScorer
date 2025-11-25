@@ -25,16 +25,10 @@ logger = logging.getLogger(__name__)
 class StepStatus(str, Enum):
     """Status of apipeline step """
     
-    init = "init"    
-    requested = "requested" 
-    PENDING  = 'pending'
-    ready = "ready"
-    LOCAL = 'LOCAL'
-    incomplete = 'incomplete'
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
-    FAILED = "FAILED"
+    FAILED = "failed"
     SKIPPED = "skipped"
     
 @dataclass
@@ -127,7 +121,7 @@ class Step(ABC):
         
         try:
             if not self.validate_inputs(context):
-                raise ValueError(f"Input validation FAILED for step: {self.name}")
+                raise ValueError(f"Input validation failed for step: {self.name}")
             
             self.logger.info(f"Starting step: {self.name}")
             
@@ -148,18 +142,18 @@ class Step(ABC):
             result.end_time = datetime.now()
             
             self.logger.info(
-                f"COMPLETED step: {self.name} "
+                f"Completed step: {self.name} "
                 f"(duration: {result.duration:.2f}s)"
             )
             
         except RetryError as e:
             result.status = StepStatus.FAILED
-            result.error = f"All retry attempts FAILED: {str(e)}"
+            result.error = f"All retry attempts failed: {str(e)}"
             result.end_time = datetime.now()
             result.attempt_number = self.retry_attempts
             
             self.logger.error(
-                f"Step FAILED after {self.retry_attempts} attempts: {self.name}",
+                f"Step failed after {self.retry_attempts} attempts: {self.name}",
                 exc_info=True
             )
             
@@ -171,7 +165,7 @@ class Step(ABC):
             result.error = str(e)
             result.end_time = datetime.now()
             
-            self.logger.error(f"Step FAILED: {self.name}", exc_info=True)
+            self.logger.error(f"Step failed: {self.name}", exc_info=True)
             
             if not self.skip_on_failure:
                 raise
@@ -210,7 +204,7 @@ class SubModule:
             result = step.run(context)
             results[step.name] = result
         
-        self.logger.info(f"COMPLETED submodule: {full_name}")
+        self.logger.info(f"Completed submodule: {full_name}")
         return results
     
     def get_summary(self, context: PipelineContext) -> Dict:
@@ -221,7 +215,7 @@ class SubModule:
             if name.startswith(f"{self.name}.")
         }
         
-        COMPLETED = sum(
+        completed = sum(
             1 for r in submodule_results.values()
             if r.status == StepStatus.COMPLETED
         )
@@ -229,8 +223,8 @@ class SubModule:
         return {
             'name': self.name,
             'total_steps': len(self.steps),
-            'COMPLETED': COMPLETED,
-            'status': 'COMPLETED' if COMPLETED == len(self.steps) else 'partial'
+            'completed': completed,
+            'status': 'completed' if completed == len(self.steps) else 'partial'
         }
         
 class Module:
@@ -270,10 +264,10 @@ class Module:
                     result = component.run(context)
                     results[component.name] = result
             
-            self.logger.info(f"COMPLETED module: {self.name}")
+            self.logger.info(f"Completed module: {self.name}")
             
         except Exception as e:
-            self.logger.error(f"Module FAILED: {self.name}", exc_info=True)
+            self.logger.error(f"Module failed: {self.name}", exc_info=True)
             if not self.skip_on_module_failure:
                 raise
         
@@ -287,11 +281,11 @@ class Module:
             if name.startswith(f"{self.name}.")
         }
         
-        COMPLETED = sum(
+        completed = sum(
             1 for r in module_results.values()
             if r.status == StepStatus.COMPLETED
         )
-        FAILED = sum(
+        failed = sum(
             1 for r in module_results.values()
             if r.status == StepStatus.FAILED
         )
@@ -304,13 +298,13 @@ class Module:
         return {
             'name': self.name,
             'total_steps': len(module_results),
-            'COMPLETED': COMPLETED,
-            'FAILED': FAILED,
+            'completed': completed,
+            'failed': failed,
             'total_duration_seconds': round(total_duration, 2),
-            'status': 'COMPLETED' if COMPLETED == len(module_results) else 'partial'
+            'status': 'completed' if completed == len(module_results) else 'partial'
         }
 
-class ModularPipeline:
+class Pipeline:
     """
     Pipeline that organizes steps into modules and submodules.
     
@@ -345,7 +339,7 @@ class ModularPipeline:
         checkpoint = {
             'timestamp': datetime.now().isoformat(),
             'pipeline_name': self.name,
-            'COMPLETED_steps': [
+            'completed_steps': [
                 name for name, result in context.results.items()
                 if result.status == StepStatus.COMPLETED
             ],
@@ -404,3 +398,100 @@ class ModularPipeline:
             checkpoint_dir=self.checkpoint_dir
         )
         
+        # Handle checkpoint resume
+        completed_steps = set()
+        if resume_from_checkpoint and self.checkpoint_dir:
+            checkpoint = self._load_checkpoint()
+            if checkpoint:
+                completed_steps = set(checkpoint.get('completed_steps', []))
+                self.logger.info(
+                    f"Resuming from checkpoint with {len(completed_steps)} "
+                    f"completed steps"
+                )
+                
+        # Determine which modules to run
+        if only_modules:
+            modules_to_run = only_modules
+            
+        else:
+            start_idx = 0
+            end_idx = len(self.module_order)
+            
+            if from_module:
+                start_idx = self.module_order.index(from_module)
+            if to_module:
+                end_idx = self.module_order.index(to_module) + 1
+            
+            modules_to_run = self.module_order[start_idx:end_idx]
+            
+        # Remove skipped modules
+        if skip_modules:
+            modules_to_run = [m for m in modules_to_run if m not in skip_modules]
+            
+        self.logger.info(f"\n{'='*60}")
+        self.logger.info(f"Running pipeline: {self.name}")
+        self.logger.info(f"Modules to execute: {modules_to_run}")
+        self.logger.info(f"{'='*60}\n")
+        
+        # Execute modules
+        for module_name in modules_to_run:
+            # Check if entire module is completed (all its steps)
+            module = self.modules[module_name]
+            
+            if resume_from_checkpoint:
+                # Count how many steps in this module are already completed
+                module_steps_completed = sum(
+                    1 for step_name in completed_steps
+                    if step_name.startswith(f"{module_name}.")
+                )
+                
+                # If all steps are completed, skip the module
+                total_module_steps = self._count_module_steps(module)
+                if module_steps_completed == total_module_steps:
+                    self.logger.info(f"Skipping completed module: {module_name}")
+                    continue
+            try:
+                module.run(context)
+                self._save_checkpoint(context)
+            except Exception as e:
+                self.logger.error(
+                    f"Pipeline failed at module: {module_name}",
+                    exc_info=True
+                )
+                self._save_checkpoint(context)
+                raise
+            
+        self.logger.info(f"\n{'='*60}")
+        self.logger.info(f"Pipeline completed: {self.name}")
+        self.logger.info(f"{'='*60}\n")
+        
+        return context
+    
+    def _count_module_steps(self, module: Module) -> int:
+        """Count total steps in a module including submodules"""
+        count = 0
+        for component in module.components:
+            if isinstance(component, SubModule):
+                count += len(component.steps)
+            else:
+                count += 1
+        return count
+    
+    def get_status(self, context: PipelineContext) -> Dict[str, Any]:
+        """Get detailed pipeline status with module-level summaries"""
+        module_summaries = {}
+        for module_name in self.module_order:
+            module = self.modules[module_name]
+            module_summaries[module_name] = module.get_summary(context)
+        
+        total_steps = sum(m['total_steps'] for m in module_summaries.values())
+        completed_steps = sum(m['completed'] for m in module_summaries.values())
+        
+        return {
+            'pipeline_name': self.name,
+            'total_modules': len(self.modules),
+            'total_steps': total_steps,
+            'completed_steps': completed_steps,
+            'progress': f"{completed_steps}/{total_steps}",
+            'modules': module_summaries
+        }

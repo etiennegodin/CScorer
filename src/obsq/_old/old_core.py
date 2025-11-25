@@ -1,21 +1,34 @@
 from __future__ import annotations
 from typing import Callable, List, Dict, Any, Optional
-
+import yaml
 from dataclasses import dataclass, field
 import time
 import importlib
 
+# Custom YAML handlers
+def stepstatus_representer(dumper, data):
+    return dumper.represent_scalar("!StepStatus", data.value)
 
+def stepstatus_constructor(loader, node):
+    from ..pipeline import StepStatus
+    value = loader.construct_scalar(node)
+    return StepStatus(value)
+
+
+# register immediately on import
+yaml.add_representer(StepStatus, stepstatus_representer)
+yaml.add_constructor("!StepStatus", stepstatus_constructor)
+    
 def check_completion(items:Any):
     from .enums import StepStatus
     completion = True
     if isinstance(items,dict):
         for item in items.values():
-            if item.status != StepStatus.COMPLETED:
+            if item.status != StepStatus.completed:
                     completion = False
     elif isinstance(items, list):
         for item in items:
-            if item.status != StepStatus.COMPLETED:
+            if item.status != StepStatus.completed:
                     completion = False
     return completion
 
