@@ -17,7 +17,7 @@ class GbifLoader(ClassStep):
         #Load gbif_loader default config
         gbif_loader_conf = context.config['gbif_loader']
         #Build predicate from config
-        self.predicate = self._predicate_builder(self.config)
+        self.predicate = self._predicate_builder(gbif_loader_conf)
         #Add additonnal predicates
         for key, value in self.custom_predicates.items():
             self.predicate.add_field(key = key, value = value)
@@ -35,7 +35,7 @@ class GbifLoader(ClassStep):
         
             ready_key = await self._poll_gbif_until_ready(self,download_key)
             self.status = StepStatus.ready
-        return 'x'
+        return {'x':'y'}
         if self.status == StepStatus.ready:
             gbif_raw_data = await self._download_and_unpack(self,ready_key, dest_dir= context.config['paths']['gbif_folder'])
             self.storage['raw_data'] = gbif_raw_data
