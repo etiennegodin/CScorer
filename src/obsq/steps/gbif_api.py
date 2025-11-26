@@ -7,12 +7,20 @@ from pprint import pprint #debug
 
 
 class GbifLoader(ClassStep):
+    """
+    Docstring for GbifLoader
+    
+    :var Args: Description
+    :var Returns: Description
+    :var str: Description
+    :vartype str: _description_
+    """
     
     def __init__(self, name:str, **kwargs):
         super().__init__(name, retry_attempts = 1,**kwargs)
         self.name = name
         
-    async def _execute(self, context:PipelineContext):
+    async def _execute(self, context:PipelineContext)->str:
         #Load gbif_loader default config
         gbif_loader_conf = context.config['gbif_loader']
         #Build predicate from config
@@ -39,8 +47,10 @@ class GbifLoader(ClassStep):
         file_list = await self._download_and_unpack(ready_key, dest_dir= dest_dir)
         context.set_intermediate_step_result(self.name, {"files": file_list} )
 
+        #Check if file in list
         for f in file_list:
             if "verbatim.txt" in f:
+                #Rename to download_key.csv and output 
                 old_path = Path(f)
                 new_path = Path(f"{old_path.parent}/{download_key}.csv")  
                 os.rename(old_path,new_path)
@@ -108,13 +118,15 @@ class GbifLoader(ClassStep):
         Fetch the GBIF ZIP (SQL_TSV_ZIP or SIMPLE_CSV) and unpack to dest_dir.
         pygbif.occurrence.download_get can write the file LOCALly.
         """
- 
+
         os.makedirs(dest_dir, exist_ok=True)
         self.logger.info(f"Downloading GBIF data for {download_key} to {dest_dir}...")
+        
         # This returns file path or bytes depending on client; example below writes to path
         response = await asyncio.to_thread(lambda: occ.download_get(download_key, path=dest_dir))
         zip_path = response['path']# implementation detail from pygbif
         self.logger.info(f"Downloaded to {zip_path}")
+        
         # Unpack (if needed) - example uses unzip via python
         import zipfile
         if zipfile.is_zipfile(zip_path):
@@ -122,15 +134,12 @@ class GbifLoader(ClassStep):
                 z.extractall(dest_dir)
             self.logger.info("Unpacked ZIP.")
         
-        # Save data path
-        #output = f"{dest_dir}/{response['key']}.csv"
-        file_list = []
-        files = os.listdir(dest_dir)
-        for f in files:
-            file_list.append(f"{dest_dir}/{f}")
-            
+        #Remove zip
         os.remove(zip_path)
-        return file_list
+
+        #Return all files
+        files = os.listdir(dest_dir)
+        return [f"{dest_dir}/{f}" for f in files]
     
     
     def _predicate_builder(self,config:dict):
@@ -149,6 +158,9 @@ class GbifLoader(ClassStep):
     
     
 class GbifPredicate():
+    """
+    Docstring for GbifPredicate
+    """
     def __init__(self, type = 'and'):
         if type not in ('and', 'or'):
             raise ValueError("Mode must be 'and' or 'or'")

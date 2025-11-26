@@ -3,8 +3,15 @@ from ..utils.sql import read_sql_template
 from pathlib import Path
 
 
-
 async def clean_gbif_occurences(context:PipelineContext, step_name:str):
+    """
+    Docstring for clean_gbif_occurences
+    
+    :param context: Description
+    :type context: PipelineContext
+    :param step_name: Description
+    :type step_name: str
+    """
     con = context.con
     sql_folder = Path(context.config['paths']['queries_folder'])
     

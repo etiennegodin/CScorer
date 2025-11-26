@@ -4,10 +4,14 @@ from ..utils.duckdb import import_csv_to_db
 from ..utils.sql import read_sql_template
 from pathlib import Path
 
-
-
 @step 
 def create_custom_predicates(context:PipelineContext):
+    """
+    Docstring for create_custom_predicates
+    
+    :param context: Description
+    :type context: PipelineContext
+    """
     predicates = {}
     #Prep citizen predicates
     predicates['collect_citizen_data'] = {'BASIS_OF_RECORD': 'HUMAN_OBSERVATION'}
