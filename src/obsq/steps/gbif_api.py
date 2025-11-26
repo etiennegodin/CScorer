@@ -19,8 +19,9 @@ class GbifLoader(ClassStep):
         
         #Add additonnal predicates
         if self._validate_custom_predicates(context):
-            custom_predicates = context.get_step_output("create_custom_predicates")[self.name]
-            for key, value in self.custom_predicates.items():
+            custom_predicates_dict = context.get_step_output("create_custom_predicates")
+            custom_predicates = custom_predicates_dict[self.name.split(sep='.')[-1]]
+            for key, value in custom_predicates.items():
                 self.predicate.add_field(key = key, value = value)
                     
         # Set dict for self outputs
@@ -41,7 +42,7 @@ class GbifLoader(ClassStep):
                 return {"output":f}
 
     def _validate_custom_predicates(self,context):
-        return context.get("create_custom_predicates") is not None
+        return context.get_step_output("create_custom_predicates") is not None
 
     # Validation functions (optional)
     def _validate_has_download_key(self,context: PipelineContext) -> bool:

@@ -323,12 +323,12 @@ class SubModule:
     "time_features" and "categorical_features" as submodules.
     """
     
-    def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]]):
+    def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]], is_async:bool = False):
         self.name = name
         self.steps = {step.name: step for step in steps}
         self.step_order = [step.name for step in steps]
         self.logger = logging.getLogger(f"{__name__}.SubModule.{name}")
-    
+        self.is_async = is_async
     def run(
         self,
         context: PipelineContext,
