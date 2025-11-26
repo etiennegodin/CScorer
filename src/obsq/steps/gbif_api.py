@@ -4,6 +4,7 @@ import asyncio
 import logging
 from pygbif import occurrences as occ
 from pprint import pprint
+
 class GbifLoader(ClassStep):
     
     def __init__(self, name:str, predicates:dict, **kwargs):
@@ -139,7 +140,6 @@ class GbifLoader(ClassStep):
     
     
 class GbifPredicate():
-    
     def __init__(self, type = 'and'):
         if type not in ('and', 'or'):
             raise ValueError("Mode must be 'and' or 'or'")

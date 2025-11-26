@@ -10,6 +10,7 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 import types
 from pprint import pprint
+import duckdb
 
 from tenacity import (
     retry,
@@ -78,6 +79,7 @@ class PipelineContext:
     data: Dict[str, Any] = field(default_factory=dict)
     results: Dict[str, StepResult] = field(default_factory=dict)
     checkpoint_dir: Optional[Path] = None
+    con: duckdb.DuckDBPyConnection = None
     
     def get(self, key: str, default=None) -> Any:
         return self.data.get(key, default)
@@ -124,9 +126,15 @@ class PipelineContext:
         if self.results == {}:
             for step_name, step_results in checkpoint['results'].items():
                 step_results['status'] = StepStatus(step_results['status']) #re-instantiate as StepResult
+                step_results["start_time"] = datetime.fromisoformat(step_results["start_time"])
+                step_results["end_time"] = datetime.fromisoformat(step_results["end_time"])
                 self.results[step_name] = StepResult(**step_results)
         return self
-            
+    
+    def _to_datetime(self,date_time):
+        format ="%Y-%m-%d %H:%M:%S.%f"
+        datetime_str = datetime.strptime(date_time, format)
+        return datetime_str    
 
 # ============================================================================
 # BASE STEP CLASS (for orchestration, not data transformation)

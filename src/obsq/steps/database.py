@@ -10,6 +10,7 @@ class DataBaseConnection(ClassStep):
         self.con = _open_connection(db_path)
     
     def _execute(self, context):
+        context.con = self.con
         print(f"Initiliazing database connection: {self.db_path}")
         return self.db_path
 
