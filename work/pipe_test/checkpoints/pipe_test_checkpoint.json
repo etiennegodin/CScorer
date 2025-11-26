@@ -1,8 +1,15 @@
 {
-  "timestamp": "2025-11-25T22:20:34.541393",
+  "timestamp": "2025-11-25T22:54:58.731974",
   "pipeline_name": "pipe_test",
   "completed_steps": [
-    "init.db_connection"
+    "init.db_connection",
+    "ingest_gbif.create_custom_predicates",
+    "ingest_gbif.collect_all_gbif.collect_citizen_data",
+    "ingest_gbif.collect_all_gbif.collect_expert_data",
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
+    "my_module.step1",
+    "my_module.step2"
   ],
   "results": {
     "init.db_connection": {
@@ -10,8 +17,113 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-25T22:20:34.540926",
-      "end_time": "2025-11-25T22:20:34.541265",
+      "start_time": "2025-11-25T22:54:31.246236",
+      "end_time": "2025-11-25T22:54:31.247658",
+      "attempt_number": 1
+    },
+    "ingest_gbif.create_custom_predicates": {
+      "step_name": "ingest_gbif.create_custom_predicates",
+      "status": "completed",
+      "output": {
+        "collect_citizen_data": {
+          "BASIS_OF_RECORD": "HUMAN_OBSERVATION"
+        },
+        "collect_expert_data": {
+          "DATASET_KEY": [
+            "2fd02649-fc08-4957-9ac5-2830e072c097",
+            "c4a5efee-4c61-45d8-bd7a-6275b2388308",
+            "7a7244fc-13b9-43ee-93c9-0d5c4457a86a",
+            "0348540a-e644-4496-89d3-c257da9ad776",
+            "10cf770a-282a-41dd-9e19-83b7c894b956",
+            "1e837919-112c-40ad-abb9-5ca74b044742"
+          ]
+        }
+      },
+      "error": null,
+      "start_time": "2025-11-25T22:54:31.250378",
+      "end_time": "2025-11-25T22:54:31.251005",
+      "attempt_number": 1
+    },
+    "ingest_gbif.collect_all_gbif.collect_citizen_data": {
+      "step_name": "ingest_gbif.collect_all_gbif.collect_citizen_data",
+      "status": "completed",
+      "output": {
+        "output": "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
+        "download_key": "0008865-251120083545085",
+        "files": [
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/occurrence.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/rights.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/dataset",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/meta.xml",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/multimedia.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/0008865-251120083545085.zip",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/citations.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/metadata.xml"
+        ]
+      },
+      "error": null,
+      "start_time": "2025-11-25T22:54:31.251727",
+      "end_time": "2025-11-25T22:54:33.817693",
+      "attempt_number": 1
+    },
+    "ingest_gbif.collect_all_gbif.collect_expert_data": {
+      "step_name": "ingest_gbif.collect_all_gbif.collect_expert_data",
+      "status": "completed",
+      "output": {
+        "output": "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
+        "download_key": "0008865-251120083545085",
+        "files": [
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/occurrence.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/rights.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/dataset",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/meta.xml",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/multimedia.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/0008865-251120083545085.zip",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/citations.txt",
+          "/home/manat/projects/obsq/work/pipe_test/data/gbif/metadata.xml"
+        ]
+      },
+      "error": null,
+      "start_time": "2025-11-25T22:54:33.818034",
+      "end_time": "2025-11-25T22:54:36.361201",
+      "attempt_number": 1
+    },
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
+      "step_name": "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
+      "status": "completed",
+      "output": "raw.gbif_citizen",
+      "error": null,
+      "start_time": "2025-11-25T22:54:36.362638",
+      "end_time": "2025-11-25T22:54:58.390478",
+      "attempt_number": 1
+    },
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
+      "step_name": "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
+      "status": "completed",
+      "output": "raw.gbif_expert",
+      "error": null,
+      "start_time": "2025-11-25T22:54:58.391480",
+      "end_time": "2025-11-25T22:54:58.724032",
+      "attempt_number": 1
+    },
+    "my_module.step1": {
+      "step_name": "my_module.step1",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T22:54:58.729768",
+      "end_time": "2025-11-25T22:54:58.730433",
+      "attempt_number": 1
+    },
+    "my_module.step2": {
+      "step_name": "my_module.step2",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-25T22:54:58.730736",
+      "end_time": "2025-11-25T22:54:58.731541",
       "attempt_number": 1
     }
   }
