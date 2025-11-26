@@ -109,6 +109,12 @@ class PipelineContext:
 
         return None
     
+    def get_step_result(self,step_name:str)-> StepResult:
+        for step in self.results.keys():
+            if step_name in step: #find even if incomplete name
+                return self.results[step]
+        return None       
+        
     def get_step_output(self, step_name: str) -> Any:
         for step in self.results.keys():
             if step_name in step: #find even if incomplete name
@@ -332,20 +338,47 @@ class SubModule:
     def run(
         self,
         context: PipelineContext,
+        module_steps_completed:set,
         parent_name: str = ""
     ) -> Dict[str, StepResult]:
         """Run all steps in this submodule"""
         full_name = f"{parent_name}.{self.name}" if parent_name else self.name
         self.logger.info(f"Starting submodule: {full_name}")
         
+        ### Async logic 
+        self.is_async 
+
         results = {}
+        steps_to_run = []
         for step_name in self.step_order:
             step = self.steps[step_name]
             # Prefix step name with submodule hierarchy
             step.name = f"{full_name}.{step_name}"
-            result = step.run(context)
-            results[step.name] = result
+            
+            if f"{full_name}.{step_name}" in module_steps_completed:
+                self.logger.info(f"Skipping completed step: {step_name}")
+                #Store previous results in return's dict
+                results[step.name] = context.get_step_result(step_name)
+                continue
+            
+            steps_to_run.append(step)
         
+        #If all steps completed, return previous results
+        if len(steps_to_run) == 0:
+            self.logger.info(f"All steps of submodule {self.name} completed, skipping")
+            return results
+        
+        if not self.is_async:
+            for s in steps_to_run:
+                result = s.run(context)
+                results[s.name] = result
+        else:
+            raise NotImplementedError("Async submodule not done")
+            async_steps = []
+            for s in steps_to_run:
+                async_steps.append(asyncio.create_task(step.run(context)))
+            results = asyncio.gather(*async_steps)
+            
         self.logger.info(f"Completed submodule: {full_name}")
         return results
     
@@ -388,7 +421,7 @@ class Module:
         self.skip_on_module_failure = skip_on_module_failure
         self.logger = logging.getLogger(f"{__name__}.Module.{name}")
     
-    def run(self, context: PipelineContext) -> Dict[str, StepResult]:
+    def run(self, context: PipelineContext, module_steps_completed:set) -> Dict[str, StepResult]:
         """Run all components in this module"""
         self.logger.info(f"=" * 60)
         self.logger.info(f"Starting module: {self.name}")
@@ -398,16 +431,19 @@ class Module:
         
         try:
             for component in self.components:
-                if isinstance(component, SubModule):
-                    submodule_results = component.run(context, parent_name=self.name)
-                    results.update(submodule_results)
-                elif isinstance(component, types.FunctionType):
+                if isinstance(component, types.FunctionType):
                     raise ValueError(f"""
             Component {component.__name__} of {self.name} is a function and not a step.
             Please use the step decorator or provide a valid StepClass
-            """)
+            """)   
+                elif isinstance(component, SubModule):
+                    submodule_results = component.run(context, module_steps_completed, parent_name=self.name)
+                    results.update(submodule_results)
                 else:  # It's a Step
                     component.name = f"{self.name}.{component.name}"
+                    if component.name in module_steps_completed:
+                        self.logger.info(f"Skipping completed component: {component.name}")
+                        continue
                     result = component.run(context)
                     results[component.name] = result
             
@@ -593,20 +629,23 @@ class Pipeline:
             
             if resume_from_checkpoint:
                 # Count how many steps in this module are already completed
-                module_steps_completed = sum(
+                module_steps_completed_sum = sum(
                     1 for step_name in completed_steps
                     if step_name.startswith(f"{module_name}.")
                 )
+                
+                module_steps_completed = [step_name for step_name in completed_steps if step_name.startswith(f"{module_name}.")]
+                
 
                 # If all steps are completed, skip the module
                 total_module_steps = self._count_module_steps(module)
-                if module_steps_completed == total_module_steps:
+                if module_steps_completed_sum == total_module_steps:
                     self.logger.info(f"Skipping completed module: {module_name}")
                     continue
                 
        
             try:
-                module.run(context)
+                module.run(context, module_steps_completed)
                 self._save_checkpoint(context)
             except Exception as e:
                 self.logger.error(
