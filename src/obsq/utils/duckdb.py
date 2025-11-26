@@ -28,7 +28,7 @@ def load_spatial_extension(con):
         return False
 
 async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:str,table:str, replace:bool = True, geo:bool = False, delete_file: bool = False):
-
+    logger = logging.getLogger("import_csv_to_db")
     if (replace) or (f"{schema}.{table}" not in get_all_tables(con)):
         create_schema(con, schema=schema)
         query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
@@ -43,11 +43,11 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection, file_path:str,schema:
                 """    
     try:
         con.execute(query)
-        logging.info(f'Registered {file_path} to {schema}.{table}')
+        logger.info(f'Registered {file_path} to {schema}.{table}')
         return f"{schema}.{table}"
 
     except Exception as e:
-        logging.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
+        logger.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
         return None
     
 async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:str, logger,
