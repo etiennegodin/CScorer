@@ -12,11 +12,8 @@ def create_folders(parent_folder:Path)->dict:
     """
     
     folders = {}
-    
-    modules_folder = (parent_folder / 'modules')
-    steps_folder = (parent_folder / 'steps')
-    checkpoints_folder = (parent_folder / 'checkpoints')
 
+    queries_folder = (parent_folder / 'queries')
 
     data_folder = (parent_folder / 'data')
     gbif_folder = (data_folder / 'gbif')
@@ -31,6 +28,7 @@ def create_folders(parent_folder:Path)->dict:
     #folders["modules_folder"] = str(modules_folder)
     #folders["steps_folder"] = str(steps_folder)
     #folders["checkpoints_folder"] = str(checkpoints_folder)
+    folders["queries_folder"] = str(queries_folder)
 
     folders["data_folder"] = str(data_folder)
     folders["eda_folder"] = str(eda_folder)

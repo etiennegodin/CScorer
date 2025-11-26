@@ -2,8 +2,9 @@ from jinja2 import Template
 from pathlib import Path
 import inspect
 from pathlib import Path
-from ...pipeline import Pipeline, PipelineStep, StepStatus
-import asyncio
+from ...pipeline import PipelineContext, StepStatus
+from ..core import to_Path
+
 def who_called_me():
     # Frame 0 = this function
     # Frame 1 = direct caller
@@ -29,20 +30,21 @@ def read_sql_file(file_path:Path):
     
     return sql_query
     
-async def simple_sql_query(pipe:Pipeline, step:PipelineStep, sql_folder:Path):
-    con = pipe.con
-    file_name = step.name
-    file_path = sql_folder / f"{file_name}.sql"
+async def simple_sql_query(context:PipelineContext, query_file:str, sql_folder:Path):
+    con = context.con
+    query_path = to_Path(query_file)
+    if query_path.suffix != "sql":
+        query_path = query_path.parent / f"{query_path.stem}.sql"
+        
+    file_path = sql_folder / query_path
     query = read_sql_file(file_path)
     
     try:
         con.execute(query)
-
+        return True
+        
     except Exception as e:
-        pipe.logger.error(f"FAILED to run query :\n{e}")
-        step.status = StepStatus.FAILED
-        raise RuntimeError(e)
+        raise e
     
-    step.status = StepStatus.COMPLETED
 
     

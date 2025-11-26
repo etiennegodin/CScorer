@@ -1,12 +1,10 @@
 from obsq.pipeline import PipelineContext, Module, SubModule, step
-from ..steps import GbifLoader
+from ..steps import GbifLoader, sm_gbif_clean
 from ..utils.duckdb import import_csv_to_db
+from ..utils.sql import read_sql_template
+from pathlib import Path
 
-#Citizen data loader
-collect_citizen_data = GbifLoader('collect_citizen_data')
-collect_expert_data = GbifLoader('collect_expert_data')
 
-sm_collect_all_gbif = SubModule("collect_all_gbif",[collect_citizen_data, collect_expert_data])
 
 @step 
 def create_custom_predicates(context:PipelineContext):
@@ -39,8 +37,20 @@ async def store_gbif_expert_csv(context:PipelineContext):
         table = import_csv_to_db(context.con, file, "raw", "gbif_expert", geo = True)
         return table
 
+
+# COLLECT
+collect_citizen_data = GbifLoader('collect_citizen_data')
+collect_expert_data = GbifLoader('collect_expert_data')
+sm_collect_all_gbif = SubModule("collect_all_gbif",[collect_citizen_data, collect_expert_data])
+
+# STORE
 sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv, store_gbif_expert_csv])
 
-m_collect_gbif = Module("ingest_gbif",[create_custom_predicates, sm_collect_all_gbif, sm_store_all_gbif])
+
+
+
+
+
+m_collect_gbif = Module("ingest_gbif",[create_custom_predicates, sm_collect_all_gbif, sm_store_all_gbif, sm_gbif_clean])
 
     
