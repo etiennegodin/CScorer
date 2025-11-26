@@ -110,8 +110,9 @@ class PipelineContext:
         return None
     
     def get_step_output(self, step_name: str) -> Any:
-        if step_name in self.results:
-            return self.results[step_name].output
+        for step in self.results.keys():
+            if step_name in step: #find even if incomplete name
+                return self.results[step].output
         return None
     
     def get_module_outputs(self, module_name: str) -> Dict[str, Any]:
