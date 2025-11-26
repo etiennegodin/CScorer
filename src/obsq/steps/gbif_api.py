@@ -1,9 +1,10 @@
 from ..pipeline import PipelineContext, StepStatus, ClassStep
 import os
 import asyncio
-import logging
 from pygbif import occurrences as occ
-from pprint import pprint
+from pathlib import Path
+from pprint import pprint #debug
+
 
 class GbifLoader(ClassStep):
     
@@ -33,13 +34,18 @@ class GbifLoader(ClassStep):
         if self._validate_has_download_key(context):
             download_key = context.get_step_output(self.name)['download_key']
             ready_key = await self._poll_gbif_until_ready(download_key)
-        
-        file_list = await self._download_and_unpack(ready_key, dest_dir= context.config['paths']['gbif_folder'])
+        gbif_dir = Path(context.config['paths']['gbif_folder'])
+        dest_dir = gbif_dir / download_key
+        file_list = await self._download_and_unpack(ready_key, dest_dir= dest_dir)
         context.set_intermediate_step_result(self.name, {"files": file_list} )
 
         for f in file_list:
             if "verbatim.txt" in f:
-                return {"output":f}
+                old_path = Path(f)
+                new_path = Path(f"{old_path.parent}/{download_key}.csv")  
+                os.rename(old_path,new_path)
+                return {"output":str(new_path)}
+            
 
     def _validate_custom_predicates(self,context):
         return context.get_step_output("create_custom_predicates") is not None
