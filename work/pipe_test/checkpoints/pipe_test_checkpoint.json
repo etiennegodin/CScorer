@@ -1,11 +1,8 @@
 {
-  "timestamp": "2025-11-25T17:10:31.930185",
+  "timestamp": "2025-11-25T22:20:34.541393",
   "pipeline_name": "pipe_test",
   "completed_steps": [
-    "init.db_connection",
-    "collect_gbif.collect_citizen_data",
-    "my_module.step1",
-    "my_module.step2"
+    "init.db_connection"
   ],
   "results": {
     "init.db_connection": {
@@ -13,49 +10,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-25T17:10:29.354941",
-      "end_time": "2025-11-25T17:10:29.355705",
-      "attempt_number": 1
-    },
-    "collect_gbif.collect_citizen_data": {
-      "step_name": "collect_gbif.collect_citizen_data",
-      "status": "completed",
-      "output": {
-        "output": "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
-        "download_key": "0006639-251120083545085",
-        "files": [
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/occurrence.txt",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/rights.txt",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/dataset",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/meta.xml",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/multimedia.txt",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/verbatim.txt",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/0006639-251120083545085.zip",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/citations.txt",
-          "/home/manat/projects/obsq/work/pipe_test/data/gbif/metadata.xml"
-        ]
-      },
-      "error": null,
-      "start_time": "2025-11-25T17:10:29.364146",
-      "end_time": "2025-11-25T17:10:31.917116",
-      "attempt_number": 1
-    },
-    "my_module.step1": {
-      "step_name": "my_module.step1",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-11-25T17:10:31.923086",
-      "end_time": "2025-11-25T17:10:31.923313",
-      "attempt_number": 1
-    },
-    "my_module.step2": {
-      "step_name": "my_module.step2",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-11-25T17:10:31.923378",
-      "end_time": "2025-11-25T17:10:31.923535",
+      "start_time": "2025-11-25T22:20:34.540926",
+      "end_time": "2025-11-25T22:20:34.541265",
       "attempt_number": 1
     }
   }
