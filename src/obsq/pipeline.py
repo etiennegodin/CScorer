@@ -330,6 +330,13 @@ class SubModule:
     """
     
     def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]], is_async:bool = False):
+        """_summary_
+
+        Args:
+            name (str): _description_
+            steps (List[Union[FunctionStep, ClassStep]]): _description_
+            is_async (bool, optional): _description_. Defaults to False.
+        """
         self.name = name
         self.steps = {step.name: step for step in steps}
         self.step_order = [step.name for step in steps]
@@ -414,12 +421,22 @@ class Module:
         self,
         name: str,
         components: List[Union[Union[FunctionStep, ClassStep], SubModule]],
-        skip_on_module_failure: bool = False
+        skip_on_module_failure: bool = False,
+        always_run:bool = False
     ):
+        """_summary_
+
+        Args:
+            name (str): _description_
+            components (List[Union[Union[FunctionStep, ClassStep], SubModule]]): _description_
+            skip_on_module_failure (bool, optional): _description_. Defaults to False.
+            always_run (bool, optional): _description_. Defaults to False.
+        """
         self.name = name
         self.components = components
         self.skip_on_module_failure = skip_on_module_failure
         self.logger = logging.getLogger(f"{__name__}.Module.{name}")
+        self.always_run = always_run
     
     def run(self, context: PipelineContext, module_steps_completed:set) -> Dict[str, StepResult]:
         """Run all components in this module"""
@@ -503,6 +520,13 @@ class Pipeline:
         modules: List[Module],
         checkpoint_dir: Optional[Union[str, Path]] = None
     ):
+        """_summary_
+
+        Args:
+            name (str): _description_
+            modules (List[Module]): _description_
+            checkpoint_dir (Optional[Union[str, Path]], optional): _description_. Defaults to None.
+        """
         self.name = name
         self.modules = {module.name: module for module in modules}
         self.module_order = [module.name for module in modules]
@@ -626,24 +650,26 @@ class Pipeline:
         for module_name in modules_to_run:
             # Check if entire module is completed (all its steps)
             module = self.modules[module_name]
-            
-            if resume_from_checkpoint:
-                # Count how many steps in this module are already completed
-                module_steps_completed_sum = sum(
-                    1 for step_name in completed_steps
-                    if step_name.startswith(f"{module_name}.")
-                )
-                
-                module_steps_completed = [step_name for step_name in completed_steps if step_name.startswith(f"{module_name}.")]
-                
+            module.always_run
+            if not module.always_run:
+                if resume_from_checkpoint:
+                    # Count how many steps in this module are already completed
+                    module_steps_completed_sum = sum(
+                        1 for step_name in completed_steps
+                        if step_name.startswith(f"{module_name}.")
+                    )
+                    
+                    module_steps_completed = [step_name for step_name in completed_steps if step_name.startswith(f"{module_name}.")]
+                    
 
-                # If all steps are completed, skip the module
-                total_module_steps = self._count_module_steps(module)
-                if module_steps_completed_sum == total_module_steps:
-                    self.logger.info(f"Skipping completed module: {module_name}")
-                    continue
+                    # If all steps are completed, skip the module
+                    total_module_steps = self._count_module_steps(module)
+                    if module_steps_completed_sum == total_module_steps:
+                        self.logger.info(f"Skipping completed module: {module_name}")
+                        continue
+            else:
+                module_steps_completed = []
                 
-       
             try:
                 module.run(context, module_steps_completed)
                 self._save_checkpoint(context)
