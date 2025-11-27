@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-27T15:15:55.171147",
+  "timestamp": "2025-11-27T15:59:56.177494",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -7,7 +7,10 @@
     "ingest_gbif.collect_all_gbif.collect_citizen_data",
     "ingest_gbif.collect_all_gbif.collect_expert_data",
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
-    "ingest_gbif.store_all_gbif.store_gbif_expert_csv"
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
+    "ingest_gbif.gbif_clean.create_clean_schema",
+    "ingest_gbif.gbif_clean.clean_gbif_citizen",
+    "ingest_gbif.gbif_clean.clean_gbif_expert"
   ],
   "results": {
     "init.db_connection": {
@@ -15,8 +18,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-27T15:15:43.001116",
-      "end_time": "2025-11-27T15:15:43.002869",
+      "start_time": "2025-11-27T15:59:53.156764",
+      "end_time": "2025-11-27T15:59:53.157020",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -107,13 +110,40 @@
       "end_time": "2025-11-25T23:53:59.661364",
       "attempt_number": 1
     },
+    "ingest_gbif.gbif_clean.create_clean_schema": {
+      "step_name": "ingest_gbif.gbif_clean.create_clean_schema",
+      "status": "completed",
+      "output": "clean",
+      "error": null,
+      "start_time": "2025-11-27T15:24:57.647332",
+      "end_time": "2025-11-27T15:24:57.661455",
+      "attempt_number": 1
+    },
     "ingest_gbif.gbif_clean.clean_gbif_citizen": {
       "step_name": "ingest_gbif.gbif_clean.clean_gbif_citizen",
+      "status": "completed",
+      "output": "<bool object>",
+      "error": null,
+      "start_time": "2025-11-27T15:57:44.020723",
+      "end_time": "2025-11-27T15:57:44.037636",
+      "attempt_number": 1
+    },
+    "ingest_gbif.gbif_clean.clean_gbif_expert": {
+      "step_name": "ingest_gbif.gbif_clean.clean_gbif_expert",
+      "status": "completed",
+      "output": "<bool object>",
+      "error": null,
+      "start_time": "2025-11-27T15:59:53.158650",
+      "end_time": "2025-11-27T15:59:53.167674",
+      "attempt_number": 1
+    },
+    "ingest_gbif.get_citizen_expert": {
+      "step_name": "ingest_gbif.get_citizen_expert",
       "status": "failed",
       "output": null,
-      "error": "clean_gbif_citizen() takes 1 positional argument but 2 were given",
-      "start_time": "2025-11-27T15:15:43.010911",
-      "end_time": "2025-11-27T15:15:55.163239",
+      "error": "'PipelineContext' object is not subscriptable",
+      "start_time": "2025-11-27T15:59:53.167902",
+      "end_time": "2025-11-27T15:59:56.175053",
       "attempt_number": 1
     }
   }

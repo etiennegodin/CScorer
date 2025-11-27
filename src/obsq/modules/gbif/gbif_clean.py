@@ -1,10 +1,9 @@
 from obsq.pipeline import PipelineContext, SubModule, FunctionStep, step
 from ...utils.sql import read_sql_template
-from ...utils import create_schema
 from pathlib import Path
+from ...steps import CreateSchema
 
-
-async def clean_gbif_occurences(context:PipelineContext, step:FunctionStep):
+async def clean_gbif_occurences(context:PipelineContext, step_name:str):
     """
     Docstring for clean_gbif_occurences
     
@@ -13,7 +12,6 @@ async def clean_gbif_occurences(context:PipelineContext, step:FunctionStep):
     :param step_name: Description
     :type step_name: str
     """
-    step_name = step.name
     con = context.con
     sql_folder = Path(context.config['paths']['queries_folder'])
     
@@ -41,6 +39,6 @@ async def clean_gbif_expert(context:PipelineContext):
     return clean_gbif_occurences(context, step_name="clean_gbif_expert")
 
 # Create schema 
-create_clean_schema = FunctionStep("create_clean_schema", create_schema, schema = "clean" )
+create_clean_schema = CreateSchema("create_clean_schema", schema = "clean" )
 
 gbif_clean_submodule = SubModule('gbif_clean',[create_clean_schema, clean_gbif_citizen,clean_gbif_expert ])
