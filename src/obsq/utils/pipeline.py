@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def create_folders(parent_folder:Path)->dict:
+def create_folders(ROOT_FOLDER, work_folder:Path)->dict:
     """_summary_
 
     Args:
@@ -13,9 +13,9 @@ def create_folders(parent_folder:Path)->dict:
     
     folders = {}
 
-    queries_folder = (parent_folder / 'queries')
+    queries_folder = (ROOT_FOLDER / 'queries')
 
-    data_folder = (parent_folder / 'data')
+    data_folder = (work_folder / 'data')
     gbif_folder = (data_folder / 'gbif')
     inat_folder = data_folder/ 'inat'
     gee_folder = data_folder/ 'gee'
@@ -23,13 +23,10 @@ def create_folders(parent_folder:Path)->dict:
     db_path = data_folder / 'data.duckdb'
 
     # Set folder paths to config
-    folders["root_folder"] = str(parent_folder)
-    
-    #folders["modules_folder"] = str(modules_folder)
-    #folders["steps_folder"] = str(steps_folder)
-    #folders["checkpoints_folder"] = str(checkpoints_folder)
+    folders["root_folder"] = str(ROOT_FOLDER)
     folders["queries_folder"] = str(queries_folder)
-
+    
+    folders["work_folder"] = str(work_folder)
     folders["data_folder"] = str(data_folder)
     folders["eda_folder"] = str(eda_folder)
     folders["gbif_folder"] = str(gbif_folder)

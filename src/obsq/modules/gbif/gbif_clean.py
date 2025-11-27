@@ -1,5 +1,5 @@
 from obsq.pipeline import PipelineContext, SubModule, step
-from ..utils.sql import read_sql_template
+from ...utils.sql import read_sql_template
 from pathlib import Path
 
 
@@ -38,4 +38,4 @@ async def clean_gbif_citizen(context:PipelineContext):
 async def clean_gbif_expert(context:PipelineContext):
     return clean_gbif_occurences(context, step_name="clean_gbif_expert")
 
-sm_gbif_clean = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])
+gbif_clean_submodule = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])

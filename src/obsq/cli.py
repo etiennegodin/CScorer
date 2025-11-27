@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 import os
 import importlib.util
+import logging
 from .utils.debug import launch_debugger
 from .utils.core import read_config
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
@@ -44,10 +45,11 @@ def main():
     
     
     file = global_parser.parse_args().config
-    root_folder = Path(file).resolve().parents[0] 
+    work_folder = Path(file).resolve().parents[0] 
+    ROOT_FOLDER = Path(__file__).resolve().parents[0] 
 
     """
-    pipe_config = read_config(root_folder / "pipe_config.yaml")
+    pipe_config = read_config(work_folder / "pipe_config.yaml")
     pipe_struct = pipe_config['pipe_struct']
     subparsers = parser.add_subparsers(title= "Module", dest= 'module', required =True, description= "Modules of pipeline to run", help= 'Modules options')
     subparsers.add_parser('full', help = "Run full pipeline", parents=[global_parser])
@@ -59,10 +61,10 @@ def main():
     # Debugger
     if args.debug:
         launch_debugger()
-        
+    ROOT_FOLDER  
     # Run main of current pipeline    
-    if "main.py" in os.listdir(root_folder):
-        spec=importlib.util.spec_from_file_location("pipe_main",f"{root_folder}/main.py")
+    if "main.py" in os.listdir(work_folder):
+        spec=importlib.util.spec_from_file_location("pipe_main",f"{work_folder}/main.py")
         
         # creates a new module based on spec
         pipe_main = importlib.util.module_from_spec(spec)
@@ -70,4 +72,6 @@ def main():
         # when a module is imported or reloaded.
         spec.loader.exec_module(pipe_main)
         
-        pipe_main.main(root_folder, args)
+        pipe_main.main(ROOT_FOLDER, work_folder, args)
+    else:
+        logging.error(f" No 'main.py' found in {work_folder}")
