@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-26T00:43:22.857925",
+  "timestamp": "2025-11-27T14:31:48.580384",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -131,9 +131,9 @@
       "step_name": "ingest_gbif.gbif_clean.clean_gbif_citizen",
       "status": "failed",
       "output": null,
-      "error": "[Errno 2] No such file or directory: '/home/manat/projects/obsq/work/pipe_test/queries/clean_gbif.sql'",
-      "start_time": "2025-11-26T00:43:19.842729",
-      "end_time": "2025-11-26T00:43:22.848234",
+      "error": "'NoneType' object has no attribute 'execute'",
+      "start_time": "2025-11-27T14:31:38.205828",
+      "end_time": "2025-11-27T14:31:48.571994",
       "attempt_number": 1
     }
   }

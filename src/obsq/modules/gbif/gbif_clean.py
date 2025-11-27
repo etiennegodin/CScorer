@@ -17,7 +17,7 @@ async def clean_gbif_occurences(context:PipelineContext, step_name:str):
     
     table_name = step_name.split(sep='_', maxsplit=1)[-1]
     source_table_name =  f"raw.{table_name}"
-    query_name = 'clean_gbif'
+    query_name = 'gbif_clean'
     file_path = sql_folder / f"{query_name}.sql"
     
     template = read_sql_template(file_path)
