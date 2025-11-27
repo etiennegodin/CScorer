@@ -52,7 +52,7 @@ class DataBaseQuery(ClassStep):
         if query_path.suffix != "sql":
             query_path = query_path.parent / f"{query_path.stem}.sql"
             
-        file_path = sql_folder / query_path
+        file_path = context['config']['paths']['queries_folder'] / query_path
             
 class DataBaseDfLoader(ClassStep):
     

@@ -22,9 +22,9 @@ def main(ROOT_FOLDER, work_folder, args):
     db_connection = DataBaseConnection(config['paths']['db_path'])
     init = Module('init', [db_connection], always_run= True)
 
-    #pipeline = Pipeline('pipe_test', [init, gbif_ingest_module], work_folder/ "checkpoints")
+    pipeline = Pipeline('pipe_test', [init, gbif_ingest_module], work_folder/ "checkpoints")
     
-    pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
+    #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
     pipeline.run(config, resume_from_checkpoint = resume)
 
     

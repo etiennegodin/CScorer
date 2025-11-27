@@ -159,7 +159,9 @@ class BaseStep(ABC):
         retry_attempts: int = 3,
         retry_wait_multiplier: int = 1,
         retry_wait_max: int = 10,
-        skip_on_failure: bool = False
+        skip_on_failure: bool = False,
+        **kwargs
+
     ):
         self.name = name
         self.retry_attempts = retry_attempts
@@ -277,6 +279,8 @@ class FunctionStep(BaseStep):
         
         # Auto-detect if function is async
         self.is_async = inspect.iscoroutinefunction(func)
+        self.__dict__.update(kwargs)
+            
     
     def validate_inputs(self, context: PipelineContext) -> bool:
         if self.validate_func:
@@ -286,7 +290,7 @@ class FunctionStep(BaseStep):
     def _execute(self, context: PipelineContext) -> Any:
         if self.is_async:
             import asyncio
-            return asyncio.run(self.func(context))
+            return asyncio.run(self.func(context ))
         return self.func(context)
 
 # ============================================================================
@@ -333,9 +337,9 @@ class SubModule:
         """_summary_
 
         Args:
-            name (str): _description_
-            steps (List[Union[FunctionStep, ClassStep]]): _description_
-            is_async (bool, optional): _description_. Defaults to False.
+            name (str): Set this submodule's name
+            steps (List[Union[FunctionStep, ClassStep]]): Steps of this module to run
+            is_async (bool, optional): NotImplemented. Defaults to False.
         """
         self.name = name
         self.steps = {step.name: step for step in steps}
@@ -427,10 +431,10 @@ class Module:
         """_summary_
 
         Args:
-            name (str): _description_
-            components (List[Union[Union[FunctionStep, ClassStep], SubModule]]): _description_
-            skip_on_module_failure (bool, optional): _description_. Defaults to False.
-            always_run (bool, optional): _description_. Defaults to False.
+            name (str): Set this module's name
+            components (List[Union[Union[FunctionStep, ClassStep], SubModule]]): Components of this module to run
+            skip_on_module_failure (bool, optional): Skip module if fails. Defaults to False.
+            always_run (bool, optional): Force module to always run. Defaults to False.
         """
         self.name = name
         self.components = components
