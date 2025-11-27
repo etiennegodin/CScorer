@@ -5,7 +5,7 @@ from ...utils.duckdb import import_csv_to_db
 from pathlib import Path
 
 @step 
-def create_custom_predicates(context:PipelineContext):
+def create_custom_predicates(context:PipelineContext, ):
     """
     Docstring for create_custom_predicates
     

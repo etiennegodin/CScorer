@@ -5,6 +5,7 @@ import geopandas as gpd
 import pandas as pd
 from ..utils.core import to_Path, rename_col_df, convert_df_to_gdf
 from dataclasses import dataclass, field
+from ..pipeline import PipelineContext, FunctionStep
 
 def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
@@ -135,15 +136,7 @@ def set_geom_bbox(con,table_name = None, ):
     except Exception as e:
         logging.error(f'Could not set bbox for table {table_name} : \n {e}')
         return False
-        
-def create_schema(con, schema:str=None):
-    try:
-        con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
-        return True
 
-    except Exception as e:
-        logging.error(f'Error creating schema {schema} : \n', e)
-        return False
     
 def create_table(con, table:str, schema:str = 'main'):
     try:

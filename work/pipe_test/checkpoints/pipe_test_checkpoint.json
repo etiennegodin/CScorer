@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-27T14:31:48.580384",
+  "timestamp": "2025-11-27T15:15:55.171147",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -7,9 +7,7 @@
     "ingest_gbif.collect_all_gbif.collect_citizen_data",
     "ingest_gbif.collect_all_gbif.collect_expert_data",
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
-    "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
-    "my_module.step1",
-    "my_module.step2"
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv"
   ],
   "results": {
     "init.db_connection": {
@@ -17,8 +15,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-25T23:26:51.617351",
-      "end_time": "2025-11-25T23:26:51.618523",
+      "start_time": "2025-11-27T15:15:43.001116",
+      "end_time": "2025-11-27T15:15:43.002869",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -109,31 +107,13 @@
       "end_time": "2025-11-25T23:53:59.661364",
       "attempt_number": 1
     },
-    "my_module.step1": {
-      "step_name": "my_module.step1",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-11-25T23:30:34.144606",
-      "end_time": "2025-11-25T23:30:34.145612",
-      "attempt_number": 1
-    },
-    "my_module.step2": {
-      "step_name": "my_module.step2",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-11-25T23:30:34.146041",
-      "end_time": "2025-11-25T23:30:34.147279",
-      "attempt_number": 1
-    },
     "ingest_gbif.gbif_clean.clean_gbif_citizen": {
       "step_name": "ingest_gbif.gbif_clean.clean_gbif_citizen",
       "status": "failed",
       "output": null,
-      "error": "'NoneType' object has no attribute 'execute'",
-      "start_time": "2025-11-27T14:31:38.205828",
-      "end_time": "2025-11-27T14:31:48.571994",
+      "error": "clean_gbif_citizen() takes 1 positional argument but 2 were given",
+      "start_time": "2025-11-27T15:15:43.010911",
+      "end_time": "2025-11-27T15:15:55.163239",
       "attempt_number": 1
     }
   }
