@@ -49,7 +49,7 @@ class GbifLoader(ClassStep):
 
         #Check if file in list
         for f in file_list:
-            if "verbatim.txt" in f:
+            if "occurrence.txt" in f:
                 #Rename to download_key.csv and output 
                 old_path = Path(f)
                 new_path = Path(f"{old_path.parent}/{download_key}.csv")  

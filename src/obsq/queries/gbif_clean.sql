@@ -29,6 +29,9 @@ g.dynamicProperties as annotations,
 g.decimalLatitude,
 g.decimalLongitude,
 occurrenceStatus,
+g.iucnRedListCategory,
+g.issue,
+g.hasCoordinate
 g.geodeticDatum,
 g.geom,
 CASE
@@ -36,6 +39,10 @@ CASE
     ELSE CAST(coordinateUncertaintyInMeters AS INT)
 END AS coordinateUncertaintyInMeters,
 
+(
+    length(g.mediaType) 
+  - length(replace(g.mediaType, 'StillImage', ''))
+) / length('StillImage') AS media_count
 
 FROM {{source_table_name}} g
 )
@@ -43,10 +50,11 @@ FROM {{source_table_name}} g
 SELECT * FROM main_cleanup m
 
 WHERE m.coordinateUncertaintyInMeters < 3000 
-AND m.taxonRank = 'species' 
+AND m.taxonRank = 'SPECIES' 
 AND MONTH(m.eventDate) > MONTH(CAST('2000-04-01' AS DATE))
 AND MONTH(m.eventDate) < MONTH(CAST('2000-09-01' AS DATE))
-AND m.institutionCode = 'iNaturalist';
+AND m.institutionCode = 'iNaturalist'
+AND m.hasCoordinate = True;
 
 
 
