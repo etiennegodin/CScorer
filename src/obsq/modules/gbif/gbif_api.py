@@ -1,4 +1,4 @@
-from ..pipeline import PipelineContext, StepStatus, ClassStep
+from ...pipeline import PipelineContext, StepStatus, ClassStep
 import os
 import asyncio
 from pygbif import occurrences as occ

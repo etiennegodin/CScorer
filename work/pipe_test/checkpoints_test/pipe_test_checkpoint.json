@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-11-27T14:19:54.676036",
+  "pipeline_name": "pipe_test",
+  "completed_steps": [
+    "init.db_connection"
+  ],
+  "results": {
+    "init.db_connection": {
+      "step_name": "init.db_connection",
+      "status": "completed",
+      "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
+      "error": null,
+      "start_time": "2025-11-27T14:19:54.675238",
+      "end_time": "2025-11-27T14:19:54.675895",
+      "attempt_number": 1
+    }
+  }
+}

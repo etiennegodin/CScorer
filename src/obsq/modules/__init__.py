@@ -1,4 +1,3 @@
-from .my_module import myModule 
-from .gbif import m_collect_gbif
+from .gbif.gbif import gbif_ingest_module
 
 __all__ = ["myModule"]
