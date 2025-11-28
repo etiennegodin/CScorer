@@ -1,6 +1,6 @@
 from obsq.pipeline import PipelineContext, Module, SubModule, step
 from . import GbifLoader, gbif_clean_submodule
-from ...steps import DataBaseQuery
+from ...steps import DataBaseQuery, CreateSchema
 from ...utils.duckdb import import_csv_to_db
 from pathlib import Path
 
@@ -51,11 +51,20 @@ sm_collect_all_gbif = SubModule("collect_all_gbif",[collect_citizen_data,
 sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv,
                                                 store_gbif_expert_csv])
 
-# Extract expert user from citizen data 
+# Create observers table 
+extract_observers = DataBaseQuery("extract_observers", query_name= "gbif_extract_observers")
+#Get citizen experts 
 get_citizen_expert = DataBaseQuery("get_citizen_expert", query_name= "gbif_get_citizen_expert")
 
 # Send observations from citizen expert to expert table
 citizen_occ_to_expert = DataBaseQuery("citizen_occ_to_expert", query_name= "gbif_citizen_occ_to_expert" )
+
+filter_observers_sm = SubModule("filter_observers",[extract_observers,
+                                                get_citizen_expert,
+                                                citizen_occ_to_expert])
+
+# Create species table
+extract_species = DataBaseQuery("extract_species", query_name= "gbif_extract_species")
 
 # FULL MODULE 
 
@@ -63,8 +72,8 @@ gbif_ingest_module = Module("ingest_gbif",[create_custom_predicates,
                                            sm_collect_all_gbif,
                                            sm_store_all_gbif,
                                            gbif_clean_submodule,
-                                           get_citizen_expert,
-                                           citizen_occ_to_expert
+                                            filter_observers_sm,
+                                            extract_species
                                            ])
 
     

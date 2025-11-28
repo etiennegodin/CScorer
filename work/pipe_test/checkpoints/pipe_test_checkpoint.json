@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-28T11:51:17.119994",
+  "timestamp": "2025-11-28T12:13:46.274097",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -16,7 +16,9 @@
     "init.create_all_schemas.create_raw_schema",
     "init.create_all_schemas.create_clean_schema",
     "init.create_all_schemas.create_preprocessed_schema",
-    "init.create_all_schemas.create_features_schema"
+    "init.create_all_schemas.create_features_schema",
+    "ingest_gbif.filter_observers.extract_observers",
+    "ingest_gbif.filter_observers.get_citizen_expert"
   ],
   "results": {
     "init.db_connection": {
@@ -24,8 +26,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-28T11:51:14.008107",
-      "end_time": "2025-11-28T11:51:14.008478",
+      "start_time": "2025-11-28T12:13:43.189989",
+      "end_time": "2025-11-28T12:13:43.190343",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -153,9 +155,9 @@
       "step_name": "ingest_gbif.get_citizen_expert",
       "status": "failed",
       "output": null,
-      "error": "Catalog Error: Table with name inat_observers does not exist!\nDid you mean \"gbif_expert\"?\n\nLINE 11: FROM raw.inat_observers\n              ^",
-      "start_time": "2025-11-28T11:51:14.029871",
-      "end_time": "2025-11-28T11:51:17.115610",
+      "error": "Catalog Error: Table with name all_observers does not exist!\nDid you mean \"clean.observers\"?\n\nLINE 3: FROM raw.all_observers\n             ^",
+      "start_time": "2025-11-28T12:07:08.326615",
+      "end_time": "2025-11-28T12:07:11.357924",
       "attempt_number": 1
     },
     "ingest_gbif.citizen_occ_to_expert": {
@@ -172,8 +174,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-11-28T11:51:14.008640",
-      "end_time": "2025-11-28T11:51:14.011482",
+      "start_time": "2025-11-28T12:13:43.190531",
+      "end_time": "2025-11-28T12:13:43.192631",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -181,8 +183,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-11-28T11:51:14.011611",
-      "end_time": "2025-11-28T11:51:14.013110",
+      "start_time": "2025-11-28T12:13:43.192820",
+      "end_time": "2025-11-28T12:13:43.194942",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -190,8 +192,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-11-28T11:51:14.013224",
-      "end_time": "2025-11-28T11:51:14.019232",
+      "start_time": "2025-11-28T12:13:43.195084",
+      "end_time": "2025-11-28T12:13:43.197174",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -199,8 +201,35 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-11-28T11:51:14.019406",
-      "end_time": "2025-11-28T11:51:14.024686",
+      "start_time": "2025-11-28T12:13:43.197377",
+      "end_time": "2025-11-28T12:13:43.199852",
+      "attempt_number": 1
+    },
+    "ingest_gbif.filter_observers.extract_observers": {
+      "step_name": "ingest_gbif.filter_observers.extract_observers",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-28T12:13:43.203067",
+      "end_time": "2025-11-28T12:13:43.215463",
+      "attempt_number": 1
+    },
+    "ingest_gbif.filter_observers.get_citizen_expert": {
+      "step_name": "ingest_gbif.filter_observers.get_citizen_expert",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-11-28T12:13:43.215713",
+      "end_time": "2025-11-28T12:13:43.224848",
+      "attempt_number": 1
+    },
+    "ingest_gbif.filter_observers.citizen_occ_to_expert": {
+      "step_name": "ingest_gbif.filter_observers.citizen_occ_to_expert",
+      "status": "failed",
+      "output": null,
+      "error": "Catalog Error: Table with name inat_expert does not exist!\nDid you mean \"clean.gbif_expert or raw.gbif_expert\"?\n\nLINE 5: WHERE recordedBy NOT IN (SELECT inat_name FROM preprocessed.inat_expert) AND institutionCode = 'iNaturalist...\n                                                       ^",
+      "start_time": "2025-11-28T12:13:43.225093",
+      "end_time": "2025-11-28T12:13:46.270765",
       "attempt_number": 1
     }
   }
