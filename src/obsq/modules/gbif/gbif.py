@@ -51,16 +51,24 @@ sm_collect_all_gbif = SubModule("collect_all_gbif",[collect_citizen_data,
 sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv,
                                                 store_gbif_expert_csv])
 
+
+gbif_ingest_module = Module("ingest_gbif",[create_custom_predicates,
+                                           sm_collect_all_gbif,
+                                           sm_store_all_gbif])
+
 # Create observers table 
-extract_observers = DataBaseQuery("extract_observers", query_name= "gbif_extract_observers")
+extract_all_observers = DataBaseQuery("extract_all_observers", query_name= "gbif_extract_all_observers")
 #Get citizen experts 
 get_citizen_expert = DataBaseQuery("get_citizen_expert", query_name= "gbif_get_citizen_expert")
+
+get_citizen_observers = DataBaseQuery("get_citizen_observers", query_name= "gbif_get_citizen_observers")
 
 # Send observations from citizen expert to expert table
 citizen_occ_to_expert = DataBaseQuery("citizen_occ_to_expert", query_name= "gbif_citizen_occ_to_expert" )
 
-filter_observers_sm = SubModule("filter_observers",[extract_observers,
+filter_observers_sm = SubModule("filter_observers",[extract_all_observers,
                                                 get_citizen_expert,
+                                                get_citizen_observers,
                                                 citizen_occ_to_expert])
 
 # Create species table
@@ -68,9 +76,8 @@ extract_species = DataBaseQuery("extract_species", query_name= "gbif_extract_spe
 
 # FULL MODULE 
 
-gbif_ingest_module = Module("ingest_gbif",[create_custom_predicates,
-                                           sm_collect_all_gbif,
-                                           sm_store_all_gbif,
+
+gbif_preprocess_module = Module("preprocess_gbif", [
                                            gbif_clean_submodule,
                                             filter_observers_sm,
                                             extract_species

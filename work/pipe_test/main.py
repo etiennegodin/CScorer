@@ -1,7 +1,7 @@
 from pathlib import Path
 from obsq.utils import read_config, create_folders
 from obsq.pipeline import Pipeline, Module
-from obsq.modules import gbif_ingest_module, create_all_schemas
+from obsq.modules import gbif_ingest_module, gbif_preprocess_module, create_all_schemas
 from obsq.steps import DataBaseConnection, CreateSchema
 
 def main(ROOT_FOLDER, work_folder, args):
@@ -23,7 +23,7 @@ def main(ROOT_FOLDER, work_folder, args):
     
     init = Module('init', [db_connection, create_all_schemas], always_run= True)
 
-    pipeline = Pipeline('pipe_test', [init, gbif_ingest_module], work_folder/ "checkpoints")
+    pipeline = Pipeline('pipe_test', [init, gbif_ingest_module, gbif_preprocess_module], work_folder/ "checkpoints")
     
     #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
     pipeline.run(config, resume_from_checkpoint = resume)

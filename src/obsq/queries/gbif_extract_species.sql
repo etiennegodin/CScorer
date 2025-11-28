@@ -11,5 +11,5 @@ family,
 genus,
 iucnRedListCategory
 
-FROM clean.gbif_citizen
+FROM preprocessed.gbif_citizen
 
