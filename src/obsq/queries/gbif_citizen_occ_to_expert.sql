@@ -1,20 +1,21 @@
--- create gbif_citizen table
-CREATE OR REPLACE VIEW preprocessed.gbif_citizen_filtered AS
+-- create gbif_citizen view
+CREATE OR REPLACE VIEW preprocessed.gbif_citizen AS
 SELECT *
-FROM raw.gbif_citizen
-WHERE recordedBy NOT IN (SELECT inat_name FROM preprocessed.inat_expert) AND institutionCode = 'iNaturalist';
+FROM clean.gbif_citizen
+WHERE recordedBy NOT IN (SELECT recordedBy FROM raw.citizen_expert) AND institutionCode = 'iNaturalist'
+;
 
--- create gbif_expert_table
+-- create gbif_expert_table to insert into new observations
 CREATE OR REPLACE TABLE preprocessed.gbif_expert AS
 SELECT * FROM clean.gbif_expert;
 
--- CREATE VIEW OF obsevations from inat expert 
-CREATE OR REPLACE VIEW preprocessed.expert_occ_inat AS
+-- CREATE VIEW OF observations from citizen expert 
+CREATE OR REPLACE VIEW raw.citizen_occ_from_expert AS
 SELECT *
 FROM clean.gbif_citizen
-WHERE recordedBy IN (SELECT inat_name FROM preprocessed.inat_expert);
+WHERE recordedBy IN (SELECT recordedBy FROM raw.citizen_expert);
 
--- add expert_occ_inat VIEW TO TABLE
+-- add citizen_occ_from_expert VIEW TO TABLE
 INSERT INTO preprocessed.gbif_expert
-SELECT * FROM preprocessed.expert_occ_inat;
+SELECT * FROM raw.citizen_occ_from_expert;
 

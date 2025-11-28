@@ -19,7 +19,9 @@ async def clean_gbif_occurences(context:PipelineContext, step_name:str):
     source_table_name =  f"raw.{table_name}"
     query_name = 'gbif_clean'
     file_path = sql_folder / f"{query_name}.sql"
-    
+    print(table_name)
+    print(source_table_name)
+
     template = read_sql_template(file_path)
     query = template.render(target_table_name = table_name, source_table_name = source_table_name)
     
@@ -38,7 +40,6 @@ async def clean_gbif_citizen(context:PipelineContext):
 async def clean_gbif_expert(context:PipelineContext):
     return clean_gbif_occurences(context, step_name="clean_gbif_expert")
 
-# Create schema 
-create_clean_schema = CreateSchema("create_clean_schema", schema = "clean" )
 
-gbif_clean_submodule = SubModule('gbif_clean',[create_clean_schema, clean_gbif_citizen,clean_gbif_expert ])
+
+gbif_clean_submodule = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])

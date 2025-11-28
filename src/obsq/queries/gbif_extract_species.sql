@@ -1,6 +1,6 @@
 CREATE OR REPLACE VIEW clean.species AS 
 
-SELECT 
+SELECT DISTINCT
 taxonID,
 scientificName,
 taxonRank,

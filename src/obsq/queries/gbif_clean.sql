@@ -52,7 +52,6 @@ WHERE m.coordinateUncertaintyInMeters < 3000
 AND m.taxonRank = 'SPECIES' 
 AND MONTH(m.eventDate) > MONTH(CAST('2000-04-01' AS DATE))
 AND MONTH(m.eventDate) < MONTH(CAST('2000-09-01' AS DATE))
-AND m.institutionCode = 'iNaturalist'
 AND m.hasCoordinate = True;
 
 
