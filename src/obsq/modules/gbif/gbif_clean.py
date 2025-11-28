@@ -41,5 +41,4 @@ async def clean_gbif_expert(context:PipelineContext):
     return clean_gbif_occurences(context, step_name="clean_gbif_expert")
 
 
-
 gbif_clean_submodule = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])
