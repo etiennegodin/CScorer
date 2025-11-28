@@ -3,7 +3,6 @@ from ..utils import to_Path
 from ..pipeline import ClassStep
 
 
-
 class DataBaseConnection(ClassStep):
     
     def __init__(self, db_path, **kwargs):
@@ -33,26 +32,33 @@ class DataBaseQuery(ClassStep):
         """
         super().__init__(name, **kwargs)
         
-        if query_name is not None:
+        if query_name is None:
+            self.query_file_name = name
+        else:
             self.query_file_name = query_name
-        self.query_file_name = name
     
     def _execute(self, context):
         con = _open_connection(context.get_step_output("db_connection"))
         
-        query = self._get_query(context)
+        self.query_path = self._get_query_path(context)
+        
+        with open(self.query_path, 'r') as f:
+            sql_query = f.read()
         
         try:
-            con.execute(self.query)
+            con.execute(sql_query)
         except Exception as e: 
             self.logger.error(e)
+            raise e 
             
-    def _get_query(self, context):
+    def _get_query_path(self, context):
         query_path = to_Path(self.query_file_name) #trick to get .suffix and .stem
         if query_path.suffix != "sql":
             query_path = query_path.parent / f"{query_path.stem}.sql"
             
-        file_path = context['config']['paths']['queries_folder'] / query_path
+        return context.config['paths']['queries_folder'] / query_path
+    
+    
             
 class DataBaseDfLoader(ClassStep):
     

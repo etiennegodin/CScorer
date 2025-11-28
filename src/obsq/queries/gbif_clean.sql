@@ -31,8 +31,7 @@ g.decimalLongitude,
 occurrenceStatus,
 g.iucnRedListCategory,
 g.issue,
-g.hasCoordinate
-g.geodeticDatum,
+g.hasCoordinate,
 g.geom,
 CASE
     WHEN coordinateUncertaintyInMeters IS NULL THEN 0

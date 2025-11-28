@@ -9,7 +9,6 @@ from ..pipeline import PipelineContext, FunctionStep
 
 def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
-    print(db_path)
     try:
         con = duckdb.connect(database=db_path)
         if load_spatial_extension(con):
@@ -57,7 +56,6 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection,
     """
     logger = logging.getLogger("import_csv_to_db")
     if (replace) or (f"{schema}.{table}" not in get_all_tables(con)):
-        create_schema(con, schema=schema)
         query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
         """
     else:
