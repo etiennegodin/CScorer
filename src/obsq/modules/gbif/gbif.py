@@ -52,10 +52,10 @@ sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv,
                                                 store_gbif_expert_csv])
 
 # Extract expert user from citizen data 
-get_citizen_expert = DataBaseQuery("get_citizen_expert")
+get_citizen_expert = DataBaseQuery("get_citizen_expert", query_name= "gbif_get_citizen_expert")
 
 # Send observations from citizen expert to expert table
-citizen_occ_to_expert = DataBaseQuery("citizen_occ_to_expert")
+citizen_occ_to_expert = DataBaseQuery("citizen_occ_to_expert", query_name= "gbif_citizen_occ_to_expert" )
 
 # FULL MODULE 
 
