@@ -1,6 +1,6 @@
 CREATE OR REPLACE VIEW raw.all_observers AS 
 
-SELECT 
+SELECT DISTINCT
 recordedBy,
 recordedByID
 
