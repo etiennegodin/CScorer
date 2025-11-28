@@ -14,7 +14,6 @@ def main(ROOT_FOLDER, work_folder, args):
     except FileNotFoundError:
         raise FileNotFoundError("Please provide a valid config file")
     
-    
     # Create folder structure
     config["paths"] = create_folders(ROOT_FOLDER, work_folder)
       
@@ -26,7 +25,13 @@ def main(ROOT_FOLDER, work_folder, args):
     pipeline = Pipeline('pipe_test', [init, gbif_ingest_module, gbif_preprocess_module], work_folder/ "checkpoints")
     
     #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
-    pipeline.run(config, resume_from_checkpoint = resume)
+    pipeline.run(config,
+                 resume_from_checkpoint = resume,
+                 from_module= args.from_module,
+                 to_module= args.to_module,
+                 only_modules=args.only_modules,
+                 skip_modules=args.skip_modules
+                 )
 
     
 if __name__ == "__main__":
