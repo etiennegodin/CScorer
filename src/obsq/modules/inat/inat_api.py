@@ -8,29 +8,39 @@ from pprint import pprint
 import json
 from concurrent.futures import ThreadPoolExecutor
 
-class inatApiLoader(ClassStep):
-    def __init__(self, context:PipelineContext, name:str):
-        self.limit = context.config['inat_api']['limit']
-        self.overwrite = context.config['inat_api']['overwrite']
-        self.per_page = context.config['inat_api']['per_page']
-        self.limiter = AsyncLimiter(context.config['inat_api']['max_calls_per_minute'], 60)
+class inatApiClient(ClassStep):
+    def __init__(self, name:str,
+                 endpoint:str,
+                 fields:dict,
+                 items:list,
+                limiter:int = 60,
+                per_page:int = 10,
+                limit:int = None,
+                overwrite_table:bool = False,
+                chunk_size:int = 100):
+        
+        #Init api
+        self.name = name
+        self.url = f"https://api.inaturalist.org/v2/{endpoint}"
+        self.fields = self._fields_to_string(fields)
+        self.items = items
+
+        #Init fetch behaviour 
+        self.overwrite = overwrite_table
+        self.per_page = per_page
+        self.limit = limit
+        self.limiter = AsyncLimiter(limiter, 60)
         self.queue  = Queue()
+        self.chunk_size = chunk_size
+        #Init writer
         self.table_name = f"raw.{name}"
 
         super().__init__()
-        self.name = name
 
-    async def run(self, context:PipelineContext, step: PipelineStep, items:list, endpoint:str, fields:str,):
-        limit = context.config['inat_api']['limit']
-        con = context.con
-        logger = context.logger
-        chunk_size = 100  # Process items in batches
+    async def run(self, context:PipelineContext,  ):
         
-        if step.status == StepStatus.COMPLETED:
-            logger.info(f"{self.name} already COMPLETED")
-            #SKip 
-            return self.table_name
-         
+        con = context.con
+
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id TEXT, json JSON)")
         last_id = con.execute(f"SELECT MAX(id) FROM {self.table_name}").fetchone()[0] 
@@ -43,28 +53,27 @@ class inatApiLoader(ClassStep):
         
         # Filter items based on last processed ID (idempotent resume)
         if last_id is not None:
-            logger.info(f"Resuming from last processed ID: {last_id}")
+            self.logger.info(f"Resuming from last processed ID: {last_id}")
             # Filter items: keep only those > last_id (since ordered ASC)
             items = [item for item in items if str(item) > str(last_id)]
             if not items:
-                logger.info(f"All items already processed")
-                step.status = StepStatus.COMPLETED
+                self.logger.info(f"All items already processed")
                 return self.table_name
         
         # Apply limit if set
-        if limit is not None:
-            items = items[:limit]
+        if self.limit is not None:
+            items = items[: self.limit]
         
         self.item_count = len(items)
-        logger.info(f"Processing {self.item_count} items, starting from: {items[0] if items else 'N/A'}")
+        self.logger.info(f"Processing {self.item_count} items, starting from: {items[0] if items else 'N/A'}")
         
         # Chunk items for batch processing
-        items_chunks = [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
-        logger.info(f"Processing {self.item_count} items in {len(items_chunks)} chunks of {chunk_size}")
+        items_chunks = [items[i:i + self.chunk_size] for i in range(0, len(items), self.chunk_size)]
+        self.logger.info(f"Processing {self.item_count} items in {len(items_chunks)} chunks of {self.chunk_size}")
         
-        #Store count of observers (for logger)
+        #Store count of observers (for self.logger)
         async with aiohttp.ClientSession() as session:
-            writer_task = asyncio.create_task(self._write_data(con, logger))
+            writer_task = asyncio.create_task(self._write_data(con, self.logger))
             
             # Create fetchers with batched IDs
             fetchers = []
@@ -77,20 +86,20 @@ class inatApiLoader(ClassStep):
                     # Create comma-separated ID string
                     id_string = ','.join(str(key) for key in batch_keys)
                     fetchers.append(asyncio.create_task(
-                        self._fetch_data(session, endpoint, fields, id_string, batch_start, logger, chunk_idx)
+                        self._fetch_data(session, id_string, batch_start, chunk_idx)
                     ))
             
             await asyncio.gather(*fetchers)
             await self.queue.join()
             await self.queue.put(None)
             await writer_task
-        
-        step.storage['db'] = self.table_name
-        step.status = StepStatus.COMPLETED
+            
+        return self.table_name
+
 
         
-    async def _write_data(self, con, logger):
-        logger.info('Init writer task')
+    async def _write_data(self, con):
+        self.logger.info('Init writer task')
         loop = asyncio.get_event_loop()
         executor = ThreadPoolExecutor(max_workers=1)
         processed_count = 0
@@ -99,7 +108,7 @@ class inatApiLoader(ClassStep):
         while True:
             item = await self.queue.get()
             if item is None:
-                logger.info(f'Writer done, processed {processed_count} items')
+                self.logger.info(f'Writer done, processed {processed_count} items')
                 self.queue.task_done()
                 break
             
@@ -123,10 +132,10 @@ class inatApiLoader(ClassStep):
                 
                 await loop.run_in_executor(executor, batch_insert)
                 processed_count += len(batch)
-                logger.debug(f'Inserted batch of {len(batch)} items')
+                self.logger.debug(f'Inserted batch of {len(batch)} items')
 
             except Exception as e:
-                logger.error(f"FAILED to insert batch: {e}")
+                self.logger.error(f"FAILED to insert batch: {e}")
             
             # Mark all items in batch as done
             for _ in batch:
@@ -134,14 +143,14 @@ class inatApiLoader(ClassStep):
         
         executor.shutdown(wait=True)
         
-    async def _fetch_data(self, session, endpoint:str, fields:str, id_string:str, batch_idx:int, logger, chunk_idx:int=0):
+    async def _fetch_data(self, session, id_string:str, batch_idx:int, chunk_idx:int=0):
         """Fetch data for multiple IDs in a single request using comma-separated ID string"""
-        url = f"https://api.inaturalist.org/v2/{endpoint}"
-        params = {'id': id_string, "fields": fields}
+        
+        params = {'id': id_string, "fields": self.fields}
         
         async with self.limiter:
             try:
-                async with session.get(url, params=params, timeout=10) as r:
+                async with session.get(self.url, params=params, timeout=10) as r:
                     r.raise_for_status()
                     data = await r.json()    
                     if data and "results" in data:
@@ -149,24 +158,26 @@ class inatApiLoader(ClassStep):
                         for result in data["results"]:
                             try:
                                 await self.queue.put((batch_idx, result))
-                                logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
+                                self.logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
                             except Exception as e:
-                                logger.error(f"FAILED to queue result: {e}")
-                        logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string}")
+                                self.logger.error(f"FAILED to queue result: {e}")
+                        self.logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string}")
                     else:
-                        logger.warning(f"No results found for IDs {id_string}")
+                        self.logger.warning(f"No results found for IDs {id_string}")
             except Exception as e:
-                logger.error(f"API request FAILED for IDs {id_string}: {e}")
+                self.logger.error(f"API request FAILED for IDs {id_string}: {e}")
 
 
 
-# Convert to the special syntax
-def fields_to_string(fields_dict, level=0):
-    parts = []
-    for key, value in fields_dict.items():
-        if isinstance(value, dict):
-            nested = fields_to_string(value, level + 1)
-            parts.append(f"{key}:({nested})")
-        elif value is True:
-            parts.append(f"{key}:!t")
-    return ','.join(parts)
+    # Convert to the special syntax
+    def _fields_to_string(self,fields_dict, level=0):
+        if not isinstance(fields_dict, dict):
+            raise TypeError("Error in _fields_to_string, provided input is no a dict")
+        parts = []
+        for key, value in fields_dict.items():
+            if isinstance(value, dict):
+                nested = self._fields_to_string(self,value, level + 1)
+                parts.append(f"{key}:({nested})")
+            elif value is True:
+                parts.append(f"{key}:!t")
+        return ','.join(parts)
