@@ -5,7 +5,7 @@ from ...pipeline import PipelineContext,Module, SubModule, step
 
 get_observer_list_query = """SELECT * FROM """
 
-get_observer_list = DataBaseLoader('get_observer_list', columns='recordedBy',from_table='raw.citizen_observers', limit = 10, return_type= 'list')
+get_observer_list = DataBaseLoader('get_observer_list', columns='recordedBy',from_table='raw.citizen_observers', limit = None, return_type= 'list')
 
 get_observers_data = inatApiClient('inat_observers',
                                    endpoint= 'users/autocomplete/?q=',
