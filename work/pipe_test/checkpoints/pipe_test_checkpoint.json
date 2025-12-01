@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-30T23:27:40.459005",
+  "timestamp": "2025-12-01T00:47:57.233016",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -17,15 +17,21 @@
     "preprocess_gbif.filter_observers.extract_all_observers",
     "preprocess_gbif.filter_observers.get_citizen_expert",
     "preprocess_gbif.filter_observers.get_citizen_observers",
-    "preprocess_gbif.filter_observers.citizen_occ_to_expert"  ],
+    "preprocess_gbif.filter_observers.citizen_occ_to_expert",
+    "preprocess_gbif.extract_species",
+    "inat_data.inat_observers.get_observer_list",
+    "inat_data.inat_observers.inat_observers",
+    "inat_data.inat_observers.extract_observer_json",
+    "inat_data.inat_observers.get_inat_observers_data"
+  ],
   "results": {
     "init.db_connection": {
       "step_name": "init.db_connection",
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-11-30T23:27:37.435383",
-      "end_time": "2025-11-30T23:27:37.435672",
+      "start_time": "2025-12-01T00:47:55.652663",
+      "end_time": "2025-12-01T00:47:55.652977",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -109,8 +115,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-11-30T23:27:37.435830",
-      "end_time": "2025-11-30T23:27:37.438864",
+      "start_time": "2025-12-01T00:47:55.653101",
+      "end_time": "2025-12-01T00:47:55.655113",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -118,8 +124,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-11-30T23:27:37.438998",
-      "end_time": "2025-11-30T23:27:37.440605",
+      "start_time": "2025-12-01T00:47:55.655321",
+      "end_time": "2025-12-01T00:47:55.656999",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -127,8 +133,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-11-30T23:27:37.440743",
-      "end_time": "2025-11-30T23:27:37.442573",
+      "start_time": "2025-12-01T00:47:55.657094",
+      "end_time": "2025-12-01T00:47:55.658354",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -136,8 +142,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-11-30T23:27:37.442677",
-      "end_time": "2025-11-30T23:27:37.444419",
+      "start_time": "2025-12-01T00:47:55.658442",
+      "end_time": "2025-12-01T00:47:55.660233",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
@@ -205,29 +211,47 @@
     },
     "preprocess_gbif.extract_species": {
       "step_name": "preprocess_gbif.extract_species",
-      "status": "failed",
-      "output": null,
-      "error": "'NoneType' object is not subscriptable",
-      "start_time": "2025-11-30T23:27:37.448333",
-      "end_time": "2025-11-30T23:27:40.453493",
-      "attempt_number": 1
-    },
-    "inat_data.get_observer_list": {
-      "step_name": "inat_data.get_observer_list",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-29T11:52:53.641724",
-      "end_time": "2025-11-29T11:52:53.647080",
+      "start_time": "2025-11-30T23:33:45.363249",
+      "end_time": "2025-11-30T23:33:51.995512",
       "attempt_number": 1
     },
-    "inat_data.inat_observers": {
-      "step_name": "inat_data.inat_observers",
-      "status": "failed",
+    "inat_data.inat_observers.get_observer_list": {
+      "step_name": "inat_data.inat_observers.get_observer_list",
+      "status": "completed",
+      "output": "<list object>",
+      "error": null,
+      "start_time": "2025-12-01T00:47:55.661995",
+      "end_time": "2025-12-01T00:47:55.672497",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.inat_observers": {
+      "step_name": "inat_data.inat_observers.inat_observers",
+      "status": "completed",
+      "output": "raw.inat_observers",
+      "error": null,
+      "start_time": "2025-12-01T00:47:55.672640",
+      "end_time": "2025-12-01T00:47:57.218730",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.extract_observer_json": {
+      "step_name": "inat_data.inat_observers.extract_observer_json",
+      "status": "completed",
       "output": null,
-      "error": "object of type 'NoneType' has no len()",
-      "start_time": "2025-11-29T11:53:32.150807",
-      "end_time": "2025-11-29T11:53:35.165031",
+      "error": null,
+      "start_time": "2025-12-01T00:47:57.218856",
+      "end_time": "2025-12-01T00:47:57.232680",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.get_inat_observers_data": {
+      "step_name": "inat_data.inat_observers.get_inat_observers_data",
+      "status": "completed",
+      "output": "raw.get_inat_observers_data",
+      "error": null,
+      "start_time": "2025-12-01T00:31:13.609702",
+      "end_time": "2025-12-01T00:31:16.358434",
       "attempt_number": 1
     }
   }
