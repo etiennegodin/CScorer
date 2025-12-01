@@ -25,10 +25,11 @@ def main(ROOT_FOLDER, work_folder, args):
     pipeline = Pipeline('pipe_test', [init, gbif_ingest_module,
                                       gbif_preprocess_module,
                                       inat_data_module],
-                                    work_folder/ "checkpoints")
+                                    work_folder/ "checkpoints", 
+                                    config = config)
     
     #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
-    pipeline.run(config,
+    pipeline.run(
                  resume_from_checkpoint = resume,
                  from_module= args.from_module,
                  to_module= args.to_module,

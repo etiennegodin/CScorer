@@ -14,6 +14,7 @@ class inatApiClient(ClassStep):
                  items_from:str,
                 params_key:str = None,
                 fields:dict = None,
+                api_version:int = 2,
                 limiter:int = 60,
                 per_page:int = 10,
                 limit:int = None,
@@ -23,13 +24,15 @@ class inatApiClient(ClassStep):
         #Init api
         self.name = name
         self.params_key = params_key
-        self.base_url = f"https://api.inaturalist.org/v2/{endpoint}"
+        self.base_url = f"https://api.inaturalist.org/v{api_version}/{endpoint}"
+
+        self.items_from = items_from
         if fields is not None:
             self.fields = fields_to_string(fields)
         else:
             self.fields = None
-        self.items_from = items_from
-
+            
+        
         #Init fetch behaviour 
         self.overwrite = overwrite_table
         self.per_page = per_page
@@ -49,13 +52,13 @@ class inatApiClient(ClassStep):
         items = context.get_step_output(self.items_from)
 
         # Create table for data
-        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id TEXT, json JSON)")
-        last_id = con.execute(f"SELECT MAX(id) FROM {self.table_name}").fetchone()[0] 
+        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (idx INT, id_string TEXT, json JSON)")
+        last_id = con.execute(f"SELECT MAX(idx) FROM {self.table_name}").fetchone()[0] 
 
         if self.overwrite and self.table_name in get_all_tables(con):
             if last_id is not None:
                 if await _ask_yes_no(f'Found existing table data on disk for {self.table_name}, do you want to overwrite all ? (y/n)'):
-                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (id TEXT, json JSON)")
+                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (idx INT, id_string TEXT, json JSON)")
                     last_id = None
         
         # Filter items based on last processed ID (idempotent resume)
@@ -130,10 +133,10 @@ class inatApiClient(ClassStep):
             try:
                 # Run blocking database batch insert in thread pool
                 def batch_insert():
-                    for idx, data in batch:
+                    for idx,id_string, data in batch:
                         con.execute(
-                            f"INSERT INTO {self.table_name} VALUES (?, ?)",
-                            (data['id'], json.dumps(data))
+                            f"INSERT INTO {self.table_name} VALUES (?, ?, ?)",
+                            (idx, id_string, json.dumps(data))
                         )
                     con.commit()  # Commit batch
                 
@@ -171,7 +174,7 @@ class inatApiClient(ClassStep):
                         # Put all results from this multi-ID request into queue
                         for result in data["results"]:
                             try:
-                                await self.queue.put((batch_idx, result))
+                                await self.queue.put((batch_idx,id_string, result))
                                 self.logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
                             except Exception as e:
                                 self.logger.error(f"FAILED to queue result: {e}")
