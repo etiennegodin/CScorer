@@ -1,4 +1,4 @@
-from ...pipeline import ClassStep, PipelineContext
+from ...pipeline import ClassStep, PipelineContext, BaseStep
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import get_all_tables
 import asyncio, aiohttp, aiofiles
@@ -11,8 +11,9 @@ from concurrent.futures import ThreadPoolExecutor
 class inatApiClient(ClassStep):
     def __init__(self, name:str,
                  endpoint:str,
-                 fields:dict,
-                 items:list,
+                 items_from:str,
+                params_key:str = None,
+                fields:dict = None,
                 limiter:int = 60,
                 per_page:int = 10,
                 limit:int = None,
@@ -21,9 +22,13 @@ class inatApiClient(ClassStep):
         
         #Init api
         self.name = name
-        self.url = f"https://api.inaturalist.org/v2/{endpoint}"
-        self.fields = self._fields_to_string(fields)
-        self.items = items
+        self.params_key = params_key
+        self.base_url = f"https://api.inaturalist.org/v2/{endpoint}"
+        if fields is not None:
+            self.fields = fields_to_string(fields)
+        else:
+            self.fields = None
+        self.items_from = items_from
 
         #Init fetch behaviour 
         self.overwrite = overwrite_table
@@ -35,11 +40,13 @@ class inatApiClient(ClassStep):
         #Init writer
         self.table_name = f"raw.{name}"
 
-        super().__init__()
+        super().__init__(name)
 
-    async def run(self, context:PipelineContext,  ):
+    async def _execute(self, context:PipelineContext):
         
         con = context.con
+        
+        items = context.get_step_output(self.items_from)
 
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (id TEXT, json JSON)")
@@ -73,7 +80,7 @@ class inatApiClient(ClassStep):
         
         #Store count of observers (for self.logger)
         async with aiohttp.ClientSession() as session:
-            writer_task = asyncio.create_task(self._write_data(con, self.logger))
+            writer_task = asyncio.create_task(self._write_data(con))
             
             # Create fetchers with batched IDs
             fetchers = []
@@ -146,11 +153,18 @@ class inatApiClient(ClassStep):
     async def _fetch_data(self, session, id_string:str, batch_idx:int, chunk_idx:int=0):
         """Fetch data for multiple IDs in a single request using comma-separated ID string"""
         
-        params = {'id': id_string, "fields": self.fields}
-        
+        params = {self.params_key: id_string}
+        if self.fields is not None:
+            params['fields'] = self.fields
+            
+        if self.params_key is None:
+            params = {}
+            url = self.base_url + (id_string)
+
         async with self.limiter:
             try:
-                async with session.get(self.url, params=params, timeout=10) as r:
+                async with session.get(url, params=params, timeout=10) as r:
+                    r.url
                     r.raise_for_status()
                     data = await r.json()    
                     if data and "results" in data:
@@ -169,15 +183,13 @@ class inatApiClient(ClassStep):
 
 
 
-    # Convert to the special syntax
-    def _fields_to_string(self,fields_dict, level=0):
-        if not isinstance(fields_dict, dict):
-            raise TypeError("Error in _fields_to_string, provided input is no a dict")
-        parts = []
-        for key, value in fields_dict.items():
-            if isinstance(value, dict):
-                nested = self._fields_to_string(self,value, level + 1)
-                parts.append(f"{key}:({nested})")
-            elif value is True:
-                parts.append(f"{key}:!t")
-        return ','.join(parts)
+# Convert to the special syntax
+def fields_to_string(fields_dict, level=0):
+    parts = []
+    for key, value in fields_dict.items():
+        if isinstance(value, dict):
+            nested = fields_to_string(value, level + 1)
+            parts.append(f"{key}:({nested})")
+        elif value is True:
+            parts.append(f"{key}:!t")
+    return ','.join(parts)

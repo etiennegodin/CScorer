@@ -522,7 +522,8 @@ class Pipeline:
         self,
         name: str,
         modules: List[Module],
-        checkpoint_dir: Optional[Union[str, Path]] = None
+        checkpoint_dir: Optional[Union[str, Path]] = None,
+        config:dict = None
     ):
         """_summary_
 
@@ -539,6 +540,9 @@ class Pipeline:
         
         if self.checkpoint_dir:
             self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+            
+        self.config = config 
+
             
     def _get_checkpoint_path(self) -> Path:
         return self.checkpoint_dir / f"{self.name}_checkpoint.json"
@@ -582,7 +586,6 @@ class Pipeline:
     
     def run(
         self,
-        config: Dict,
         initial_data: Optional[Dict[str, Any]] = None,
         from_module: Optional[str] = None,
         to_module: Optional[str] = None,
@@ -607,7 +610,7 @@ class Pipeline:
         """
         # Initialize context
         context = PipelineContext(
-            config = config,
+            config = self.config,
             data=initial_data or {},
             checkpoint_dir=self.checkpoint_dir
         )

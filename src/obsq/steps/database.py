@@ -1,7 +1,10 @@
 from ..utils.duckdb import _open_connection
 from ..utils import to_Path
 from ..pipeline import ClassStep
+from typing import Literal
+from typing import Literal
 
+_RETURN_TYPES = Literal["df", "dict", 'list']
 
 class DataBaseConnection(ClassStep):
     
@@ -56,24 +59,48 @@ class DataBaseQuery(ClassStep):
         if query_path.suffix != "sql":
             query_path = query_path.parent / f"{query_path.stem}.sql"
             
-        return context.config['paths']['queries_folder'] / query_path
-    
-    
+        return context.config['paths']['queries_folder'] / query_path  
             
-class DataBaseDfLoader(ClassStep):
+class DataBaseLoader(ClassStep):
     
-    def __init__(self, name, query:str, **kwargs):
+    def __init__(self, name,
+                 columns:list,
+                 from_table:str,
+                 limit:int = None,
+                 return_type: _RETURN_TYPES = "df",
+                 **kwargs):
+        
         super().__init__(name, **kwargs)
-        self.query = query
-    
+        if not isinstance(columns, list):
+            columns = [columns]
+        self.columns = self._join_string(columns)
+        self.from_table = from_table
+        self.limit = limit
+        self.return_type = return_type
+
     def _execute(self, context):
-        con = context.get_step_output("db_connection")
+
+        con = context.con
         try:
-            df = con.execute(self.query).df()
+            self.logger.info(f"Getting data from db for {self.name} ")
+            df = con.execute(f"""SELECT {self.columns} FROM {self.from_table} ORDER BY {self.columns.split(sep=",")[0]} ASC {f'LIMIT {self.limit}' if self.limit is not None else ''}""").df()
+            if self.return_type == 'df':
+                return df
+            elif self.return_type == 'dict':
+                output = {}
+                for c in df.columns:
+                    output[c] = df[c]
+            elif self.return_type == "list":
+                return df[self.columns].to_list()
+            else:
+                raise NotImplementedError(f"Return type {self.return_type} is not implemented")
+            
         except Exception as e: 
             self.logger.error(e)
             
-        return df 
+    def _join_string(self, items:list)->str:
+        return ','.join(str(item) for item in items)
+
         
 
 
