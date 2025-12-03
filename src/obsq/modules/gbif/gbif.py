@@ -52,7 +52,7 @@ sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv,
                                                 store_gbif_expert_csv])
 
 
-gbif_ingest_module = Module("ingest_gbif",[create_custom_predicates,
+gbif_ingest = Module("ingest_gbif",[create_custom_predicates,
                                            sm_collect_all_gbif,
                                            sm_store_all_gbif])
 
@@ -73,7 +73,7 @@ filter_observers_sm = SubModule("filter_observers",[extract_all_observers,
 
 
 # FULL MODULE 
-gbif_preprocess_module = Module("preprocess_gbif", [
+gbif_preprocess = Module("preprocess_gbif", [
                                            gbif_clean_submodule,
                                             filter_observers_sm
 

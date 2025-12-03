@@ -8,7 +8,7 @@ _RETURN_TYPES = Literal["df", "dict", 'list']
 
 class DataBaseConnection(ClassStep):
     
-    def __init__(self, db_path, **kwargs):
+    def __init__(self, **kwargs):
         """_summary_
 
         Args:
@@ -16,10 +16,11 @@ class DataBaseConnection(ClassStep):
         """
         self.name = "db_connection"
         super().__init__(self.name, **kwargs)
-        self.db_path = db_path
-        self.con = _open_connection(db_path)
+
     
     def _execute(self, context):
+        self.db_path = context.config['paths']['db_path']
+        self.con = _open_connection(self.db_path)
         context.con = self.con
         print(f"Initiliazing database connection: {self.db_path}")
         return self.db_path

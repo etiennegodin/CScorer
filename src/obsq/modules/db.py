@@ -1,5 +1,5 @@
-from ..steps import CreateSchema
-from ..pipeline import SubModule
+from ..steps import CreateSchema, DataBaseConnection
+from ..pipeline import Module, SubModule
 # CREATE ALL SCHEMAS FOR FUTURE TABLE AND VIEWS
 
 create_raw_schema = CreateSchema('create_raw_schema', schema= 'raw')
@@ -11,3 +11,10 @@ create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_clean_schema,
                                                 create_preprocessed_schema,
                                                 create_features_schema])
+
+
+
+#Create init module with db connection d
+db_connection = DataBaseConnection()
+
+db_init = Module('init', [db_connection, create_all_schemas], always_run= True)
