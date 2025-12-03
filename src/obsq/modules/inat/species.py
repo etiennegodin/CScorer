@@ -5,7 +5,7 @@ from ...pipeline import PipelineContext,Module, SubModule, step
 
 ## SPECIES SUBMODULE
 
-get_species_taxon_list = DataBaseLoader('get_species_taxon_list', columns='taxonID',from_table='preprocessed.gbif_citizen', limit = None, return_type= 'list')
+get_species_taxon_list = DataBaseLoader('get_species_taxon_list', columns='taxonID',from_table='clean.species', limit = None, return_type= 'list')
 
 phenology_fields = {
         "count" : True,
@@ -19,9 +19,10 @@ get_phenology_data = inatApiClient('inat_phenology',
                                    endpoint= 'observations/popular_field_values',
                                    api_version=2,
                                    params_key= 'taxon_id',
+                                   limiter = 20,
                                    items_from = 'get_species_taxon_list',
                                    fields= phenology_fields,
-                                   per_page=1000,
+                                   per_page=10,
                                    chunk_size=1,
                                    overwrite_table= True)
 
@@ -33,6 +34,7 @@ get_similar_species_data = inatApiClient('inat_similar_species',
                                    params_key= 'taxon_id',
                                    items_from = 'get_species_taxon_list',
                                    per_page=1000,
+                                   limiter = 50,
                                    chunk_size=1,
                                    overwrite_table= True)
 

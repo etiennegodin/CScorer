@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-03T10:36:14.222761",
+  "timestamp": "2025-12-03T12:25:56.583605",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -25,8 +25,11 @@
     "inat_data.inat_observers.inat_observers",
     "inat_data.inat_observers.extract_observer_json",
     "inat_data.inat_observers.clean_observer",
-    "inat_data.clean_gbif_post_inat",
-    "inat_data.inat_ranges.load_ranges_to_db"
+    "inat_data.inat_ranges.load_ranges_to_db",
+    "inat_data.gbif_post_inat_observers.clean_gbif_post_inat",
+    "inat_data.gbif_post_inat_observers.create_species_table",
+    "inat_data.inat_species.inat_phenology",
+    "inat_data.inat_species.extract_similar_species_json"
   ],
   "results": {
     "init.db_connection": {
@@ -34,8 +37,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-03T10:35:47.627114",
-      "end_time": "2025-12-03T10:35:47.627524",
+      "start_time": "2025-12-03T12:00:21.393669",
+      "end_time": "2025-12-03T12:00:21.393957",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -43,8 +46,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-03T10:35:47.627749",
-      "end_time": "2025-12-03T10:35:47.629714",
+      "start_time": "2025-12-03T12:00:21.394072",
+      "end_time": "2025-12-03T12:00:21.395775",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -52,8 +55,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-03T10:35:47.629828",
-      "end_time": "2025-12-03T10:35:47.631614",
+      "start_time": "2025-12-03T12:00:21.395853",
+      "end_time": "2025-12-03T12:00:21.397164",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -61,8 +64,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-03T10:35:47.631789",
-      "end_time": "2025-12-03T10:35:47.634257",
+      "start_time": "2025-12-03T12:00:21.397302",
+      "end_time": "2025-12-03T12:00:21.399769",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -70,8 +73,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-03T10:35:47.634477",
-      "end_time": "2025-12-03T10:35:47.636833",
+      "start_time": "2025-12-03T12:00:21.399884",
+      "end_time": "2025-12-03T12:00:21.401840",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -218,8 +221,8 @@
       "status": "completed",
       "output": "<list object>",
       "error": null,
-      "start_time": "2025-12-03T08:21:32.804569",
-      "end_time": "2025-12-03T08:21:32.806712",
+      "start_time": "2025-12-03T12:00:21.406238",
+      "end_time": "2025-12-03T12:00:21.429282",
       "attempt_number": 1
     },
     "inat_data.inat_species.inat_similar_species": {
@@ -227,8 +230,8 @@
       "status": "completed",
       "output": "raw.inat_similar_species",
       "error": null,
-      "start_time": "2025-12-03T08:21:32.806811",
-      "end_time": "2025-12-03T08:21:35.369965",
+      "start_time": "2025-12-03T12:00:21.438340",
+      "end_time": "2025-12-03T12:25:56.507120",
       "attempt_number": 1
     },
     "inat_data.inat_species.extract_phenology_json": {
@@ -236,8 +239,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-03T08:21:35.370056",
-      "end_time": "2025-12-03T08:21:35.374843",
+      "start_time": "2025-12-03T12:00:21.429430",
+      "end_time": "2025-12-03T12:00:21.438149",
       "attempt_number": 1
     },
     "inat_data.inat_observers.get_observer_list": {
@@ -276,15 +279,6 @@
       "end_time": "2025-12-03T09:46:16.856798",
       "attempt_number": 1
     },
-    "inat_data.clean_gbif_post_inat": {
-      "step_name": "inat_data.clean_gbif_post_inat",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T09:50:13.223056",
-      "end_time": "2025-12-03T09:50:14.377781",
-      "attempt_number": 1
-    },
     "inat_data.inat_ranges.load_ranges_to_db": {
       "step_name": "inat_data.inat_ranges.load_ranges_to_db",
       "status": "completed",
@@ -292,6 +286,42 @@
       "error": null,
       "start_time": "2025-12-03T10:35:47.640616",
       "end_time": "2025-12-03T10:36:14.221916",
+      "attempt_number": 1
+    },
+    "inat_data.gbif_post_inat_observers.clean_gbif_post_inat": {
+      "step_name": "inat_data.gbif_post_inat_observers.clean_gbif_post_inat",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T10:49:06.476814",
+      "end_time": "2025-12-03T10:49:07.281892",
+      "attempt_number": 1
+    },
+    "inat_data.gbif_post_inat_observers.create_species_table": {
+      "step_name": "inat_data.gbif_post_inat_observers.create_species_table",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T10:49:07.282076",
+      "end_time": "2025-12-03T10:49:07.287986",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.inat_phenology": {
+      "step_name": "inat_data.inat_species.inat_phenology",
+      "status": "completed",
+      "output": "raw.inat_phenology",
+      "error": null,
+      "start_time": "2025-12-03T10:49:07.308472",
+      "end_time": "2025-12-03T11:54:34.578673",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.extract_similar_species_json": {
+      "step_name": "inat_data.inat_species.extract_similar_species_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T12:25:56.513529",
+      "end_time": "2025-12-03T12:25:56.582197",
       "attempt_number": 1
     }
   }
