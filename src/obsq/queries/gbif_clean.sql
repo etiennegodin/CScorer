@@ -4,8 +4,12 @@ WITH main_cleanup AS(
 SELECT g.gbifID,
 g.occurrenceID,
 g."references" as "url",
+g.year,
+g.month,
+g.day,
 g.recordedBy,
 g.recordedByID,
+g.occurrenceRemarks,
 g.eventDate,
 g.identificationID,
 g.identifiedBy,
@@ -20,7 +24,7 @@ g.class,
 g.order,
 g.family,
 g.genus,
-g.scientificName,
+g.species,
 g.taxonRank,
 g.taxonID,
 g.sex,
@@ -50,9 +54,11 @@ SELECT * FROM main_cleanup m
 
 WHERE m.coordinateUncertaintyInMeters < 3000 
 AND m.taxonRank = 'SPECIES' 
-AND MONTH(CAST(m.eventDate AS DATE)) > MONTH(CAST('2000-04-01' AS DATE))
-AND MONTH(CAST(m.eventDate AS DATE))  < MONTH(CAST('2000-09-01' AS DATE))
-AND m.hasCoordinate = True;
+AND m.month >= 4
+AND m.month < 9
+AND m.hasCoordinate = True
+AND m.taxonID IS NOT NULL
+AND institutionCode = 'iNaturalist';
 
 
 

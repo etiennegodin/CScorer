@@ -2,7 +2,7 @@
 CREATE OR REPLACE VIEW clean.gbif_citizen_no_expert AS
 SELECT *
 FROM clean.gbif_citizen
-WHERE recordedBy NOT IN (SELECT recordedBy FROM raw.citizen_expert) AND institutionCode = 'iNaturalist'
+WHERE recordedBy NOT IN (SELECT recordedBy FROM raw.citizen_expert)
 ;
 
 -- create gbif_expert_table to insert into new observations
