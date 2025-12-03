@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-02T22:33:58.451745",
+  "timestamp": "2025-12-02T22:47:45.582145",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -22,7 +22,8 @@
     "inat_data.inat_observers.get_observer_list",
     "inat_data.inat_observers.inat_observers",
     "inat_data.inat_observers.extract_observer_json",
-    "inat_data.inat_observers.clean_observer"
+    "inat_data.inat_observers.clean_observer",
+    "inat_data.clean_gbif_post_inat"
   ],
   "results": {
     "init.db_connection": {
@@ -30,8 +31,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.306878",
-      "end_time": "2025-12-02T22:33:53.307187",
+      "start_time": "2025-12-02T22:47:45.564242",
+      "end_time": "2025-12-02T22:47:45.564504",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -115,8 +116,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.307334",
-      "end_time": "2025-12-02T22:33:53.308780",
+      "start_time": "2025-12-02T22:47:45.564638",
+      "end_time": "2025-12-02T22:47:45.566286",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -124,8 +125,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.308876",
-      "end_time": "2025-12-02T22:33:53.310274",
+      "start_time": "2025-12-02T22:47:45.566386",
+      "end_time": "2025-12-02T22:47:45.567659",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -133,8 +134,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.310366",
-      "end_time": "2025-12-02T22:33:53.312055",
+      "start_time": "2025-12-02T22:47:45.567756",
+      "end_time": "2025-12-02T22:47:45.568992",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -142,8 +143,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.312249",
-      "end_time": "2025-12-02T22:33:53.314224",
+      "start_time": "2025-12-02T22:47:45.569067",
+      "end_time": "2025-12-02T22:47:45.570133",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
@@ -178,8 +179,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-28T12:51:45.148191",
-      "end_time": "2025-11-28T12:51:45.158311",
+      "start_time": "2025-12-02T22:40:51.480799",
+      "end_time": "2025-12-02T22:40:51.498003",
       "attempt_number": 1
     },
     "preprocess_gbif.filter_observers.get_citizen_expert": {
@@ -187,8 +188,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-28T12:51:45.158538",
-      "end_time": "2025-11-28T12:51:45.166655",
+      "start_time": "2025-12-02T22:40:51.498153",
+      "end_time": "2025-12-02T22:40:51.508933",
       "attempt_number": 1
     },
     "preprocess_gbif.filter_observers.get_citizen_observers": {
@@ -196,8 +197,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-28T12:52:38.123819",
-      "end_time": "2025-11-28T12:52:38.135701",
+      "start_time": "2025-12-02T22:40:51.509292",
+      "end_time": "2025-12-02T22:40:51.516981",
       "attempt_number": 1
     },
     "preprocess_gbif.filter_observers.citizen_occ_to_expert": {
@@ -205,8 +206,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-28T12:51:45.178133",
-      "end_time": "2025-11-28T12:51:45.242594",
+      "start_time": "2025-12-02T22:40:51.517213",
+      "end_time": "2025-12-02T22:40:51.623117",
       "attempt_number": 1
     },
     "preprocess_gbif.extract_species": {
@@ -214,8 +215,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-11-30T23:33:45.363249",
-      "end_time": "2025-11-30T23:33:51.995512",
+      "start_time": "2025-12-02T22:40:51.623315",
+      "end_time": "2025-12-02T22:40:51.628991",
       "attempt_number": 1
     },
     "inat_data.inat_observers.get_observer_list": {
@@ -223,8 +224,8 @@
       "status": "completed",
       "output": "<list object>",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.316153",
-      "end_time": "2025-12-02T22:33:53.326466",
+      "start_time": "2025-12-02T22:40:51.630959",
+      "end_time": "2025-12-02T22:40:51.639504",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {
@@ -232,8 +233,8 @@
       "status": "completed",
       "output": "raw.inat_observers",
       "error": null,
-      "start_time": "2025-12-02T22:33:53.326763",
-      "end_time": "2025-12-02T22:33:58.404626",
+      "start_time": "2025-12-02T22:40:51.639675",
+      "end_time": "2025-12-02T22:41:04.205792",
       "attempt_number": 1
     },
     "inat_data.inat_observers.extract_observer_json": {
@@ -241,8 +242,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T22:33:58.404725",
-      "end_time": "2025-12-02T22:33:58.410422",
+      "start_time": "2025-12-02T22:41:04.205898",
+      "end_time": "2025-12-02T22:41:04.212006",
       "attempt_number": 1
     },
     "inat_data.inat_observers.clean_observer": {
@@ -250,8 +251,17 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T22:33:58.410616",
-      "end_time": "2025-12-02T22:33:58.451494",
+      "start_time": "2025-12-02T22:41:04.212248",
+      "end_time": "2025-12-02T22:41:04.265315",
+      "attempt_number": 1
+    },
+    "inat_data.clean_gbif_post_inat": {
+      "step_name": "inat_data.clean_gbif_post_inat",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-02T22:47:45.572266",
+      "end_time": "2025-12-02T22:47:45.581971",
       "attempt_number": 1
     }
   }

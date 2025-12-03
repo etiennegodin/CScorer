@@ -21,4 +21,9 @@ clean_observer = DataBaseQuery('clean_observer', query_name= 'inat_clean_observe
 
 inat_observers = SubModule("inat_observers", [get_observer_list, get_observers_data, extract_observer_json, clean_observer])
 
-inat_data_module = Module('inat_data',[inat_observers], always_run= True )
+
+
+clean_gbif_post_inat = DataBaseQuery('clean_gbif_post_inat', query_name= 'gbif_clean_post_inat')
+
+
+inat_data_module = Module('inat_data',[inat_observers, clean_gbif_post_inat], always_run= False )
