@@ -1,4 +1,6 @@
+/work/*/checkpoints/*
 *data/
+*checkpoints/
 *.env
 *.vscode/
 *.duckdb
