@@ -36,7 +36,7 @@ fields = {
 
 }
 
-get_phenology_data = inatApiClient('species_phenology',
+get_phenology_data = inatApiClient('inat_phenology',
                                    endpoint= 'observations/popular_field_values',
                                    api_version=2,
                                    params_key= 'taxon_id',
@@ -46,9 +46,8 @@ get_phenology_data = inatApiClient('species_phenology',
                                    chunk_size=1,
                                    overwrite_table= True)
 
+extract_phenology_json = DataBaseQuery('extract_phenology_json', query_name= 'inat_extract_phenology_json')
 
-inat_species_submodule = SubModule("inat_species", [get_species_taxon_list, get_phenology_data], always_run= True)
-
-
+inat_species_submodule = SubModule("inat_species", [get_species_taxon_list, get_phenology_data, extract_phenology_json])
 
 inat_data_module = Module('inat_data',[inat_observers_submodule, clean_gbif_post_inat, inat_species_submodule], always_run= False )

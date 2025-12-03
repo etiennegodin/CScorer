@@ -1,0 +1,282 @@
+{
+  "total_results": 11,
+  "page": 1,
+  "per_page": 11,
+  "results": [
+    {
+      "count": 8956,
+      "controlled_attribute": {
+        "id": 12,
+        "label": "Flowers and Fruits"
+      },
+      "controlled_value": {
+        "id": 13,
+        "label": "Flowers"
+      },
+      "month_of_year": {
+        "1": 11,
+        "2": 8,
+        "3": 7,
+        "4": 9,
+        "5": 21,
+        "6": 200,
+        "7": 2368,
+        "8": 3762,
+        "9": 1988,
+        "10": 502,
+        "11": 70,
+        "12": 8
+      }
+    },
+    {
+      "count": 6800,
+      "controlled_attribute": {
+        "id": 36,
+        "label": "Leaves"
+      },
+      "controlled_value": {
+        "id": 38,
+        "label": "Green Leaves"
+      },
+      "month_of_year": {
+        "1": 6,
+        "2": 7,
+        "3": 19,
+        "4": 109,
+        "5": 100,
+        "6": 397,
+        "7": 1862,
+        "8": 2474,
+        "9": 1374,
+        "10": 418,
+        "11": 27,
+        "12": 7
+      }
+    },
+    {
+      "count": 1543,
+      "controlled_attribute": {
+        "id": 12,
+        "label": "Flowers and Fruits"
+      },
+      "controlled_value": {
+        "id": 15,
+        "label": "Flower Buds"
+      },
+      "month_of_year": {
+        "1": 1,
+        "2": 1,
+        "3": 2,
+        "4": 4,
+        "5": 16,
+        "6": 195,
+        "7": 796,
+        "8": 465,
+        "9": 47,
+        "10": 9,
+        "11": 6,
+        "12": 1
+      }
+    },
+    {
+      "count": 532,
+      "controlled_attribute": {
+        "id": 12,
+        "label": "Flowers and Fruits"
+      },
+      "controlled_value": {
+        "id": 14,
+        "label": "Fruits or Seeds"
+      },
+      "month_of_year": {
+        "1": 6,
+        "2": 29,
+        "3": 18,
+        "4": 22,
+        "5": 7,
+        "6": 5,
+        "7": 10,
+        "8": 62,
+        "9": 178,
+        "10": 158,
+        "11": 30,
+        "12": 7
+      }
+    },
+    {
+      "count": 368,
+      "controlled_attribute": {
+        "id": 12,
+        "label": "Flowers and Fruits"
+      },
+      "controlled_value": {
+        "id": 21,
+        "label": "No Flowers or Fruits"
+      },
+      "month_of_year": {
+        "1": 4,
+        "2": 7,
+        "3": 18,
+        "4": 90,
+        "5": 77,
+        "6": 99,
+        "7": 28,
+        "8": 13,
+        "9": 8,
+        "10": 14,
+        "11": 7,
+        "12": 3
+      }
+    },
+    {
+      "count": 108,
+      "controlled_attribute": {
+        "id": 36,
+        "label": "Leaves"
+      },
+      "controlled_value": {
+        "id": 40,
+        "label": "No Live Leaves"
+      },
+      "month_of_year": {
+        "1": 16,
+        "2": 26,
+        "3": 18,
+        "4": 13,
+        "5": 5,
+        "6": 0,
+        "7": 0,
+        "8": 2,
+        "9": 4,
+        "10": 13,
+        "11": 5,
+        "12": 6
+      }
+    },
+    {
+      "count": 86,
+      "controlled_attribute": {
+        "id": 36,
+        "label": "Leaves"
+      },
+      "controlled_value": {
+        "id": 39,
+        "label": "Colored Leaves"
+      },
+      "month_of_year": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 1,
+        "6": 0,
+        "7": 6,
+        "8": 12,
+        "9": 24,
+        "10": 34,
+        "11": 6,
+        "12": 2
+      }
+    },
+    {
+      "count": 16,
+      "controlled_attribute": {
+        "id": 9,
+        "label": "Sex"
+      },
+      "controlled_value": {
+        "id": 20,
+        "label": "Cannot Be Determined"
+      },
+      "month_of_year": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 1,
+        "7": 5,
+        "8": 5,
+        "9": 3,
+        "10": 2,
+        "11": 0,
+        "12": 0
+      }
+    },
+    {
+      "count": 9,
+      "controlled_attribute": {
+        "id": 9,
+        "label": "Sex"
+      },
+      "controlled_value": {
+        "id": 11,
+        "label": "Male"
+      },
+      "month_of_year": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 3,
+        "8": 3,
+        "9": 3,
+        "10": 0,
+        "11": 0,
+        "12": 0
+      }
+    },
+    {
+      "count": 9,
+      "controlled_attribute": {
+        "id": 36,
+        "label": "Leaves"
+      },
+      "controlled_value": {
+        "id": 37,
+        "label": "Breaking Leaf Buds"
+      },
+      "month_of_year": {
+        "1": 0,
+        "2": 3,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 2,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 1,
+        "11": 0,
+        "12": 0
+      }
+    },
+    {
+      "count": 8,
+      "controlled_attribute": {
+        "id": 9,
+        "label": "Sex"
+      },
+      "controlled_value": {
+        "id": 10,
+        "label": "Female"
+      },
+      "month_of_year": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 1,
+        "8": 2,
+        "9": 4,
+        "10": 1,
+        "11": 0,
+        "12": 0
+      }
+    }
+  ]
+}

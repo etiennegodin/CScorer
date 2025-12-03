@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-02T23:57:30.295366",
+  "timestamp": "2025-12-03T00:27:26.661155",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -25,7 +25,8 @@
     "inat_data.inat_observers.clean_observer",
     "inat_data.clean_gbif_post_inat",
     "inat_data.inat_species.get_species_taxon_list",
-    "inat_data.inat_species.species_phenology"
+    "inat_data.inat_species.inat_phenology",
+    "inat_data.inat_species.extract_phenology_json"
   ],
   "results": {
     "init.db_connection": {
@@ -33,8 +34,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.240013",
-      "end_time": "2025-12-02T23:57:29.240272",
+      "start_time": "2025-12-03T00:27:26.642274",
+      "end_time": "2025-12-03T00:27:26.642627",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -118,8 +119,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.240412",
-      "end_time": "2025-12-02T23:57:29.241972",
+      "start_time": "2025-12-03T00:27:26.642783",
+      "end_time": "2025-12-03T00:27:26.644307",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -127,8 +128,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.242048",
-      "end_time": "2025-12-02T23:57:29.243276",
+      "start_time": "2025-12-03T00:27:26.644420",
+      "end_time": "2025-12-03T00:27:26.645504",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -136,8 +137,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.243355",
-      "end_time": "2025-12-02T23:57:29.244496",
+      "start_time": "2025-12-03T00:27:26.645578",
+      "end_time": "2025-12-03T00:27:26.646644",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -145,8 +146,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.244567",
-      "end_time": "2025-12-02T23:57:29.245794",
+      "start_time": "2025-12-03T00:27:26.646719",
+      "end_time": "2025-12-03T00:27:26.647886",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
@@ -271,17 +272,35 @@
       "status": "completed",
       "output": "<list object>",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.248324",
-      "end_time": "2025-12-02T23:57:29.251032",
+      "start_time": "2025-12-03T00:15:54.572658",
+      "end_time": "2025-12-03T00:15:54.576103",
       "attempt_number": 1
     },
     "inat_data.inat_species.species_phenology": {
       "step_name": "inat_data.inat_species.species_phenology",
+      "status": "failed",
+      "output": null,
+      "error": "<Queue at 0x79ba06ddffd0 maxsize=0> is bound to a different event loop",
+      "start_time": "2025-12-02T23:52:33.934918",
+      "end_time": "2025-12-02T23:53:08.039022",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.inat_phenology": {
+      "step_name": "inat_data.inat_species.inat_phenology",
       "status": "completed",
-      "output": "raw.species_phenology",
+      "output": "raw.inat_phenology",
       "error": null,
-      "start_time": "2025-12-02T23:57:29.251151",
-      "end_time": "2025-12-02T23:57:30.295154",
+      "start_time": "2025-12-03T00:15:54.576319",
+      "end_time": "2025-12-03T00:15:58.389575",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.extract_phenology_json": {
+      "step_name": "inat_data.inat_species.extract_phenology_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T00:27:26.650687",
+      "end_time": "2025-12-03T00:27:26.660898",
       "attempt_number": 1
     }
   }
