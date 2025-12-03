@@ -58,4 +58,3 @@ dependencies:
       - aiofiles
       - aiolimiter
       - tenacity
-      - fiona
