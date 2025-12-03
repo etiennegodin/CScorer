@@ -19,7 +19,7 @@ def main(ROOT_FOLDER, work_folder, args):
     pipeline = Pipeline('pipe_test', [m.db_init, m.gbif_ingest,
                                       m.gbif_preprocess,
                                       m.inat_data,
-                                      m.all_features],
+                                      m.extractor_features],
                                     work_folder/ "checkpoints", 
                                     config = config)
     

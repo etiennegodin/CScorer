@@ -5,6 +5,4 @@ from ..steps import DataBaseQuery
 observer_feature = DataBaseQuery('process_observers_features', "features_observers")
 
 
-
-
-all_features = Module('extractor_features', [observer_feature])
+extractor_features = Module('extractor_features', [observer_feature])
