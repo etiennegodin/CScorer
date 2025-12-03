@@ -1,5 +1,5 @@
 -- create gbif_citizen view
-CREATE OR REPLACE TABLE preprocessed.gbif_citizen AS
+CREATE OR REPLACE VIEW clean.gbif_citizen_no_expert AS
 SELECT *
 FROM clean.gbif_citizen
 WHERE recordedBy NOT IN (SELECT recordedBy FROM raw.citizen_expert) AND institutionCode = 'iNaturalist'
