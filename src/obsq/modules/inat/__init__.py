@@ -1,2 +1,2 @@
 from .api import inatApiClient
-from .inat_data import inat_data_module
+from .inat_data import inat_data

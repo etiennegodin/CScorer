@@ -10,7 +10,7 @@ create_species_table = DataBaseQuery('create_species_table', query_name= 'gbif_e
 gbif_post_inat_observers = SubModule("gbif_post_inat_observers", [clean_gbif_post_inat, create_species_table])
 
 
-inat_data_module = Module('inat_data',[inat_observers_submodule,
+inat_data = Module('inat_data',[inat_observers_submodule,
                                        gbif_post_inat_observers,
                                        inat_species_submodule,
                                        inat_ranges_submodule], always_run= False )
