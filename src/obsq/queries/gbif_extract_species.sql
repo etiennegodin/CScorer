@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW clean.species AS
 
 SELECT DISTINCT
 taxonID,
-scientificName,
+species,
 taxonRank,
 phylum,
 "class",
