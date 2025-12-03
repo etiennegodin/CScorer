@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-03T15:17:38.612496",
+  "timestamp": "2025-12-03T15:22:18.995087",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -38,8 +38,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-03T15:17:36.828189",
-      "end_time": "2025-12-03T15:17:36.993087",
+      "start_time": "2025-12-03T15:22:17.390819",
+      "end_time": "2025-12-03T15:22:17.543740",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -47,8 +47,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-03T15:17:36.993321",
-      "end_time": "2025-12-03T15:17:36.995007",
+      "start_time": "2025-12-03T15:22:17.543927",
+      "end_time": "2025-12-03T15:22:17.545520",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -56,8 +56,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-03T15:17:36.995138",
-      "end_time": "2025-12-03T15:17:36.996622",
+      "start_time": "2025-12-03T15:22:17.545622",
+      "end_time": "2025-12-03T15:22:17.546789",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -65,8 +65,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-03T15:17:36.996797",
-      "end_time": "2025-12-03T15:17:36.998678",
+      "start_time": "2025-12-03T15:22:17.546973",
+      "end_time": "2025-12-03T15:22:17.548685",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -74,8 +74,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-03T15:17:36.998814",
-      "end_time": "2025-12-03T15:17:37.000298",
+      "start_time": "2025-12-03T15:22:17.548870",
+      "end_time": "2025-12-03T15:22:17.550357",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -330,8 +330,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-03T15:17:37.002761",
-      "end_time": "2025-12-03T15:17:38.611875",
+      "start_time": "2025-12-03T15:22:17.554005",
+      "end_time": "2025-12-03T15:22:18.994859",
       "attempt_number": 1
     }
   }

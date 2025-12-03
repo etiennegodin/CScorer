@@ -62,7 +62,7 @@ GROUP BY recordedBy, year, month
 
 SELECT g.recordedBy,
 COUNT(DISTINCT "gbifID") as observations_count,
-ROUND(observations_count / SUM(COUNT(*)) OVER (), 3) AS total_pct,
+ROUND(COUNT(DISTINCT "gbifID") / SUM(COUNT(DISTINCT "gbifID")) OVER (), 5) AS total_pct,
 COUNT(DISTINCT g.class) as class_count,
 COUNT(DISTINCT g."order") as order_count,
 COUNT(DISTINCT g.family) as family_count,
