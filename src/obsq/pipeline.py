@@ -160,6 +160,7 @@ class BaseStep(ABC):
         retry_wait_multiplier: int = 1,
         retry_wait_max: int = 10,
         skip_on_failure: bool = False,
+        always_run: bool = False,
         **kwargs
 
     ):
@@ -171,6 +172,7 @@ class BaseStep(ABC):
         self.logger = logging.getLogger(f"{__name__}.{self.name}")
         # Auto-detect if function is async
         self.is_async = inspect.iscoroutinefunction(self._execute)
+        self.always_run = always_run
 
     @abstractmethod
     def _execute(self, context: PipelineContext) -> Any:
@@ -333,7 +335,7 @@ class SubModule:
     "time_features" and "categorical_features" as submodules.
     """
     
-    def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]], is_async:bool = False):
+    def __init__(self, name: str, steps: List[Union[FunctionStep, ClassStep]], always_run:bool = False, is_async:bool = False):
         """_summary_
 
         Args:
@@ -345,7 +347,12 @@ class SubModule:
         self.steps = {step.name: step for step in steps}
         self.step_order = [step.name for step in steps]
         self.logger = logging.getLogger(f"{__name__}.SubModule.{name}")
+        self.always_run = always_run
         self.is_async = is_async
+        
+        for n in self.steps.keys():
+            self.steps[n].always_run = always_run
+        
     def run(
         self,
         context: PipelineContext,
@@ -365,12 +372,12 @@ class SubModule:
             step = self.steps[step_name]
             # Prefix step name with submodule hierarchy
             step.name = f"{full_name}.{step_name}"
-            
-            if f"{full_name}.{step_name}" in module_steps_completed:
-                self.logger.info(f"Skipping completed step: {step_name}")
-                #Store previous results in return's dict
-                results[step.name] = context.get_step_result(step_name)
-                continue
+            if not self.always_run:
+                if f"{full_name}.{step_name}" in module_steps_completed:
+                    self.logger.info(f"Skipping completed step: {step_name}")
+                    #Store previous results in return's dict
+                    results[step.name] = context.get_step_result(step_name)
+                    continue
             
             steps_to_run.append(step)
         
@@ -657,7 +664,6 @@ class Pipeline:
         for module_name in modules_to_run:
             # Check if entire module is completed (all its steps)
             module = self.modules[module_name]
-            module.always_run
             if not module.always_run:
                 if resume_from_checkpoint:
                     # Count how many steps in this module are already completed

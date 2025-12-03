@@ -28,7 +28,7 @@ class inatApiClient(ClassStep):
 
         self.items_from = items_from
         if fields is not None:
-            self.fields = fields_to_string(fields)
+            self.fields = f"({fields_to_string(fields)})"
         else:
             self.fields = None
             
@@ -156,15 +156,18 @@ class inatApiClient(ClassStep):
     async def _fetch_data(self, session, id_string:str, batch_idx:int, chunk_idx:int=0):
         """Fetch data for multiple IDs in a single request using comma-separated ID string"""
         
-        params = {self.params_key: id_string}
+        params = {}
+        
+        if self.params_key is not None:
+            params[self.params_key] = id_string
+            url = self.base_url
+        else:
+            url = self.base_url + (id_string)
+          
         if self.fields is not None:
             params['fields'] = self.fields
-            
-        if self.params_key is None:
-            params = {}
-            url = self.base_url + (id_string)
 
-        params['per_page'] =self.per_page
+        #params['per_page'] = self.per_page
         
         async with self.limiter:
             try:
@@ -184,6 +187,7 @@ class inatApiClient(ClassStep):
                     else:
                         self.logger.warning(f"No results found for IDs {id_string}")
             except Exception as e:
+                self.logger.error(r.url)
                 self.logger.error(f"API request FAILED for IDs {id_string}: {e}")
 
 
