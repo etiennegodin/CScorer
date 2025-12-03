@@ -85,8 +85,8 @@ ROUND(AVG(g.media_count),2) as avg_media_count,
 ROUND(COUNT(*) FILTER ( WHERE g.sex IS NOT NULL )/observations_count, 3) AS sex_meta_pct,
 ROUND(COUNT(*) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/observations_count, 3) AS reproductiveCondition_meta_pct,
 ROUND(COUNT(*) FILTER ( WHERE g.annotations IS NOT NULL )/observations_count, 3) AS annotations_meta_pct,
-ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time
-
+ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time,
+ROUND(AVG(LENGTH("occurrenceRemarks"))) AS avg_description_len
 
 FROM preprocessed.gbif_citizen g
 JOIN yearly_observation y
