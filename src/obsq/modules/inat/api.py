@@ -183,7 +183,7 @@ class inatApiClient(ClassStep):
                                 self.logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
                             except Exception as e:
                                 self.logger.error(f"FAILED to queue result: {e}")
-                        self.logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string}")
+                        self.logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string} | {chunk_idx}/{self.item_count}")
                     else:
                         self.logger.warning(f"No results found for IDs {id_string}")
             except Exception as e:

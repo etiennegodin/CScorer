@@ -26,5 +26,5 @@ SELECT
     CAST(json_extract(json, '$.month_of_year."12"') AS INTEGER) AS month_12
 
 FROM raw.inat_phenology
-ORDER BY taxonID attribute_id, value_id
+ORDER BY taxonID, attribute_id, value_id
 ;
