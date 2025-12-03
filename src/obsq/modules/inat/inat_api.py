@@ -164,6 +164,8 @@ class inatApiClient(ClassStep):
             params = {}
             url = self.base_url + (id_string)
 
+        params['per_page'] =self.per_page
+        
         async with self.limiter:
             try:
                 async with session.get(url, params=params, timeout=10) as r:
