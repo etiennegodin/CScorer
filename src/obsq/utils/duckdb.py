@@ -142,19 +142,11 @@ def register_df(con, view_name:str, df:pd.DataFrame):
         logging.error(f'Error registering {view_name} data : \n', e)
         return False
     
-def gdf_to_duckdb(con:duckdb.DuckDBPyConnection,
-                gdf:gpd.GeoDataFrame,
-                schema:str,
-                table:str):
-    
-    
+
+def gdf_to_duckdb(con:duckdb.DuckDBPyConnection,gdf:gpd.GeoDataFrame,schema:str,table:str):
     
     if not isinstance(gdf, gpd.GeoDataFrame):
         gdf = convert_df_to_gdf(gdf)
-    
-    #Force Path object from db_path var
-    if not isinstance(db_path, Path):
-        db_path = to_Path(db_path)
 
     #Replace ":" with "_" in cols yo void conflict in sql query
     gdf = rename_col_df(gdf, old = ':', new = '_')
@@ -179,6 +171,7 @@ def gdf_to_duckdb(con:duckdb.DuckDBPyConnection,
     return f"{schema}.{table}"
 
 def get_table_columns(table_name = None, con = None):
+
     columns = None
     if table_name is None:
         raise ValueError('get_table_columns - No table provided ')
