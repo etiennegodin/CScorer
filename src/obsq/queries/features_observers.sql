@@ -6,7 +6,7 @@ WITH species_count AS(
 
 SELECT
 COUNT(*) as species_obs,
-"recordedBy", "scientificName"
+"recordedBy", "species"
 FROM preprocessed.gbif_citizen
 GROUP BY "recordedBy", species
 )
@@ -60,10 +60,9 @@ FROM preprocessed.gbif_citizen
 GROUP BY recordedBy, year, month
 ) 
 
-SELECT g.recordedBy,,
-
-COUNT(*) as observations_count,
-ROUND(100.0000 * COUNT(*) / SUM(COUNT(*)) OVER (), 3) AS total_pct,
+SELECT g.recordedBy,
+COUNT(DISTINCT "gbifID") as observations_count,
+ROUND(observations_count / SUM(COUNT(*)) OVER (), 3) AS total_pct,
 COUNT(DISTINCT g.class) as class_count,
 COUNT(DISTINCT g."order") as order_count,
 COUNT(DISTINCT g.family) as family_count,
@@ -71,32 +70,25 @@ COUNT(DISTINCT g.genus) as genus_count,
 COUNT(DISTINCT g.species) as species_count,
 COUNT(DISTINCT g."month") as unique_month_count, 
 COUNT(DISTINCT g."year") as unique_year_count, 
-COUNT(DISTINCT cast(eventDate AS DATE)) as unique_dates,
+COUNT(DISTINCT CAST (eventDate AS DATE)) as unique_dates,
 MAX(y.yearly_observations) as max_yearly_observations,
 MAX(m.monthly_observations) as max_monthly_observations,
 ROUND(AVG(y.yearly_observations),2) as avg_yearly_observations,
 ROUND(AVG(m.monthly_observations),2) as avg_monthly_observations,
-ROUND(AVG(CAST(eventDate AS DATE)- CAST(dateIdentified AS DATE))) AS avg_id_time,
-COUNT(*) FILTER (WHERE "identifiedByID" IS NOT NULL) AS expert_ids, 
-COUNT(*) FILTER (WHERE "coordinateUncertaintyInMeters" > 1000 ) as high_cood_un_obs, -- count obs with high uncer
-ROUND(high_cood_un_obs / observations_count, 2) as high_cood_un_pct,
-ROUND(AVG(coordinateUncertaintyInMeters),2) as avg_coord_un,
-MAX(coordinateUncertaintyInMeters) as max_coord_un,
-ROUND(AVG(media_count),2) as avg_media_count,
-ROUND(AVG(COUNT(sex))) AS avg_meta_sex,
-ROUND(AVG(COUNT(reproductiveCondition))) AS avg_meta_reproductiveCondition,
-ROUND(AVG(COUNT(annotations))) AS avg_meta_annotations,
+COUNT(*) FILTER (WHERE g.identifiedByID IS NOT NULL) AS expert_ids, 
+ROUND(expert_ids / observations_count, 3) as expert_ids_pct,
+COUNT(*) FILTER (WHERE g.coordinateUncertaintyInMeters > 1000 ) as high_cood_un_obs, -- count obs with high uncer
+ROUND(high_cood_un_obs / observations_count, 3) as high_cood_un_pct,
+ROUND(AVG(g.coordinateUncertaintyInMeters),3) as avg_coord_un,
+MAX(g.coordinateUncertaintyInMeters) as max_coord_un,
+ROUND(AVG(g.media_count),2) as avg_media_count,
+ROUND(COUNT(*) FILTER ( WHERE g.sex IS NOT NULL )/observations_count, 3) AS sex_meta_pct,
+ROUND(COUNT(*) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/observations_count, 3) AS reproductiveCondition_meta_pct,
+ROUND(COUNT(*) FILTER ( WHERE g.annotations IS NOT NULL )/observations_count, 3) AS annotations_meta_pct,
+ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time
 
---SUM(num_identification_agreements) as id_agree_count,
---ROUND(SUM(num_identification_agreements) / COUNT(num_identification_agreements),2)as id_agree_pct,
---SUM(num_identification_disagreements) as id_disagree_count,
---ROUND((SUM(num_identification_disagreements) / COUNT(num_identification_disagreements)), 2) as id_disagree_pct,
---ROUND(AVG(description_length),2) as avg_description_len,
---SUM(expert_match) AS expert_match_count,
---ROUND(100 * (SUM(expert_match) / observations_count),2) as expert_match_pct,
---ROUND(100.0000 * (SUM(expert_match) / SUM(COUNT(*)) OVER ()), 3) AS expert_match_total_pct
 
-FROM preprocessed.gbif_citizen_labeled g
+FROM preprocessed.gbif_citizen g
 JOIN yearly_observation y
     ON g.recordedBy = y.recordedBy
 JOIN monthly_observations m 
