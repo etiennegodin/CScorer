@@ -71,14 +71,12 @@ filter_observers_sm = SubModule("filter_observers",[extract_all_observers,
                                                 get_citizen_observers,
                                                 citizen_occ_to_expert])
 
-# Create species table
-extract_species = DataBaseQuery("extract_species", query_name= "gbif_extract_species")
 
 # FULL MODULE 
 gbif_preprocess_module = Module("preprocess_gbif", [
                                            gbif_clean_submodule,
-                                            filter_observers_sm,
-                                            extract_species
+                                            filter_observers_sm
+
                                            ])
 
     
