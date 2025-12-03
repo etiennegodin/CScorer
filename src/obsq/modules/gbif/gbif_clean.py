@@ -2,6 +2,7 @@ from obsq.pipeline import PipelineContext, SubModule, FunctionStep, step
 from ...utils.sql import read_sql_template
 from pathlib import Path
 from ...steps import CreateSchema
+from ...steps import DataBaseQuery
 
 async def clean_gbif_occurences(context:PipelineContext, step_name:str):
     """
@@ -42,3 +43,4 @@ async def clean_gbif_expert(context:PipelineContext):
 
 
 gbif_clean_submodule = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])
+
