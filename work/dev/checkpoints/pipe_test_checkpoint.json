@@ -1,0 +1,288 @@
+{
+  "timestamp": "2025-12-03T08:21:35.375111",
+  "pipeline_name": "pipe_test",
+  "completed_steps": [
+    "init.db_connection",
+    "init.create_all_schemas.create_raw_schema",
+    "init.create_all_schemas.create_clean_schema",
+    "init.create_all_schemas.create_preprocessed_schema",
+    "init.create_all_schemas.create_features_schema",
+    "ingest_gbif.create_custom_predicates",
+    "ingest_gbif.collect_all_gbif.collect_citizen_data",
+    "ingest_gbif.collect_all_gbif.collect_expert_data",
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
+    "preprocess_gbif.gbif_clean.clean_gbif_citizen",
+    "preprocess_gbif.gbif_clean.clean_gbif_expert",
+    "preprocess_gbif.filter_observers.extract_all_observers",
+    "preprocess_gbif.filter_observers.get_citizen_expert",
+    "preprocess_gbif.filter_observers.get_citizen_observers",
+    "preprocess_gbif.filter_observers.citizen_occ_to_expert",
+    "inat_data.inat_observers.get_observer_list",
+    "inat_data.inat_observers.inat_observers",
+    "inat_data.inat_observers.extract_observer_json",
+    "inat_data.inat_observers.clean_observer",
+    "inat_data.clean_gbif_post_inat",
+    "inat_data.inat_species.get_species_taxon_list",
+    "inat_data.inat_species.inat_similar_species",
+    "inat_data.inat_species.extract_phenology_json"
+  ],
+  "results": {
+    "init.db_connection": {
+      "step_name": "init.db_connection",
+      "status": "completed",
+      "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.366585",
+      "end_time": "2025-12-03T08:21:30.366879",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_raw_schema": {
+      "step_name": "init.create_all_schemas.create_raw_schema",
+      "status": "completed",
+      "output": "raw",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.367028",
+      "end_time": "2025-12-03T08:21:30.369003",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_clean_schema": {
+      "step_name": "init.create_all_schemas.create_clean_schema",
+      "status": "completed",
+      "output": "clean",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.369107",
+      "end_time": "2025-12-03T08:21:30.370702",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_preprocessed_schema": {
+      "step_name": "init.create_all_schemas.create_preprocessed_schema",
+      "status": "completed",
+      "output": "preprocessed",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.370820",
+      "end_time": "2025-12-03T08:21:30.372365",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_features_schema": {
+      "step_name": "init.create_all_schemas.create_features_schema",
+      "status": "completed",
+      "output": "features",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.372497",
+      "end_time": "2025-12-03T08:21:30.374070",
+      "attempt_number": 1
+    },
+    "ingest_gbif.create_custom_predicates": {
+      "step_name": "ingest_gbif.create_custom_predicates",
+      "status": "completed",
+      "output": {
+        "collect_citizen_data": {
+          "BASIS_OF_RECORD": "HUMAN_OBSERVATION"
+        },
+        "collect_expert_data": {
+          "DATASET_KEY": [
+            "2fd02649-fc08-4957-9ac5-2830e072c097",
+            "c4a5efee-4c61-45d8-bd7a-6275b2388308",
+            "7a7244fc-13b9-43ee-93c9-0d5c4457a86a",
+            "0348540a-e644-4496-89d3-c257da9ad776",
+            "10cf770a-282a-41dd-9e19-83b7c894b956",
+            "1e837919-112c-40ad-abb9-5ca74b044742"
+          ]
+        }
+      },
+      "error": null,
+      "start_time": "2025-12-03T07:45:55.148662",
+      "end_time": "2025-12-03T07:45:55.148858",
+      "attempt_number": 1
+    },
+    "ingest_gbif.collect_all_gbif.collect_citizen_data": {
+      "step_name": "ingest_gbif.collect_all_gbif.collect_citizen_data",
+      "status": "completed",
+      "output": {
+        "output": "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/0024974-251120083545085.csv",
+        "download_key": "0024974-251120083545085",
+        "files": [
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/occurrence.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/rights.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/dataset",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/meta.xml",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/multimedia.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/verbatim.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/citations.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0024974-251120083545085/metadata.xml"
+        ]
+      },
+      "error": null,
+      "start_time": "2025-12-03T07:45:55.148990",
+      "end_time": "2025-12-03T08:13:32.650057",
+      "attempt_number": 1
+    },
+    "ingest_gbif.collect_all_gbif.collect_expert_data": {
+      "step_name": "ingest_gbif.collect_all_gbif.collect_expert_data",
+      "status": "completed",
+      "output": {
+        "output": "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/0025082-251120083545085.csv",
+        "download_key": "0025082-251120083545085",
+        "files": [
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/occurrence.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/rights.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/dataset",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/meta.xml",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/multimedia.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/verbatim.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/citations.txt",
+          "/home/manat/projects/obsq/work/dev/data/gbif/0025082-251120083545085/metadata.xml"
+        ]
+      },
+      "error": null,
+      "start_time": "2025-12-03T08:13:32.650872",
+      "end_time": "2025-12-03T08:17:40.703737",
+      "attempt_number": 1
+    },
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
+      "step_name": "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
+      "status": "completed",
+      "output": "raw.gbif_citizen",
+      "error": null,
+      "start_time": "2025-12-03T08:17:40.704749",
+      "end_time": "2025-12-03T08:17:44.962289",
+      "attempt_number": 1
+    },
+    "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
+      "step_name": "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
+      "status": "completed",
+      "output": "raw.gbif_expert",
+      "error": null,
+      "start_time": "2025-12-03T08:17:44.962413",
+      "end_time": "2025-12-03T08:17:45.367349",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.gbif_clean.clean_gbif_citizen": {
+      "step_name": "preprocess_gbif.gbif_clean.clean_gbif_citizen",
+      "status": "completed",
+      "output": "<bool object>",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.375634",
+      "end_time": "2025-12-03T08:21:30.393946",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.gbif_clean.clean_gbif_expert": {
+      "step_name": "preprocess_gbif.gbif_clean.clean_gbif_expert",
+      "status": "completed",
+      "output": "<bool object>",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.394104",
+      "end_time": "2025-12-03T08:21:30.403658",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.filter_observers.extract_all_observers": {
+      "step_name": "preprocess_gbif.filter_observers.extract_all_observers",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.404033",
+      "end_time": "2025-12-03T08:21:30.412166",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.filter_observers.get_citizen_expert": {
+      "step_name": "preprocess_gbif.filter_observers.get_citizen_expert",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.412554",
+      "end_time": "2025-12-03T08:21:30.421133",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.filter_observers.get_citizen_observers": {
+      "step_name": "preprocess_gbif.filter_observers.get_citizen_observers",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.421365",
+      "end_time": "2025-12-03T08:21:30.428284",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.filter_observers.citizen_occ_to_expert": {
+      "step_name": "preprocess_gbif.filter_observers.citizen_occ_to_expert",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.428489",
+      "end_time": "2025-12-03T08:21:30.661257",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.get_observer_list": {
+      "step_name": "inat_data.inat_observers.get_observer_list",
+      "status": "completed",
+      "output": "<list object>",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.663078",
+      "end_time": "2025-12-03T08:21:30.697275",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.inat_observers": {
+      "step_name": "inat_data.inat_observers.inat_observers",
+      "status": "completed",
+      "output": "raw.inat_observers",
+      "error": null,
+      "start_time": "2025-12-03T08:21:30.697441",
+      "end_time": "2025-12-03T08:21:32.124751",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.extract_observer_json": {
+      "step_name": "inat_data.inat_observers.extract_observer_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:32.124889",
+      "end_time": "2025-12-03T08:21:32.135120",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.clean_observer": {
+      "step_name": "inat_data.inat_observers.clean_observer",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:32.135524",
+      "end_time": "2025-12-03T08:21:32.170030",
+      "attempt_number": 1
+    },
+    "inat_data.clean_gbif_post_inat": {
+      "step_name": "inat_data.clean_gbif_post_inat",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:32.170269",
+      "end_time": "2025-12-03T08:21:32.804343",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.get_species_taxon_list": {
+      "step_name": "inat_data.inat_species.get_species_taxon_list",
+      "status": "completed",
+      "output": "<list object>",
+      "error": null,
+      "start_time": "2025-12-03T08:21:32.804569",
+      "end_time": "2025-12-03T08:21:32.806712",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.inat_similar_species": {
+      "step_name": "inat_data.inat_species.inat_similar_species",
+      "status": "completed",
+      "output": "raw.inat_similar_species",
+      "error": null,
+      "start_time": "2025-12-03T08:21:32.806811",
+      "end_time": "2025-12-03T08:21:35.369965",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.extract_phenology_json": {
+      "step_name": "inat_data.inat_species.extract_phenology_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T08:21:35.370056",
+      "end_time": "2025-12-03T08:21:35.374843",
+      "attempt_number": 1
+    }
+  }
+}

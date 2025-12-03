@@ -86,7 +86,7 @@ class GbifLoader(ClassStep):
         if response:   
             return response[0]
     
-    async def _poll_gbif_until_ready(self, download_key:str, poll_interval: int = 30, timeout_seconds: int = 60*60, ):
+    async def _poll_gbif_until_ready(self, download_key:str, poll_interval: int = 60, timeout_seconds: int = 60*60, ):
         
         """
         Poll GBIF for the download status. Uses occ.download_meta or occ.download_get to inspect.
