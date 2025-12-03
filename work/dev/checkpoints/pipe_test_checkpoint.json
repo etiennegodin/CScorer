@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-03T08:21:35.375111",
+  "timestamp": "2025-12-03T09:50:14.378415",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -18,14 +18,14 @@
     "preprocess_gbif.filter_observers.get_citizen_expert",
     "preprocess_gbif.filter_observers.get_citizen_observers",
     "preprocess_gbif.filter_observers.citizen_occ_to_expert",
+    "inat_data.inat_species.get_species_taxon_list",
+    "inat_data.inat_species.inat_similar_species",
+    "inat_data.inat_species.extract_phenology_json",
     "inat_data.inat_observers.get_observer_list",
     "inat_data.inat_observers.inat_observers",
     "inat_data.inat_observers.extract_observer_json",
     "inat_data.inat_observers.clean_observer",
-    "inat_data.clean_gbif_post_inat",
-    "inat_data.inat_species.get_species_taxon_list",
-    "inat_data.inat_species.inat_similar_species",
-    "inat_data.inat_species.extract_phenology_json"
+    "inat_data.clean_gbif_post_inat"
   ],
   "results": {
     "init.db_connection": {
@@ -33,8 +33,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-03T08:21:30.366585",
-      "end_time": "2025-12-03T08:21:30.366879",
+      "start_time": "2025-12-03T09:50:13.206614",
+      "end_time": "2025-12-03T09:50:13.207146",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -42,8 +42,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-03T08:21:30.367028",
-      "end_time": "2025-12-03T08:21:30.369003",
+      "start_time": "2025-12-03T09:50:13.207338",
+      "end_time": "2025-12-03T09:50:13.211126",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -51,8 +51,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-03T08:21:30.369107",
-      "end_time": "2025-12-03T08:21:30.370702",
+      "start_time": "2025-12-03T09:50:13.211267",
+      "end_time": "2025-12-03T09:50:13.213339",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -60,8 +60,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-03T08:21:30.370820",
-      "end_time": "2025-12-03T08:21:30.372365",
+      "start_time": "2025-12-03T09:50:13.213860",
+      "end_time": "2025-12-03T09:50:13.216511",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -69,8 +69,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-03T08:21:30.372497",
-      "end_time": "2025-12-03T08:21:30.374070",
+      "start_time": "2025-12-03T09:50:13.216689",
+      "end_time": "2025-12-03T09:50:13.219085",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -212,51 +212,6 @@
       "end_time": "2025-12-03T08:21:30.661257",
       "attempt_number": 1
     },
-    "inat_data.inat_observers.get_observer_list": {
-      "step_name": "inat_data.inat_observers.get_observer_list",
-      "status": "completed",
-      "output": "<list object>",
-      "error": null,
-      "start_time": "2025-12-03T08:21:30.663078",
-      "end_time": "2025-12-03T08:21:30.697275",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.inat_observers": {
-      "step_name": "inat_data.inat_observers.inat_observers",
-      "status": "completed",
-      "output": "raw.inat_observers",
-      "error": null,
-      "start_time": "2025-12-03T08:21:30.697441",
-      "end_time": "2025-12-03T08:21:32.124751",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.extract_observer_json": {
-      "step_name": "inat_data.inat_observers.extract_observer_json",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T08:21:32.124889",
-      "end_time": "2025-12-03T08:21:32.135120",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.clean_observer": {
-      "step_name": "inat_data.inat_observers.clean_observer",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T08:21:32.135524",
-      "end_time": "2025-12-03T08:21:32.170030",
-      "attempt_number": 1
-    },
-    "inat_data.clean_gbif_post_inat": {
-      "step_name": "inat_data.clean_gbif_post_inat",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T08:21:32.170269",
-      "end_time": "2025-12-03T08:21:32.804343",
-      "attempt_number": 1
-    },
     "inat_data.inat_species.get_species_taxon_list": {
       "step_name": "inat_data.inat_species.get_species_taxon_list",
       "status": "completed",
@@ -282,6 +237,51 @@
       "error": null,
       "start_time": "2025-12-03T08:21:35.370056",
       "end_time": "2025-12-03T08:21:35.374843",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.get_observer_list": {
+      "step_name": "inat_data.inat_observers.get_observer_list",
+      "status": "completed",
+      "output": "<list object>",
+      "error": null,
+      "start_time": "2025-12-03T08:59:50.742579",
+      "end_time": "2025-12-03T08:59:50.810175",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.inat_observers": {
+      "step_name": "inat_data.inat_observers.inat_observers",
+      "status": "completed",
+      "output": "raw.inat_observers",
+      "error": null,
+      "start_time": "2025-12-03T08:59:50.810290",
+      "end_time": "2025-12-03T09:46:16.322349",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.extract_observer_json": {
+      "step_name": "inat_data.inat_observers.extract_observer_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T09:46:16.325750",
+      "end_time": "2025-12-03T09:46:16.416395",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.clean_observer": {
+      "step_name": "inat_data.inat_observers.clean_observer",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T09:46:16.416558",
+      "end_time": "2025-12-03T09:46:16.856798",
+      "attempt_number": 1
+    },
+    "inat_data.clean_gbif_post_inat": {
+      "step_name": "inat_data.clean_gbif_post_inat",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-03T09:50:13.223056",
+      "end_time": "2025-12-03T09:50:14.377781",
       "attempt_number": 1
     }
   }
