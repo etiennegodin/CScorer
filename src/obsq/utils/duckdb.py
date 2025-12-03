@@ -11,14 +11,14 @@ def _open_connection(db_path: str):
     # always create a fresh connection; use context manager where possible
     try:
         con = duckdb.connect(database=db_path)
-        if load_spatial_extension(con):
+        if _load_spatial_extension(con):
             return con
         
     except Exception as e:
         logging.error(f'Error connection to duckdb {db_path} : \n ', e)
         raise IOError(f'Error connecting : {e}')
 
-def load_spatial_extension(con):
+def _load_spatial_extension(con):
     try:
         con.execute("INSTALL spatial;")
         con.execute("LOAD spatial;")
@@ -109,13 +109,6 @@ async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:
     
     return file_path    
 
-def assign_table_alias(columns: list = None, alias :str = None):
-    query = """"""
-    for col in columns:
-        col_new = f'{alias}.{col}'
-        query += f"{col_new},\n\t\t\t\t"
-    return query
-
 def set_geom_bbox(con,table_name = None, ):
 
     try:
@@ -135,16 +128,6 @@ def set_geom_bbox(con,table_name = None, ):
         logging.error(f'Could not set bbox for table {table_name} : \n {e}')
         return False
 
-    
-def create_table(con, table:str, schema:str = 'main'):
-    try:
-        con.execute(f"CREATE TABLE IF NOT EXISTS {schema}.{table}")
-        return True
-
-    except Exception as e:
-        logging.error(f'Error creating table {schema}.{table} : \n', e)
-        return False
-
 def get_all_tables(con)-> list[str]:
     tables = con.query("""SELECT table_schema, table_name
                 FROM information_schema.tables;""").to_df().apply(lambda x: f"{x['table_schema']}.{x['table_name']}", axis = 1).to_list()
@@ -158,38 +141,13 @@ def register_df(con, view_name:str, df:pd.DataFrame):
     except Exception as e:
         logging.error(f'Error registering {view_name} data : \n', e)
         return False
-
-def create_table_from_view(con, view:str = None, schema:str = None, table:str = None,):
-    try:
-        con.execute(f"""
-        CREATE OR REPLACE TABLE {schema}.{table} AS
-        SELECT *,
-        ST_GeomFromText(wkt) AS geom,
-        FROM {view}
-        """)
-        return True
-
-    except Exception as e:
-        logging.error(f'Error creating table {schema}.{table} from view {view} : \n ', e)
-        return False
-
-def assign_table_alias(columns: list = None, alias :str = None):
-    query = """"""
-    if not isinstance(columns, list):
-        raise TypeError('Error assign_table_alias, columns is not a list')
     
-    for col in columns:
-        col_new = f'{alias}.{col}'
-        query += f"{col_new},\n\t\t\t"
-    return query
-
-
-    
-def gdf_to_duckdb(gdf:gpd.GeoDataFrame, 
-                db_path:Path,
+def gdf_to_duckdb(con:duckdb.DuckDBPyConnection,
+                gdf:gpd.GeoDataFrame,
                 schema:str,
-                table:str,
-                view_name:str = "df_view"):
+                table:str):
+    
+    
     
     if not isinstance(gdf, gpd.GeoDataFrame):
         gdf = convert_df_to_gdf(gdf)
@@ -207,25 +165,18 @@ def gdf_to_duckdb(gdf:gpd.GeoDataFrame,
     #Remove geoemtry column, cant register to duckdb
     gdf = gdf.drop('geometry', axis = 1)
     
-    #Commit gdf to duckdb 
-    with _open_connection(db_path) as con:
-        # Load spatial extensions
-        load_spatial_extension(con)
-        #Create schema
-        create_schema(con, schema=schema)
-        #Register data to view
-        register_df(con, view_name = view_name, df = gdf)
-        #Create table from view
-        create_table_from_view(con, view = view_name, schema=schema, table=table)
-        # Create bbox for spatial index use
-        set_geom_bbox(con, table_name= f'{schema}.{table}')
-        
-        #Confirmation that table is commited to db
-        confirmation_path = Path(db_path.parent / f"{schema}.{table}")
-        #confirmation_path.touch()
-        con.close()
-        
-        return f"{schema}.{table}"
+    con.execute(f"""
+    CREATE OR REPLACE TABLE {schema}.{table} AS
+    SELECT *,
+    ST_GeomFromText(wkt) AS geom,
+    FROM gdf
+    """)
+
+    # Create bbox for spatial index use
+    set_geom_bbox(con, table_name= f'{schema}.{table}')
+    con.close()
+    
+    return f"{schema}.{table}"
 
 def get_table_columns(table_name = None, con = None):
     columns = None
