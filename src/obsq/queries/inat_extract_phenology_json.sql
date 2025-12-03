@@ -1,6 +1,4 @@
 CREATE OR REPLACE VIEW clean.inat_phenology AS
-
-WITH extracted AS(
 SELECT 
     id_string as taxonID,
     CAST(json_extract(json, '$.count') AS INTEGER) AS count,
@@ -28,13 +26,5 @@ SELECT
     CAST(json_extract(json, '$.month_of_year."12"') AS INTEGER) AS month_12
 
 FROM raw.inat_phenology
-)
-
-
-
-SELECT DISTINCT e.*, c."scientificName"
-FROM preprocessed.gbif_citizen c
-JOIN extracted e
-    ON e."taxonID" = c."taxonID"
-ORDER BY e.taxonID, attribute_id, value_id
+ORDER BY taxonID attribute_id, value_id
 ;
