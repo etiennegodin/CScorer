@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-04T12:03:36.400836",
+  "timestamp": "2025-12-04T12:08:15.686861",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -21,7 +21,10 @@
     "preprocess_gbif.gbif_preprocess_observers.extract_all_observers",
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert",
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers",
-    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle"
+    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle",
+    "inat_data.inat_observers.inat_observers",
+    "inat_data.inat_observers.extract_observer_json",
+    "inat_data.inat_observers.clean_observer"
   ],
   "results": {
     "init.db_connection": {
@@ -29,8 +32,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.228251",
-      "end_time": "2025-12-04T12:03:36.391456",
+      "start_time": "2025-12-04T12:08:15.486608",
+      "end_time": "2025-12-04T12:08:15.666251",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -105,8 +108,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.391735",
-      "end_time": "2025-12-04T12:03:36.393422",
+      "start_time": "2025-12-04T12:08:15.666451",
+      "end_time": "2025-12-04T12:08:15.668292",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -114,8 +117,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.393522",
-      "end_time": "2025-12-04T12:03:36.394762",
+      "start_time": "2025-12-04T12:08:15.668435",
+      "end_time": "2025-12-04T12:08:15.669843",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -123,8 +126,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.394850",
-      "end_time": "2025-12-04T12:03:36.396228",
+      "start_time": "2025-12-04T12:08:15.669985",
+      "end_time": "2025-12-04T12:08:15.671256",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -132,8 +135,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.396371",
-      "end_time": "2025-12-04T12:03:36.398611",
+      "start_time": "2025-12-04T12:08:15.671353",
+      "end_time": "2025-12-04T12:08:15.672702",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -168,8 +171,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-04T12:03:36.398744",
-      "end_time": "2025-12-04T12:03:36.400567",
+      "start_time": "2025-12-04T12:08:15.672820",
+      "end_time": "2025-12-04T12:08:15.674592",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -246,11 +249,29 @@
     },
     "inat_data.inat_observers.inat_observers": {
       "step_name": "inat_data.inat_observers.inat_observers",
-      "status": "failed",
+      "status": "completed",
+      "output": "raw.inat_observers",
+      "error": null,
+      "start_time": "2025-12-04T12:03:36.402578",
+      "end_time": "2025-12-04T12:05:50.712581",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.extract_observer_json": {
+      "step_name": "inat_data.inat_observers.extract_observer_json",
+      "status": "completed",
       "output": null,
-      "error": "cannot access local variable 'items' where it is not associated with a value",
-      "start_time": "2025-12-04T11:55:34.104923",
-      "end_time": "2025-12-04T11:55:43.388746",
+      "error": null,
+      "start_time": "2025-12-04T12:05:50.712841",
+      "end_time": "2025-12-04T12:05:50.729989",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.clean_observer": {
+      "step_name": "inat_data.inat_observers.clean_observer",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-04T12:08:15.677316",
+      "end_time": "2025-12-04T12:08:15.685981",
       "attempt_number": 1
     }
   }
