@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-04T11:41:49.216084",
+  "timestamp": "2025-12-04T12:03:36.400836",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -29,8 +29,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-04T11:41:47.867658",
-      "end_time": "2025-12-04T11:41:48.048504",
+      "start_time": "2025-12-04T12:03:36.228251",
+      "end_time": "2025-12-04T12:03:36.391456",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -105,8 +105,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.048707",
-      "end_time": "2025-12-04T11:41:48.050116",
+      "start_time": "2025-12-04T12:03:36.391735",
+      "end_time": "2025-12-04T12:03:36.393422",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -114,8 +114,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.050185",
-      "end_time": "2025-12-04T11:41:48.051358",
+      "start_time": "2025-12-04T12:03:36.393522",
+      "end_time": "2025-12-04T12:03:36.394762",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -123,8 +123,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.051465",
-      "end_time": "2025-12-04T11:41:48.052805",
+      "start_time": "2025-12-04T12:03:36.394850",
+      "end_time": "2025-12-04T12:03:36.396228",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -132,8 +132,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.052877",
-      "end_time": "2025-12-04T11:41:48.054209",
+      "start_time": "2025-12-04T12:03:36.396371",
+      "end_time": "2025-12-04T12:03:36.398611",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -159,8 +159,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:48.057473",
-      "end_time": "2025-12-04T11:41:48.068310",
+      "start_time": "2025-12-04T11:51:17.496878",
+      "end_time": "2025-12-04T11:51:17.506817",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_observers_schema": {
@@ -168,8 +168,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.054301",
-      "end_time": "2025-12-04T11:41:48.056059",
+      "start_time": "2025-12-04T12:03:36.398744",
+      "end_time": "2025-12-04T12:03:36.400567",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -177,8 +177,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:48.068686",
-      "end_time": "2025-12-04T11:41:48.080663",
+      "start_time": "2025-12-04T11:51:17.507013",
+      "end_time": "2025-12-04T11:51:17.515063",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.import_inat_observations": {
@@ -186,8 +186,8 @@
       "status": "completed",
       "output": "raw.inat_observations",
       "error": null,
-      "start_time": "2025-12-04T11:41:48.081063",
-      "end_time": "2025-12-04T11:41:49.117563",
+      "start_time": "2025-12-04T11:51:17.515533",
+      "end_time": "2025-12-04T11:51:18.604454",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.clean_inat_observations": {
@@ -195,8 +195,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.117649",
-      "end_time": "2025-12-04T11:41:49.123397",
+      "start_time": "2025-12-04T11:51:18.604751",
+      "end_time": "2025-12-04T11:51:18.616726",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_citizen_join_inat_obs": {
@@ -204,8 +204,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.123612",
-      "end_time": "2025-12-04T11:41:49.129748",
+      "start_time": "2025-12-04T11:51:18.617229",
+      "end_time": "2025-12-04T11:51:18.627347",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.extract_all_observers": {
@@ -213,8 +213,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.129985",
-      "end_time": "2025-12-04T11:41:49.136175",
+      "start_time": "2025-12-04T11:51:18.627656",
+      "end_time": "2025-12-04T11:51:18.639632",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert": {
@@ -222,8 +222,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.136312",
-      "end_time": "2025-12-04T11:41:49.145603",
+      "start_time": "2025-12-04T11:51:18.639872",
+      "end_time": "2025-12-04T11:51:18.647620",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers": {
@@ -231,8 +231,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.146007",
-      "end_time": "2025-12-04T11:41:49.154175",
+      "start_time": "2025-12-04T11:51:18.648022",
+      "end_time": "2025-12-04T11:51:18.658495",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle": {
@@ -240,8 +240,17 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:41:49.154379",
-      "end_time": "2025-12-04T11:41:49.215788",
+      "start_time": "2025-12-04T11:51:18.658719",
+      "end_time": "2025-12-04T11:51:18.753440",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.inat_observers": {
+      "step_name": "inat_data.inat_observers.inat_observers",
+      "status": "failed",
+      "output": null,
+      "error": "cannot access local variable 'items' where it is not associated with a value",
+      "start_time": "2025-12-04T11:55:34.104923",
+      "end_time": "2025-12-04T11:55:43.388746",
       "attempt_number": 1
     }
   }

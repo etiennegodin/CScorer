@@ -3,18 +3,15 @@ from ...steps import *
 from ...utils import gdf_to_duckdb
 from ...pipeline import *
 
-
 ## OBSERVER SUBMODULE
-
-
 get_observers_data = inatApiClient('inat_observers',
-                                   endpoint= 'users/autocomplete/?q=',
+                                   endpoint= 'users/',
                                    api_version=1,
                                    params_key= None,
                                    items_source= 'observers.citizen',
-                                   items_key='id'
-                                   per_page=1000,
-                                   chunk_size=1,
+                                   items_key='user_id',
+                                   limiter=40,
+                                   per_page=1,
                                    overwrite_table= True)
 
 extract_observer_json = SimpleQuery('extract_observer_json', query_name= 'inat_extract_observer_json')
