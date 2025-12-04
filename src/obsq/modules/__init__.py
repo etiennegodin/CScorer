@@ -1,4 +1,4 @@
-from .gbif.gbif import gbif_ingest, gbif_preprocess
+from .gbif import gbif_ingest, gbif_preprocess
 from .db import db_init
 from .inat import inatApiClient, inat_data
 from .features import extractor_features

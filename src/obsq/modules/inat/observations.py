@@ -19,5 +19,5 @@ async def import_inat_observations(context:PipelineContext):
 
 clean_inat_observations = SimpleQuery('clean_inat_observations', query_name= "inat_clean_observations" )
 
-inat_observations = SubModule("inat_observations", [import_inat_observations, clean_inat_observations])
+preprocess_inat_observations = SubModule("preprocess_inat_observations", [import_inat_observations, clean_inat_observations])
 
