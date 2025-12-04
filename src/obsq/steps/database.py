@@ -101,12 +101,11 @@ class TemplateQuery(DbQuery):
         with open(self.query_path, 'r') as f:
             try:
                 sql_template = Template(f.read())
-                return sql_template
 
             except Exception as e:
                 print(f"Error reading sql template : {e}")
             
-        sql_query = sql_template.reder(self.fields)
+        sql_query = sql_template.render(self.fields)
         
         try:
             con.execute(sql_query)

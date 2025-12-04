@@ -1,33 +1,27 @@
 {
-  "timestamp": "2025-12-03T10:29:15.216007",
+  "timestamp": "2025-12-04T11:39:57.205542",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
     "ingest_gbif.create_custom_predicates",
     "ingest_gbif.collect_all_gbif.collect_citizen_data",
     "ingest_gbif.collect_all_gbif.collect_expert_data",
-    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
     "init.create_all_schemas.create_raw_schema",
     "init.create_all_schemas.create_clean_schema",
     "init.create_all_schemas.create_preprocessed_schema",
     "init.create_all_schemas.create_features_schema",
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
     "ingest_gbif.store_all_gbif.store_gbif_expert_csv",
     "preprocess_gbif.gbif_clean.clean_gbif_citizen",
+    "init.create_all_schemas.create_observers_schema",
     "preprocess_gbif.gbif_clean.clean_gbif_expert",
-    "preprocess_gbif.filter_observers.extract_all_observers",
-    "preprocess_gbif.filter_observers.get_citizen_expert",
-    "preprocess_gbif.filter_observers.get_citizen_observers",
-    "preprocess_gbif.filter_observers.citizen_occ_to_expert",
-    "preprocess_gbif.extract_species",
-    "inat_data.inat_observers.get_observer_list",
-    "inat_data.inat_observers.inat_observers",
-    "inat_data.inat_observers.extract_observer_json",
-    "inat_data.inat_observers.clean_observer",
-    "inat_data.clean_gbif_post_inat",
-    "inat_data.inat_species.get_species_taxon_list",
-    "inat_data.inat_species.inat_phenology",
-    "inat_data.inat_species.extract_phenology_json",
-    "inat_data.inat_species.inat_similar_species"
+    "preprocess_gbif.preprocess_inat_observations.import_inat_observations",
+    "preprocess_gbif.preprocess_inat_observations.clean_inat_observations",
+    "preprocess_gbif.gbif_citizen_join_inat_obs",
+    "preprocess_gbif.gbif_preprocess_observers.extract_all_observers",
+    "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert",
+    "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers",
+    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle"
   ],
   "results": {
     "init.db_connection": {
@@ -35,8 +29,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-03T10:29:15.196237",
-      "end_time": "2025-12-03T10:29:15.197232",
+      "start_time": "2025-12-04T11:39:55.859884",
+      "end_time": "2025-12-04T11:39:56.027717",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -106,22 +100,13 @@
       "end_time": "2025-11-28T11:29:59.948870",
       "attempt_number": 1
     },
-    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
-      "step_name": "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
-      "status": "completed",
-      "output": "raw.gbif_citizen",
-      "error": null,
-      "start_time": "2025-11-28T11:35:52.270354",
-      "end_time": "2025-11-28T11:35:53.203459",
-      "attempt_number": 1
-    },
     "init.create_all_schemas.create_raw_schema": {
       "step_name": "init.create_all_schemas.create_raw_schema",
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-03T10:29:15.197481",
-      "end_time": "2025-12-03T10:29:15.200335",
+      "start_time": "2025-12-04T11:39:56.027970",
+      "end_time": "2025-12-04T11:39:56.029923",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -129,8 +114,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-03T10:29:15.200522",
-      "end_time": "2025-12-03T10:29:15.204311",
+      "start_time": "2025-12-04T11:39:56.030046",
+      "end_time": "2025-12-04T11:39:56.031567",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -138,8 +123,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-03T10:29:15.204610",
-      "end_time": "2025-12-03T10:29:15.207707",
+      "start_time": "2025-12-04T11:39:56.031671",
+      "end_time": "2025-12-04T11:39:56.033100",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -147,8 +132,17 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-03T10:29:15.207960",
-      "end_time": "2025-12-03T10:29:15.211354",
+      "start_time": "2025-12-04T11:39:56.033252",
+      "end_time": "2025-12-04T11:39:56.034996",
+      "attempt_number": 1
+    },
+    "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
+      "step_name": "ingest_gbif.store_all_gbif.store_gbif_citizen_csv",
+      "status": "completed",
+      "output": "raw.gbif_citizen",
+      "error": null,
+      "start_time": "2025-12-04T11:21:45.084817",
+      "end_time": "2025-12-04T11:21:46.160671",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_expert_csv": {
@@ -156,170 +150,98 @@
       "status": "completed",
       "output": "raw.gbif_expert",
       "error": null,
-      "start_time": "2025-11-28T12:34:29.671379",
-      "end_time": "2025-11-28T12:34:29.776888",
+      "start_time": "2025-12-04T11:21:46.160891",
+      "end_time": "2025-12-04T11:21:46.267705",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_citizen": {
       "step_name": "preprocess_gbif.gbif_clean.clean_gbif_citizen",
       "status": "completed",
-      "output": "<bool object>",
+      "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.138560",
-      "end_time": "2025-12-02T23:10:05.154118",
+      "start_time": "2025-12-04T11:39:56.038590",
+      "end_time": "2025-12-04T11:39:56.048300",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_observers_schema": {
+      "step_name": "init.create_all_schemas.create_observers_schema",
+      "status": "completed",
+      "output": "observers",
+      "error": null,
+      "start_time": "2025-12-04T11:39:56.035183",
+      "end_time": "2025-12-04T11:39:56.037097",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
       "step_name": "preprocess_gbif.gbif_clean.clean_gbif_expert",
       "status": "completed",
-      "output": "<bool object>",
+      "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.154308",
-      "end_time": "2025-12-02T23:10:05.163773",
+      "start_time": "2025-12-04T11:39:56.048474",
+      "end_time": "2025-12-04T11:39:56.059364",
       "attempt_number": 1
     },
-    "preprocess_gbif.filter_observers.extract_all_observers": {
-      "step_name": "preprocess_gbif.filter_observers.extract_all_observers",
+    "preprocess_gbif.preprocess_inat_observations.import_inat_observations": {
+      "step_name": "preprocess_gbif.preprocess_inat_observations.import_inat_observations",
+      "status": "completed",
+      "output": "raw.inat_observations",
+      "error": null,
+      "start_time": "2025-12-04T11:39:56.059694",
+      "end_time": "2025-12-04T11:39:57.083900",
+      "attempt_number": 1
+    },
+    "preprocess_gbif.preprocess_inat_observations.clean_inat_observations": {
+      "step_name": "preprocess_gbif.preprocess_inat_observations.clean_inat_observations",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.164070",
-      "end_time": "2025-12-02T23:10:05.172300",
+      "start_time": "2025-12-04T11:39:57.083978",
+      "end_time": "2025-12-04T11:39:57.088829",
       "attempt_number": 1
     },
-    "preprocess_gbif.filter_observers.get_citizen_expert": {
-      "step_name": "preprocess_gbif.filter_observers.get_citizen_expert",
+    "preprocess_gbif.gbif_citizen_join_inat_obs": {
+      "step_name": "preprocess_gbif.gbif_citizen_join_inat_obs",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.172436",
-      "end_time": "2025-12-02T23:10:05.180167",
+      "start_time": "2025-12-04T11:39:57.089112",
+      "end_time": "2025-12-04T11:39:57.127804",
       "attempt_number": 1
     },
-    "preprocess_gbif.filter_observers.get_citizen_observers": {
-      "step_name": "preprocess_gbif.filter_observers.get_citizen_observers",
+    "preprocess_gbif.gbif_preprocess_observers.extract_all_observers": {
+      "step_name": "preprocess_gbif.gbif_preprocess_observers.extract_all_observers",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.180324",
-      "end_time": "2025-12-02T23:10:05.188000",
+      "start_time": "2025-12-04T11:39:57.128019",
+      "end_time": "2025-12-04T11:39:57.133799",
       "attempt_number": 1
     },
-    "preprocess_gbif.filter_observers.citizen_occ_to_expert": {
-      "step_name": "preprocess_gbif.filter_observers.citizen_occ_to_expert",
+    "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert": {
+      "step_name": "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.188170",
-      "end_time": "2025-12-02T23:10:05.248023",
+      "start_time": "2025-12-04T11:39:57.133956",
+      "end_time": "2025-12-04T11:39:57.140661",
       "attempt_number": 1
     },
-    "preprocess_gbif.extract_species": {
-      "step_name": "preprocess_gbif.extract_species",
+    "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers": {
+      "step_name": "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:05.248488",
-      "end_time": "2025-12-02T23:10:05.257417",
+      "start_time": "2025-12-04T11:39:57.140935",
+      "end_time": "2025-12-04T11:39:57.147981",
       "attempt_number": 1
     },
-    "inat_data.inat_observers.get_observer_list": {
-      "step_name": "inat_data.inat_observers.get_observer_list",
-      "status": "completed",
-      "output": "<list object>",
-      "error": null,
-      "start_time": "2025-12-02T23:10:29.767332",
-      "end_time": "2025-12-02T23:10:29.777918",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.inat_observers": {
-      "step_name": "inat_data.inat_observers.inat_observers",
-      "status": "completed",
-      "output": "raw.inat_observers",
-      "error": null,
-      "start_time": "2025-12-02T23:10:29.778064",
-      "end_time": "2025-12-02T23:10:36.463406",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.extract_observer_json": {
-      "step_name": "inat_data.inat_observers.extract_observer_json",
+    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle": {
+      "step_name": "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle",
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-02T23:10:36.463552",
-      "end_time": "2025-12-02T23:10:36.473061",
-      "attempt_number": 1
-    },
-    "inat_data.inat_observers.clean_observer": {
-      "step_name": "inat_data.inat_observers.clean_observer",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-02T23:10:36.473412",
-      "end_time": "2025-12-02T23:10:36.525907",
-      "attempt_number": 1
-    },
-    "inat_data.clean_gbif_post_inat": {
-      "step_name": "inat_data.clean_gbif_post_inat",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T10:14:31.063811",
-      "end_time": "2025-12-03T10:14:31.158117",
-      "attempt_number": 1
-    },
-    "inat_data.inat_species.get_species_taxon_list": {
-      "step_name": "inat_data.inat_species.get_species_taxon_list",
-      "status": "completed",
-      "output": "<list object>",
-      "error": null,
-      "start_time": "2025-12-03T00:56:52.414467",
-      "end_time": "2025-12-03T00:56:52.417597",
-      "attempt_number": 1
-    },
-    "inat_data.inat_species.species_phenology": {
-      "step_name": "inat_data.inat_species.species_phenology",
-      "status": "failed",
-      "output": null,
-      "error": "<Queue at 0x79ba06ddffd0 maxsize=0> is bound to a different event loop",
-      "start_time": "2025-12-02T23:52:33.934918",
-      "end_time": "2025-12-02T23:53:08.039022",
-      "attempt_number": 1
-    },
-    "inat_data.inat_species.inat_phenology": {
-      "step_name": "inat_data.inat_species.inat_phenology",
-      "status": "completed",
-      "output": "raw.inat_phenology",
-      "error": null,
-      "start_time": "2025-12-03T00:45:29.668353",
-      "end_time": "2025-12-03T00:45:32.151030",
-      "attempt_number": 1
-    },
-    "inat_data.inat_species.extract_phenology_json": {
-      "step_name": "inat_data.inat_species.extract_phenology_json",
-      "status": "completed",
-      "output": null,
-      "error": null,
-      "start_time": "2025-12-03T00:56:55.579444",
-      "end_time": "2025-12-03T00:56:55.587349",
-      "attempt_number": 1
-    },
-    "inat_data.inat_species.inat_similar_species": {
-      "step_name": "inat_data.inat_species.inat_similar_species",
-      "status": "completed",
-      "output": "raw.inat_similar_species",
-      "error": null,
-      "start_time": "2025-12-03T00:56:52.417744",
-      "end_time": "2025-12-03T00:56:55.579252",
-      "attempt_number": 1
-    },
-    "inat_data.inat_ranges.load_ranges_to_db": {
-      "step_name": "inat_data.inat_ranges.load_ranges_to_db",
-      "status": "failed",
-      "output": null,
-      "error": "cannot access local variable 'db_path' where it is not associated with a value",
-      "start_time": "2025-12-03T10:17:41.554566",
-      "end_time": "2025-12-03T10:18:14.774401",
+      "start_time": "2025-12-04T11:39:57.149505",
+      "end_time": "2025-12-04T11:39:57.205273",
       "attempt_number": 1
     }
   }
