@@ -13,7 +13,6 @@ create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_features_schema])
 
 
-
 #Create init module with db connection d
 db_connection = DataBaseConnection()
 
