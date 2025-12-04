@@ -5,14 +5,14 @@ from. observations import inat_observations
 from ...steps import *
 from ...pipeline import *
 
-clean_gbif_post_inat = DataBaseQuery('clean_gbif_post_inat', query_name= 'gbif_clean_post_inat')
-create_species_table = DataBaseQuery('create_species_table', query_name= 'gbif_extract_species')
+clean_gbif_post_inat = SimpleQuery('clean_gbif_post_inat', query_name= 'gbif_clean_post_inat')
+create_species_table = SimpleQuery('create_species_table', query_name= 'gbif_extract_species')
 
 gbif_post_inat_observers = SubModule("gbif_post_inat_observers", [clean_gbif_post_inat, create_species_table])
 
 
-inat_data = Module('inat_data',[inat_observers_submodule,
-                                       inat_observations,
+inat_data = Module('inat_data',[inat_observations,
+                                inat_observers_submodule,
                                        inat_species_submodule,
                                        inat_ranges_submodule,
                                        gbif_post_inat_observers], always_run= False )

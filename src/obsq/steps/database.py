@@ -1,8 +1,9 @@
 from ..utils.duckdb import _open_connection
 from ..utils import to_Path
 from ..pipeline import *
-from typing import Literal
-from typing import Literal
+from typing import Literal, Any, Dict, List, Optional, Union, Callable
+from abc import abstractmethod
+from jinja2 import Template
 
 _RETURN_TYPES = Literal["df", "dict", 'list']
 
@@ -25,7 +26,35 @@ class DataBaseConnection(ClassStep):
         print(f"Initiliazing database connection: {self.db_path}")
         return self.db_path
 
-class DataBaseQuery(ClassStep):
+
+
+
+class DbQuery(ClassStep):
+
+    def __init__(self, name, query_name:str = None, **kwargs):
+        super().__init__(name, **kwargs)
+        
+        if query_name is None:
+            self.query_file_name = name
+        else:
+            self.query_file_name = query_name
+            
+
+    @abstractmethod
+    def _execute(self, context: PipelineContext) -> Any:
+        """Override this in subclasses for query-based steps"""
+        pass
+            
+    def _get_query_path(self, context):
+        query_path = to_Path(self.query_file_name) #trick to get .suffix and .stem
+        if query_path.suffix != "sql":
+            query_path = query_path.parent / f"{query_path.stem}.sql"
+            
+        return context.config['paths']['queries_folder'] / query_path  
+            
+
+
+class SimpleQuery(DbQuery):
 
     def __init__(self, name, query_name:str = None, **kwargs):
         """_summary_
@@ -34,13 +63,8 @@ class DataBaseQuery(ClassStep):
             name (_type_): _description_
             query_name (str, optional): _description_. Defaults to None.
         """
-        super().__init__(name, **kwargs)
+        super().__init__(name, query_name, **kwargs)
         
-        if query_name is None:
-            self.query_file_name = name
-        else:
-            self.query_file_name = query_name
-    
     def _execute(self, context):
         con = _open_connection(context.get_step_output("db_connection"))
         
@@ -54,13 +78,42 @@ class DataBaseQuery(ClassStep):
         except Exception as e: 
             self.logger.error(e)
             raise e 
+        
+
+class TemplateQuery(DbQuery):
+
+    def __init__(self, name, fields:dict,  query_name:str = None, **kwargs):
+        """_summary_
+
+        Args:
+            name (_type_): _description_
+            fields (dict): _description_
+            query_name (str, optional): _description_. Defaults to None.
+        """
+        self.fields = fields
+        super().__init__(name, query_name, **kwargs)
+        
+    def _execute(self, context):
+        con = _open_connection(context.get_step_output("db_connection"))
+        
+        self.query_path = self._get_query_path(context)
             
-    def _get_query_path(self, context):
-        query_path = to_Path(self.query_file_name) #trick to get .suffix and .stem
-        if query_path.suffix != "sql":
-            query_path = query_path.parent / f"{query_path.stem}.sql"
+        with open(self.query_path, 'r') as f:
+            try:
+                sql_template = Template(f.read())
+                return sql_template
+
+            except Exception as e:
+                print(f"Error reading sql template : {e}")
             
-        return context.config['paths']['queries_folder'] / query_path  
+        sql_query = sql_template.reder(self.fields)
+        
+        try:
+            con.execute(sql_query)
+        except Exception as e: 
+            self.logger.error(e)
+            raise e 
+
             
 class DataBaseLoader(ClassStep):
     

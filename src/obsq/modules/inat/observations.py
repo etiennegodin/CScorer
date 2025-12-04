@@ -17,7 +17,7 @@ async def import_inat_observations(context:PipelineContext):
         raise ValueError("Found multiple csv in inat")
     return table_name
 
-clean_inat_observations = DataBaseQuery('clean_inat_observations', query_name= "inat_clean_observations" )
+clean_inat_observations = SimpleQuery('clean_inat_observations', query_name= "inat_clean_observations" )
 
 inat_observations = SubModule("inat_observations", [import_inat_observations, clean_inat_observations])
 

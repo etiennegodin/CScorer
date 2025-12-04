@@ -1,7 +1,9 @@
 from pathlib import Path
 from ...pipeline import *
+from ...steps import SimpleQuery
 from ...utils.sql import read_sql_template
 
+"""
 async def clean_gbif_occurences(context:PipelineContext, step_name:str):
     """
     Docstring for clean_gbif_occurences
@@ -39,6 +41,9 @@ async def clean_gbif_citizen(context:PipelineContext):
 async def clean_gbif_expert(context:PipelineContext):
     return clean_gbif_occurences(context, step_name="clean_gbif_expert")
 
+"""
+
+clean_gbif_citizen = SimpleQuery
 
 gbif_clean_submodule = SubModule('gbif_clean',[clean_gbif_citizen,clean_gbif_expert ])
 
