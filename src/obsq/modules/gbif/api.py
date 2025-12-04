@@ -5,11 +5,9 @@ from pathlib import Path
 from pprint import pprint #debug
 from ...pipeline import *
 
-
-
-class GbifLoader(ClassStep):
+class GbifApi(ClassStep):
     """
-    Docstring for GbifLoader
+    Docstring for GbifApi
     
     :var Args: Description
     :var Returns: Description
