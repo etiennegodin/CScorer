@@ -21,7 +21,7 @@ class inatApiClient(ClassStep):
                 per_page:int = 10,
                 limit:int = None,
                 overwrite_table:bool = False,
-                chunk_size:int = 100):
+                chunk_size:int = 1):
         
         #Init api
         self.name = name
@@ -53,11 +53,9 @@ class inatApiClient(ClassStep):
         
         con = context.con
         
-        items = DataBaseLoader(f'get_{self.name}_items',
-                               columns=self.items_key,
-                               from_table=self.items_source,
-                               limit = None,
-                               return_type= 'list')
+        items = context.con.execute(f"SELECT DISTINCT {self.items_key} FROM {self.items_source}").df()[self.items_key].to_list()
+        self.logger.debug(print(f"{self.name} items: \n{items}"))
+
 
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (idx INT, id_string TEXT, json JSON)")

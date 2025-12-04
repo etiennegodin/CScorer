@@ -2,7 +2,9 @@ CREATE OR REPLACE VIEW observers.all AS
 
 SELECT DISTINCT
 recordedBy,
-recordedByID
+recordedByID,
+user_login,
+user_id
 
-FROM clean.gbif_citizen
+FROM preprocessed.gbif_citizen_inat
 
