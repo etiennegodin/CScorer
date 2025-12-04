@@ -25,7 +25,7 @@ class DataBaseConnection(ClassStep):
         print(f"Initiliazing database connection: {self.db_path}")
         return self.db_path
 
-class DataBaseQuery(ClassStep):
+class SimpleQuery(ClassStep):
 
     def __init__(self, name, query_name:str = None, **kwargs):
         """_summary_
