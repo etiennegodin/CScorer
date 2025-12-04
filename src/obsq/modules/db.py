@@ -6,11 +6,14 @@ create_raw_schema = CreateSchema('create_raw_schema', schema= 'raw')
 create_clean_schema = CreateSchema("create_clean_schema", schema = "clean" )
 create_preprocessed_schema = CreateSchema("create_preprocessed_schema", schema = "preprocessed" )
 create_features_schema = CreateSchema("create_features_schema", schema = "features" )
+create_observers_schema = CreateSchema("create_observers_schema", schema = "observers")
+
 
 create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_clean_schema,
                                                 create_preprocessed_schema,
-                                                create_features_schema])
+                                                create_features_schema,
+                                                create_observers_schema])
 
 
 #Create init module with db connection d

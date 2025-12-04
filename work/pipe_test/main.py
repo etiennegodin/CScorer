@@ -1,8 +1,7 @@
-from pathlib import Path
+from obsq import Pipeline
 from obsq.utils import read_config, create_folders
-from obsq.pipeline import Pipeline, Module
-from obsq.modules import gbif_ingest, gbif_preprocess, create_all_schemas, inat_data
-from obsq.steps import DataBaseConnection, CreateSchema
+#from obsq import Pipeline
+from obsq import modules as m
 
 def main(ROOT_FOLDER, work_folder, args):
     resume = True
@@ -17,14 +16,10 @@ def main(ROOT_FOLDER, work_folder, args):
     # Create folder structure
     config["paths"] = create_folders(ROOT_FOLDER, work_folder)
       
-    #Create init module with db connection d
-    db_connection = DataBaseConnection(config['paths']['db_path'])
-    
-    init = Module('init', [db_connection, create_all_schemas], always_run= True)
-
-    pipeline = Pipeline('pipe_test', [init, gbif_ingest,
-                                      gbif_preprocess,
-                                      inat_data],
+    pipeline = Pipeline('pipe_test', [m.db_init, m.gbif_ingest,
+                                      m.gbif_preprocess,
+                                      m.inat_data,
+                                      m.extractor_features],
                                     work_folder/ "checkpoints", 
                                     config = config)
     
