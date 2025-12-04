@@ -31,6 +31,7 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection,
                            file_path:str,
                            schema:str,
                            table:str,
+                           columns:list[str] = None,
                            replace:bool = True,
                            geo:bool = False,
                            delete_file: bool = False)->str:
@@ -55,6 +56,8 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection,
     :rtype: str
     """
     logger = logging.getLogger("import_csv_to_db")
+    
+    # Create or insert into 
     if (replace) or (f"{schema}.{table}" not in get_all_tables(con)):
         query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
         """
@@ -62,7 +65,16 @@ async def import_csv_to_db(con :duckdb.DuckDBPyConnection,
         query = f"""INSERT INTO {schema}.{table}
         """
         
-    query += f"""SELECT *,
+    # Fields from columns or * 
+    if columns is not None:
+        fields = ','.join(str(c) for c in columns)
+        
+        query += f""" SELECT {fields}"""
+    else:
+        query += """ SELECT *, """ 
+        
+    # Rest of query 
+    query += f"""
                 {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
                 FROM read_csv('{file_path}')
                 """    
