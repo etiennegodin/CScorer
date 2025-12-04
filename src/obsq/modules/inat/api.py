@@ -3,11 +3,69 @@ from aiolimiter import AsyncLimiter
 from asyncio import Queue
 from pprint import pprint
 import json
+import requests
 from concurrent.futures import ThreadPoolExecutor
 from ...pipeline import *
 from ...steps import DataBaseLoader
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import get_all_tables
+
+
+class inatApiRequest(ClassStep):
+    def __init__(self, name:str,
+                 endpoint:str,
+                 key:str,
+                 limit:int = None,
+                explicit_params:dict = None,
+                fields:dict = None,
+                api_version:int = 2,
+                per_page:int = 10):
+        
+        #Init api
+        self.name = name
+        self.url = f"https://api.inaturalist.org/v{api_version}/{endpoint}/{key}"
+
+        if fields is not None:
+            self.fields = f"({fields_to_string(fields)})"
+        else:
+            self.fields = None
+        self.per_page = per_page
+        self.explicit_params = explicit_params
+        self.limit = limit
+        super().__init__(name)
+        
+    async def _execute(self, context):
+        
+          # Set params 
+        if self.explicit_params is not None:
+            params = self.explicit_params
+        else:
+            params = {}
+          
+        #Set fields 
+        if self.fields is not None:
+            params['fields'] = self.fields
+            
+        params['per_page'] = self.per_page
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.url, params=params, timeout=10) as r:
+                                r.url
+                                r.raise_for_status()
+                                data = await r.json()    
+                                if data and "results" in data:
+                                    if self.limit is None:
+                                        return data['results']
+                                    elif self.limit == 1:
+                                        return data['results'][0]
+                                    else:
+                                        return data['results'][:self.limit]
+
+                                    # Put all results from this multi-ID request into queue
+            
+            
+    
+
 
 class inatApiClient(ClassStep):
     def __init__(self, name:str,
@@ -15,6 +73,7 @@ class inatApiClient(ClassStep):
                  items_source:str,
                  items_key:str,
                 params_key:str = None,
+                explicit_params:dict = None,
                 fields:dict = None,
                 api_version:int = 2,
                 limiter:int = 60,
@@ -36,7 +95,7 @@ class inatApiClient(ClassStep):
         else:
             self.fields = None
             
-        
+        self.explicit_params = explicit_params
         #Init fetch behaviour 
         self.overwrite = overwrite_table
         self.per_page = per_page
@@ -54,7 +113,7 @@ class inatApiClient(ClassStep):
         con = context.con
         
         items = context.con.execute(f"SELECT DISTINCT {self.items_key} FROM {self.items_source}").df()[self.items_key].to_list()
-        self.logger.debug(print(f"{self.name} items: \n{items}"))
+        self.logger.debug(f"{self.name} items: \n{items}")
 
 
         # Create table for data
@@ -162,23 +221,28 @@ class inatApiClient(ClassStep):
     async def _fetch_data(self, session, id_string:str, batch_idx:int, chunk_idx:int=0):
         """Fetch data for multiple IDs in a single request using comma-separated ID string"""
         
-        params = {}
-        
+        # Set params 
+        if self.explicit_params is not None:
+            params = self.explicit_params
+        else:
+            params = {}
+            
         if self.params_key is not None:
             params[self.params_key] = id_string
             url = self.base_url
         else:
             url = self.base_url + (id_string)
           
+        #Set fields 
         if self.fields is not None:
             params['fields'] = self.fields
 
-        #params['per_page'] = self.per_page
+        params['per_page'] = self.per_page
         
         async with self.limiter:
             try:
                 async with session.get(url, params=params, timeout=10) as r:
-                    r.url
+                    self.logger.debug(r.url)
                     r.raise_for_status()
                     data = await r.json()    
                     if data and "results" in data:

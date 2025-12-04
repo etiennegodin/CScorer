@@ -5,6 +5,9 @@ gbif_loader:
   YEAR: 2010
   GADM_GID: CAN.11_1
   
+place_id:
+  Québec
+
 time:
   start: 2010-01-01
   end: 2025-11-01

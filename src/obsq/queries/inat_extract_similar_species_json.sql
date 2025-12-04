@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW clean.inat_similar_species AS
+CREATE OR REPLACE VIEW preprocessed.inat_similar_species AS
 SELECT 
     id_string as taxonID,
     CAST(json_extract(json, '$.count') AS INTEGER) AS count,
