@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW clean.species AS 
+CREATE OR REPLACE VIEW preprocessed.species AS 
 
 SELECT DISTINCT
 taxonID,
@@ -11,5 +11,5 @@ family,
 genus,
 iucnRedListCategory
 
-FROM preprocessed.gbif_citizen
+FROM preprocessed.gbif_post_inat_observers
 

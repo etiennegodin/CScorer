@@ -5,15 +5,13 @@ from ...steps import *
 from ...pipeline import *
 
 clean_gbif_post_inat = SimpleQuery('clean_gbif_post_inat', query_name= 'gbif_clean_post_inat')
-create_species_table = SimpleQuery('create_species_table', query_name= 'gbif_extract_species')
 
-gbif_post_inat_observers = SubModule("gbif_post_inat_observers", [clean_gbif_post_inat, create_species_table])
+gbif_post_inat_observers = SubModule("gbif_post_inat_observers", [clean_gbif_post_inat])
 
-"""
+
 inat_data = Module('inat_data',[inat_observers_submodule,
-                                    gbif_post_inat_observers,
+                                    clean_gbif_post_inat,
                                        inat_species_submodule,
                                        inat_ranges_submodule], always_run= False )
-"""
 
-inat_data = Module('inat_data',[inat_observers_submodule], always_run= False )
+
