@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW raw.all_observers AS 
+CREATE OR REPLACE VIEW observers.all AS 
 
 SELECT DISTINCT
 recordedBy,

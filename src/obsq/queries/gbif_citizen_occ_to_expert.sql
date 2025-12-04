@@ -1,8 +1,8 @@
 -- create gbif_citizen view
-CREATE OR REPLACE VIEW clean.gbif_citizen_no_expert AS
+CREATE OR REPLACE VIEW preprocess.gbif_citizen_no_expert AS
 SELECT *
-FROM clean.gbif_citizen
-WHERE recordedBy NOT IN (SELECT recordedBy FROM raw.citizen_expert)
+FROM preprocess.gbif_citizen_inat
+WHERE recordedBy NOT IN (SELECT recordedBy FROM observers.expert)
 ;
 
 -- create gbif_expert_table to insert into new observations
