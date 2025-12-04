@@ -1,8 +1,7 @@
-from obsq.pipeline import PipelineContext, Module, SubModule, step
 from . import GbifLoader, gbif_clean_submodule
-from ...steps import DataBaseQuery, CreateSchema
-from ...utils.duckdb import import_csv_to_db
-from pathlib import Path
+from ...pipeline import *
+from ...steps import *
+from ...utils import import_csv_to_db
 
 @step 
 def create_custom_predicates(context:PipelineContext):
