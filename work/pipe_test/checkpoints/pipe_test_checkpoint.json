@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-04T11:39:57.205542",
+  "timestamp": "2025-12-04T11:41:49.216084",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -29,8 +29,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-04T11:39:55.859884",
-      "end_time": "2025-12-04T11:39:56.027717",
+      "start_time": "2025-12-04T11:41:47.867658",
+      "end_time": "2025-12-04T11:41:48.048504",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -105,8 +105,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.027970",
-      "end_time": "2025-12-04T11:39:56.029923",
+      "start_time": "2025-12-04T11:41:48.048707",
+      "end_time": "2025-12-04T11:41:48.050116",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -114,8 +114,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.030046",
-      "end_time": "2025-12-04T11:39:56.031567",
+      "start_time": "2025-12-04T11:41:48.050185",
+      "end_time": "2025-12-04T11:41:48.051358",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -123,8 +123,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.031671",
-      "end_time": "2025-12-04T11:39:56.033100",
+      "start_time": "2025-12-04T11:41:48.051465",
+      "end_time": "2025-12-04T11:41:48.052805",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -132,8 +132,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.033252",
-      "end_time": "2025-12-04T11:39:56.034996",
+      "start_time": "2025-12-04T11:41:48.052877",
+      "end_time": "2025-12-04T11:41:48.054209",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -159,8 +159,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:56.038590",
-      "end_time": "2025-12-04T11:39:56.048300",
+      "start_time": "2025-12-04T11:41:48.057473",
+      "end_time": "2025-12-04T11:41:48.068310",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_observers_schema": {
@@ -168,8 +168,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.035183",
-      "end_time": "2025-12-04T11:39:56.037097",
+      "start_time": "2025-12-04T11:41:48.054301",
+      "end_time": "2025-12-04T11:41:48.056059",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -177,8 +177,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:56.048474",
-      "end_time": "2025-12-04T11:39:56.059364",
+      "start_time": "2025-12-04T11:41:48.068686",
+      "end_time": "2025-12-04T11:41:48.080663",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.import_inat_observations": {
@@ -186,8 +186,8 @@
       "status": "completed",
       "output": "raw.inat_observations",
       "error": null,
-      "start_time": "2025-12-04T11:39:56.059694",
-      "end_time": "2025-12-04T11:39:57.083900",
+      "start_time": "2025-12-04T11:41:48.081063",
+      "end_time": "2025-12-04T11:41:49.117563",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.clean_inat_observations": {
@@ -195,8 +195,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.083978",
-      "end_time": "2025-12-04T11:39:57.088829",
+      "start_time": "2025-12-04T11:41:49.117649",
+      "end_time": "2025-12-04T11:41:49.123397",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_citizen_join_inat_obs": {
@@ -204,8 +204,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.089112",
-      "end_time": "2025-12-04T11:39:57.127804",
+      "start_time": "2025-12-04T11:41:49.123612",
+      "end_time": "2025-12-04T11:41:49.129748",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.extract_all_observers": {
@@ -213,8 +213,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.128019",
-      "end_time": "2025-12-04T11:39:57.133799",
+      "start_time": "2025-12-04T11:41:49.129985",
+      "end_time": "2025-12-04T11:41:49.136175",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert": {
@@ -222,8 +222,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.133956",
-      "end_time": "2025-12-04T11:39:57.140661",
+      "start_time": "2025-12-04T11:41:49.136312",
+      "end_time": "2025-12-04T11:41:49.145603",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers": {
@@ -231,8 +231,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.140935",
-      "end_time": "2025-12-04T11:39:57.147981",
+      "start_time": "2025-12-04T11:41:49.146007",
+      "end_time": "2025-12-04T11:41:49.154175",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle": {
@@ -240,8 +240,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-04T11:39:57.149505",
-      "end_time": "2025-12-04T11:39:57.205273",
+      "start_time": "2025-12-04T11:41:49.154379",
+      "end_time": "2025-12-04T11:41:49.215788",
       "attempt_number": 1
     }
   }
