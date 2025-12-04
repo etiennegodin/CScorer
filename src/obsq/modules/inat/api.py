@@ -5,13 +5,15 @@ from pprint import pprint
 import json
 from concurrent.futures import ThreadPoolExecutor
 from ...pipeline import *
+from ...steps import DataBaseLoader
 from ...utils.core import _ask_yes_no
 from ...utils.duckdb import get_all_tables
 
 class inatApiClient(ClassStep):
     def __init__(self, name:str,
                  endpoint:str,
-                 items_from:str,
+                 items_source:str,
+                 items_key:str,
                 params_key:str = None,
                 fields:dict = None,
                 api_version:int = 2,
@@ -26,7 +28,9 @@ class inatApiClient(ClassStep):
         self.params_key = params_key
         self.base_url = f"https://api.inaturalist.org/v{api_version}/{endpoint}"
 
-        self.items_from = items_from
+        self.items_source = items_source
+        self.items_key = items_key
+
         if fields is not None:
             self.fields = f"({fields_to_string(fields)})"
         else:
@@ -49,7 +53,11 @@ class inatApiClient(ClassStep):
         
         con = context.con
         
-        items = context.get_step_output(self.items_from)
+        items = DataBaseLoader(f'get_{self.name}_items',
+                               columns=self.items_key,
+                               from_table=self.items_source,
+                               limit = None,
+                               return_type= 'list')
 
         # Create table for data
         con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (idx INT, id_string TEXT, json JSON)")
