@@ -3,7 +3,6 @@ CREATE OR REPLACE VIEW clean.{{target_table_name}} AS
 WITH main_cleanup AS(
 SELECT g.gbifID,
 g.occurrenceID,
-g."references" as "url",
 g.year,
 g.month,
 g.day,
