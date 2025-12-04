@@ -1,3 +1,8 @@
-#from . import pipeline, data, features
+from .pipeline import Pipeline
+from . import modules
 
-#__all__ = ["pipeline", "data","features"]
+__all__ = ["Pipeline",
+           "modules"
+           
+           ]
+

@@ -1,9 +1,10 @@
-from ...pipeline import PipelineContext, StepStatus, ClassStep
 import os
 import asyncio
 from pygbif import occurrences as occ
 from pathlib import Path
 from pprint import pprint #debug
+from ...pipeline import *
+
 
 
 class GbifLoader(ClassStep):

@@ -1,6 +1,6 @@
-from pathlib import Path
+from obsq import Pipeline
 from obsq.utils import read_config, create_folders
-from obsq.pipeline import Pipeline, Module
+#from obsq import Pipeline
 from obsq import modules as m
 
 def main(ROOT_FOLDER, work_folder, args):

@@ -1,6 +1,6 @@
 from ..utils.duckdb import _open_connection
 from ..utils import to_Path
-from ..pipeline import ClassStep
+from ..pipeline import *
 
 class CreateSchema(ClassStep):
 
