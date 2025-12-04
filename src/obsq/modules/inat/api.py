@@ -72,6 +72,7 @@ class inatApiClient(ClassStep):
                  endpoint:str,
                  items_source:str,
                  items_key:str,
+                 items_limit:int= None,
                 params_key:str = None,
                 explicit_params:dict = None,
                 fields:dict = None,
@@ -89,7 +90,7 @@ class inatApiClient(ClassStep):
 
         self.items_source = items_source
         self.items_key = items_key
-
+        self.items_limit = items_limit
         if fields is not None:
             self.fields = f"({fields_to_string(fields)})"
         else:
@@ -111,8 +112,12 @@ class inatApiClient(ClassStep):
     async def _execute(self, context:PipelineContext):
         
         con = context.con
-        
-        items = context.con.execute(f"SELECT DISTINCT {self.items_key} FROM {self.items_source}").df()[self.items_key].to_list()
+        items_query = f"""SELECT DISTINCT {self.items_key},
+                            FROM {self.items_source}
+                            ORDER BY {self.items_key} ASC 
+                            {f"LIMIT {self.items_limit}" if self.items_limit is not None else ""}
+                            """
+        items = context.con.execute(items_query).df()[self.items_key].to_list()
         self.logger.debug(f"{self.name} items: \n{items}")
 
 
