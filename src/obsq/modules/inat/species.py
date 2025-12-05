@@ -41,9 +41,9 @@ async def get_phenology_wrapper(context:PipelineContext):
                                         fields= phenology_fields,
                                         per_page=10,
                                         chunk_size=1,
-                                        overwrite_table= True)._execute(context)
+                                        overwrite_table= False)._execute(context)
 
-extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_extract_phenology_json')
+extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_phenology_json')
 
 
 @step 
@@ -63,7 +63,7 @@ async def similar_species_wrapper(context:PipelineContext):
                                         per_page=50,
                                         limiter = 50,
                                         chunk_size=1,
-                                        overwrite_table= True)._execute(context)
+                                        overwrite_table= False)._execute(context)
 
 extract_similar_species_json = SimpleQuery('extract_similar_species_json', query_name= 'inat_species_similar_json')
 

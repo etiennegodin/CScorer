@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T14:27:45.890460",
+  "timestamp": "2025-12-05T16:29:01.143956",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -21,7 +21,8 @@
     "preprocess_gbif.gbif_preprocess_observers.extract_all_observers",
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert",
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers",
-    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle"
+    "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle",
+    "init.create_all_schemas.create_labeled_schema"
   ],
   "results": {
     "init.db_connection": {
@@ -29,8 +30,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.517949",
-      "end_time": "2025-12-05T14:27:45.882272",
+      "start_time": "2025-12-05T16:29:00.911735",
+      "end_time": "2025-12-05T16:29:01.124769",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -38,8 +39,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.882481",
-      "end_time": "2025-12-05T14:27:45.885022",
+      "start_time": "2025-12-05T16:29:01.125232",
+      "end_time": "2025-12-05T16:29:01.127938",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -47,8 +48,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.885114",
-      "end_time": "2025-12-05T14:27:45.886372",
+      "start_time": "2025-12-05T16:29:01.128187",
+      "end_time": "2025-12-05T16:29:01.133383",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -56,8 +57,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.886450",
-      "end_time": "2025-12-05T14:27:45.887532",
+      "start_time": "2025-12-05T16:29:01.134412",
+      "end_time": "2025-12-05T16:29:01.137367",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -65,8 +66,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.887603",
-      "end_time": "2025-12-05T14:27:45.888747",
+      "start_time": "2025-12-05T16:29:01.137544",
+      "end_time": "2025-12-05T16:29:01.139314",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -141,8 +142,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T14:27:45.888865",
-      "end_time": "2025-12-05T14:27:45.890218",
+      "start_time": "2025-12-05T16:29:01.139468",
+      "end_time": "2025-12-05T16:29:01.141383",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -242,6 +243,24 @@
       "error": null,
       "start_time": "2025-12-04T18:55:33.086993",
       "end_time": "2025-12-04T18:55:33.435117",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_labeled_schema": {
+      "step_name": "init.create_all_schemas.create_labeled_schema",
+      "status": "completed",
+      "output": "labeled",
+      "error": null,
+      "start_time": "2025-12-05T16:29:01.141572",
+      "end_time": "2025-12-05T16:29:01.143314",
+      "attempt_number": 1
+    },
+    "inat_data.inat_observers.inat_observers": {
+      "step_name": "inat_data.inat_observers.inat_observers",
+      "status": "failed",
+      "output": null,
+      "error": "Binder Error: Referenced column \"item_key\" not found in FROM clause!\nCandidate bindings: \"idx\"\n\nLINE 1: SELECT MAX(item_key) FROM raw.inat_observers\n                   ^",
+      "start_time": "2025-12-05T16:04:29.413155",
+      "end_time": "2025-12-05T16:05:03.849174",
       "attempt_number": 1
     }
   }

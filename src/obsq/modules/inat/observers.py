@@ -12,7 +12,7 @@ get_observers_data = inatApiClient('inat_observers',
                                    items_key='user_id',
                                    limiter=40,
                                    per_page=1,
-                                   overwrite_table= True)
+                                   overwrite_table= False)
 
 extract_observer_json = SimpleQuery('extract_observer_json', query_name= 'inat_observers_observers_json')
 clean_observer = SimpleQuery('clean_observer', query_name= 'inat_clean_observers')
