@@ -109,6 +109,10 @@ class inatApiClient(ClassStep):
 
         super().__init__(name)
 
+    def _create_table(self, context:PipelineContext):
+        context.con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (batch_idx INT, chunk_idx INT, item_key TEXT, json JSON)")
+
+        
     async def _execute(self, context:PipelineContext):
         
         con = context.con
@@ -122,20 +126,27 @@ class inatApiClient(ClassStep):
 
 
         # Create table for data
-        con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (idx INT, id_string TEXT, json JSON)")
-        last_id = con.execute(f"SELECT MAX(idx) FROM {self.table_name}").fetchone()[0] 
+        self._create_table(context)
+        last_id = con.execute(f"SELECT MAX(item_key) FROM {self.table_name}").fetchone()[0] 
 
         if self.overwrite and self.table_name in get_all_tables(con):
             if last_id is not None:
                 if await _ask_yes_no(f'Found existing table data on disk for {self.table_name}, do you want to overwrite all ? (y/n)'):
-                    con.execute(f"CREATE OR REPLACE TABLE {self.table_name} (idx INT, id_string TEXT, json JSON)")
+                    self._create_table(context) # -- forced
                     last_id = None
         
         # Filter items based on last processed ID (idempotent resume)
         if last_id is not None:
             self.logger.info(f"Resuming from last processed ID: {last_id}")
+            try:
+                last_id = int(last_id)
+                items = [int(item) for item in items]
+            except Exception as e:
+                self.logger.error(e)
+                raise e
+            
             # Filter items: keep only those > last_id (since ordered ASC)
-            items = [item for item in items if str(item) > str(last_id)]
+            items = [item for item in items if item >= last_id]
             if not items:
                 self.logger.info(f"All items already processed")
                 return self.table_name
@@ -164,9 +175,9 @@ class inatApiClient(ClassStep):
                     batch_end = min(batch_start + ids_per_request, len(chunk))
                     batch_keys = chunk[batch_start:batch_end]
                     # Create comma-separated ID string
-                    id_string = ','.join(str(key) for key in batch_keys)
+                    item_key = ','.join(str(key) for key in batch_keys)
                     fetchers.append(asyncio.create_task(
-                        self._fetch_data(session, id_string, batch_start, chunk_idx)
+                        self._fetch_data(session, item_key, batch_start, chunk_idx)
                     ))
             
             await asyncio.gather(*fetchers)
@@ -203,10 +214,10 @@ class inatApiClient(ClassStep):
             try:
                 # Run blocking database batch insert in thread pool
                 def batch_insert():
-                    for idx,id_string, data in batch:
+                    for idx,item_key, data in batch:
                         con.execute(
-                            f"INSERT INTO {self.table_name} VALUES (?, ?, ?)",
-                            (idx, id_string, json.dumps(data))
+                            f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?)",
+                            (idx, item_key, json.dumps(data))
                         )
                     con.commit()  # Commit batch
                 
@@ -223,7 +234,7 @@ class inatApiClient(ClassStep):
         
         executor.shutdown(wait=True)
         
-    async def _fetch_data(self, session, id_string:str, batch_idx:int, chunk_idx:int=0):
+    async def _fetch_data(self, session, item_key:str, batch_idx:int, chunk_idx:int=0):
         """Fetch data for multiple IDs in a single request using comma-separated ID string"""
         
         # Set params 
@@ -233,10 +244,10 @@ class inatApiClient(ClassStep):
             params = {}
             
         if self.params_key is not None:
-            params[self.params_key] = id_string
+            params[self.params_key] = item_key
             url = self.base_url
         else:
-            url = self.base_url + (id_string)
+            url = self.base_url + (item_key)
           
         #Set fields 
         if self.fields is not None:
@@ -254,16 +265,16 @@ class inatApiClient(ClassStep):
                         # Put all results from this multi-ID request into queue
                         for result in data["results"]:
                             try:
-                                await self.queue.put((batch_idx,id_string, result))
-                                self.logger.debug(f"Fetched result for IDs {id_string}: {result.get('id', 'N/A')}")
+                                await self.queue.put((batch_idx, chunk_idx, item_key, result))
+                                self.logger.debug(f"Fetched result for IDs {item_key}: {result.get('id', 'N/A')}")
                             except Exception as e:
                                 self.logger.error(f"FAILED to queue result: {e}")
-                        self.logger.info(f"Fetched {len(data['results'])} results for IDs: {id_string} | {chunk_idx}/{self.item_count}")
+                        self.logger.info(f"Fetched {len(data['results'])} results for IDs: {item_key} | {chunk_idx}/{self.item_count}")
                     else:
-                        self.logger.warning(f"No results found for IDs {id_string}")
+                        self.logger.warning(f"No results found for IDs {item_key}")
             except Exception as e:
                 self.logger.error(r.url)
-                self.logger.error(f"API request FAILED for IDs {id_string}: {e}")
+                self.logger.error(f"API request FAILED for IDs {item_key}: {e}")
 
 
 
