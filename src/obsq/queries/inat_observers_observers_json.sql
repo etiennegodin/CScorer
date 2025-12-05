@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW raw.inat_observers_extracted AS
 
 
 SELECT 
-id_string,
+item_key as user_id,
 
 CAST(json_extract(json, '$.id')AS INTEGER) AS id,
 json_extract_string(json, '$.login') AS login,
