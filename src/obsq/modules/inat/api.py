@@ -112,41 +112,44 @@ class inatApiClient(ClassStep):
 
         
     async def _execute(self, context:PipelineContext):
-        
+        last_id = None
         con = context.con
         items_query = f"""SELECT DISTINCT {self.items_key},
                             FROM {self.items_source}
                             ORDER BY {self.items_key} ASC 
                             {f"LIMIT {self.items_limit}" if self.items_limit is not None else ""}
                             """
-        all_items = context.con.execute(items_query).df()[self.items_key].to_list()
-        self.logger.debug(f"{self.name} items: \n{all_items}")
+        items = context.con.execute(items_query).df()[self.items_key].to_list()
+        self.logger.debug(f"{self.name} items: \n{items}")
 
-        print(len(all_items))
+        self.logger.debug(len(items))
         #Convert to int
         try:
-            all_items = [int(item) for item in all_items]
+            items = [int(item) for item in items]
         except Exception as e:
             self.logger.error(e)
 
         # Create table for data
         self._create_table(context)
-        max_id = con.execute(f"SELECT MAX(item_key) FROM {self.table_name}").fetchone()[0] 
-        min_id = con.execute(f"SELECT MIN(item_key) FROM {self.table_name}").fetchone()[0] 
-        
+
+
+        # Get last_id from table
         try:
-            max_id = int(max_id)
-            min_id = int(min_id)
+            max_id = con.execute(f"SELECT MAX(item_key) FROM {self.table_name}").fetchone()[0] 
+            min_id = con.execute(f"SELECT MIN(item_key) FROM {self.table_name}").fetchone()[0] 
+
+            if max_id is not None and min_id is not None:
+                max_id = int(max_id)
+                min_id = int(min_id)
+                if max_id > min_id:
+                    last_id = max_id
+                else:
+                    last_id = min_id
         except Exception as e:
             self.logger.error(e)
         
-        if max_id > min_id:
-            last_id = max_id
-        else:
-            last_id = min_id
-
-
-        if self.overwrite and self.table_name in get_all_tables(con):
+            
+        if self.overwrite and self.table_name in get_all_tables(con):    
             if last_id is not None:
                 if await _ask_yes_no(f'Found existing table data on disk for {self.table_name}, do you want to overwrite all ? (y/n)'):
                     self._create_table(context) # -- forced
@@ -155,22 +158,15 @@ class inatApiClient(ClassStep):
         # Filter items based on last processed ID (idempotent resume)
         if last_id is not None:
             self.logger.info(f"Resuming from last processed ID: {last_id}")
-            
-  
-            
+             
             # Filter items: keep only those > last_id (since ordered ASC)
-            items = [item for item in all_items if item >= last_id]
-            items_done = [item for item in all_items if item <= last_id]
-            
-            print(len(items))
-            print(len(items_done))
-
+            items = [item for item in items if item >= last_id]
 
             if not items:
                 self.logger.info(f"All items already processed")
                 return self.table_name
             
-        print(len(items))
+        self.logger.debug(len(items))
 
         
         # Apply limit if set
@@ -210,7 +206,7 @@ class inatApiClient(ClassStep):
         return self.table_name
 
     def _create_table(self, context:PipelineContext):
-        context.con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (batch_idx INT, chunk_idx INT, item_key TEXT, json JSON)")
+        context.con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (batch_idx INT, chunk_idx INT, item_key INT, json JSON)")
 
     async def _write_data(self, con):
         self.logger.info('Init writer task')
@@ -238,6 +234,7 @@ class inatApiClient(ClassStep):
                 # Run blocking database batch insert in thread pool
                 def batch_insert():
                     for batch_idx, chunk_idx, item_key, data in batch:
+                        self.logger.debug(f'Saved item {item_key}')
                         con.execute(
                             f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?)",
                             (batch_idx, chunk_idx, item_key, json.dumps(data))
