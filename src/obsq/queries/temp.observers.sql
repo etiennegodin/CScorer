@@ -1,8 +1,2 @@
---SUM(num_identification_agreements) as id_agree_count,
---ROUND(SUM(num_identification_agreements) / COUNT(num_identification_agreements),2)as id_agree_pct,
---SUM(num_identification_disagreements) as id_disagree_count,
---ROUND((SUM(num_identification_disagreements) / COUNT(num_identification_disagreements)), 2) as id_disagree_pct,
---ROUND(AVG(description_length),2) as avg_description_len,
---SUM(expert_match) AS expert_match_count,
---ROUND(100 * (SUM(expert_match) / observations_count),2) as expert_match_pct,
---ROUND(100.0000 * (SUM(expert_match) / SUM(COUNT(*)) OVER ()), 3) AS expert_match_total_pct
+ROUND(SUM(num_identification_agreements)/
+    (SUM(num_identification_agreements) + SUM(num_identification_disagreements)),4)as id_agree_pct,
