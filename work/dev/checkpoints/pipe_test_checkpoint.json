@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T16:29:01.143956",
+  "timestamp": "2025-12-05T16:37:34.196788",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -30,8 +30,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T16:29:00.911735",
-      "end_time": "2025-12-05T16:29:01.124769",
+      "start_time": "2025-12-05T16:37:34.028654",
+      "end_time": "2025-12-05T16:37:34.185150",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -39,8 +39,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.125232",
-      "end_time": "2025-12-05T16:29:01.127938",
+      "start_time": "2025-12-05T16:37:34.185363",
+      "end_time": "2025-12-05T16:37:34.187694",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -48,8 +48,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.128187",
-      "end_time": "2025-12-05T16:29:01.133383",
+      "start_time": "2025-12-05T16:37:34.187825",
+      "end_time": "2025-12-05T16:37:34.189326",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -57,8 +57,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.134412",
-      "end_time": "2025-12-05T16:29:01.137367",
+      "start_time": "2025-12-05T16:37:34.189434",
+      "end_time": "2025-12-05T16:37:34.190771",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -66,8 +66,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.137544",
-      "end_time": "2025-12-05T16:29:01.139314",
+      "start_time": "2025-12-05T16:37:34.190877",
+      "end_time": "2025-12-05T16:37:34.192227",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -142,8 +142,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.139468",
-      "end_time": "2025-12-05T16:29:01.141383",
+      "start_time": "2025-12-05T16:37:34.192352",
+      "end_time": "2025-12-05T16:37:34.194140",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -250,8 +250,8 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-05T16:29:01.141572",
-      "end_time": "2025-12-05T16:29:01.143314",
+      "start_time": "2025-12-05T16:37:34.194307",
+      "end_time": "2025-12-05T16:37:34.196134",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {

@@ -214,10 +214,10 @@ class inatApiClient(ClassStep):
             try:
                 # Run blocking database batch insert in thread pool
                 def batch_insert():
-                    for idx,item_key, data in batch:
+                    for batch_idx, chunk_idx, item_key, data in batch:
                         con.execute(
                             f"INSERT INTO {self.table_name} VALUES (?, ?, ?, ?)",
-                            (idx, item_key, json.dumps(data))
+                            (batch_idx, chunk_idx, item_key, json.dumps(data))
                         )
                     con.commit()  # Commit batch
                 
