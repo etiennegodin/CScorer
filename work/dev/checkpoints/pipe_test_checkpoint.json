@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T16:37:34.196788",
+  "timestamp": "2025-12-05T16:59:40.153676",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -30,8 +30,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.028654",
-      "end_time": "2025-12-05T16:37:34.185150",
+      "start_time": "2025-12-05T16:59:39.903219",
+      "end_time": "2025-12-05T16:59:40.134626",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -39,8 +39,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.185363",
-      "end_time": "2025-12-05T16:37:34.187694",
+      "start_time": "2025-12-05T16:59:40.134865",
+      "end_time": "2025-12-05T16:59:40.137167",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -48,8 +48,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.187825",
-      "end_time": "2025-12-05T16:37:34.189326",
+      "start_time": "2025-12-05T16:59:40.137343",
+      "end_time": "2025-12-05T16:59:40.139233",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -57,8 +57,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.189434",
-      "end_time": "2025-12-05T16:37:34.190771",
+      "start_time": "2025-12-05T16:59:40.139554",
+      "end_time": "2025-12-05T16:59:40.142715",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -66,8 +66,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.190877",
-      "end_time": "2025-12-05T16:37:34.192227",
+      "start_time": "2025-12-05T16:59:40.142881",
+      "end_time": "2025-12-05T16:59:40.144580",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -142,8 +142,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.192352",
-      "end_time": "2025-12-05T16:37:34.194140",
+      "start_time": "2025-12-05T16:59:40.144739",
+      "end_time": "2025-12-05T16:59:40.149725",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -250,17 +250,17 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-05T16:37:34.194307",
-      "end_time": "2025-12-05T16:37:34.196134",
+      "start_time": "2025-12-05T16:59:40.150272",
+      "end_time": "2025-12-05T16:59:40.153178",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {
       "step_name": "inat_data.inat_observers.inat_observers",
       "status": "failed",
       "output": null,
-      "error": "Binder Error: Referenced column \"item_key\" not found in FROM clause!\nCandidate bindings: \"idx\"\n\nLINE 1: SELECT MAX(item_key) FROM raw.inat_observers\n                   ^",
-      "start_time": "2025-12-05T16:04:29.413155",
-      "end_time": "2025-12-05T16:05:03.849174",
+      "error": "cannot access local variable 'items' where it is not associated with a value",
+      "start_time": "2025-12-05T16:57:53.531524",
+      "end_time": "2025-12-05T16:58:06.561551",
       "attempt_number": 1
     }
   }

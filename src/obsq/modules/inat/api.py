@@ -109,8 +109,6 @@ class inatApiClient(ClassStep):
 
         super().__init__(name)
 
-    def _create_table(self, context:PipelineContext):
-        context.con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (batch_idx INT, chunk_idx INT, item_key TEXT, json JSON)")
 
         
     async def _execute(self, context:PipelineContext):
@@ -121,13 +119,32 @@ class inatApiClient(ClassStep):
                             ORDER BY {self.items_key} ASC 
                             {f"LIMIT {self.items_limit}" if self.items_limit is not None else ""}
                             """
-        items = context.con.execute(items_query).df()[self.items_key].to_list()
-        self.logger.debug(f"{self.name} items: \n{items}")
+        all_items = context.con.execute(items_query).df()[self.items_key].to_list()
+        self.logger.debug(f"{self.name} items: \n{all_items}")
 
+        print(len(all_items))
+        #Convert to int
+        try:
+            all_items = [int(item) for item in all_items]
+        except Exception as e:
+            self.logger.error(e)
 
         # Create table for data
         self._create_table(context)
-        last_id = con.execute(f"SELECT MAX(item_key) FROM {self.table_name}").fetchone()[0] 
+        max_id = con.execute(f"SELECT MAX(item_key) FROM {self.table_name}").fetchone()[0] 
+        min_id = con.execute(f"SELECT MIN(item_key) FROM {self.table_name}").fetchone()[0] 
+        
+        try:
+            max_id = int(max_id)
+            min_id = int(min_id)
+        except Exception as e:
+            self.logger.error(e)
+        
+        if max_id > min_id:
+            last_id = max_id
+        else:
+            last_id = min_id
+
 
         if self.overwrite and self.table_name in get_all_tables(con):
             if last_id is not None:
@@ -138,18 +155,23 @@ class inatApiClient(ClassStep):
         # Filter items based on last processed ID (idempotent resume)
         if last_id is not None:
             self.logger.info(f"Resuming from last processed ID: {last_id}")
-            try:
-                last_id = int(last_id)
-                items = [int(item) for item in items]
-            except Exception as e:
-                self.logger.error(e)
-                raise e
+            
+  
             
             # Filter items: keep only those > last_id (since ordered ASC)
-            items = [item for item in items if item >= last_id]
+            items = [item for item in all_items if item >= last_id]
+            items_done = [item for item in all_items if item <= last_id]
+            
+            print(len(items))
+            print(len(items_done))
+
+
             if not items:
                 self.logger.info(f"All items already processed")
                 return self.table_name
+            
+        print(len(items))
+
         
         # Apply limit if set
         if self.limit is not None:
@@ -187,8 +209,9 @@ class inatApiClient(ClassStep):
             
         return self.table_name
 
+    def _create_table(self, context:PipelineContext):
+        context.con.execute(f"CREATE TABLE IF NOT EXISTS  {self.table_name} (batch_idx INT, chunk_idx INT, item_key TEXT, json JSON)")
 
-        
     async def _write_data(self, con):
         self.logger.info('Init writer task')
         loop = asyncio.get_event_loop()
