@@ -65,13 +65,11 @@ SELECT g.recordedBy,
 COUNT(DISTINCT g.gbifID) as observations_count, 
 ROUND(COUNT(DISTINCT g.gbifID) / SUM(COUNT(DISTINCT "gbifID")) OVER (), 5) AS total_pct,
 -- ids
-COUNT(*) FILTER (WHERE g.identifiedByID IS NOT NULL) AS expert_ids,
+COUNT(DISTINCT g.gbifID) FILTER (WHERE g.identifiedByID IS NOT NULL) AS expert_ids,
 ROUND(expert_ids / observations_count, 3) as expert_ids_pct,
 COUNT( DISTINCT expert_match) FILTER ( WHERE g.expert_match = 1 )AS expert_match_count,
-ROUND(expert_match_count / observations_count,4) as expert_match_pct
-ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time,
-ROUND(SUM(num_identification_agreements)/
-    (SUM(num_identification_agreements) + SUM(num_identification_disagreements)),4)as id_agree_pct,
+ROUND(expert_match_count / observations_count,4) as expert_match_pct,
+ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time
 --taxonomic
 COUNT(DISTINCT g.class) as class_count,
 COUNT(DISTINCT g."order") as order_count,
@@ -86,7 +84,7 @@ MAX(y.yearly_observations) as max_yearly_observations,
 MAX(m.monthly_observations) as max_monthly_observations,
 ROUND(AVG(y.yearly_observations),2) as avg_yearly_observations,
 ROUND(AVG(m.monthly_observations),2) as avg_monthly_observations,
--- metadata
+--
 COUNT(*) FILTER (WHERE g.coordinateUncertaintyInMeters > 1000 ) as high_cood_un_obs, -- count obs with high uncer
 ROUND(high_cood_un_obs / observations_count, 3) as high_cood_un_pct,
 ROUND(AVG(g.coordinateUncertaintyInMeters),3) as avg_coord_un,
