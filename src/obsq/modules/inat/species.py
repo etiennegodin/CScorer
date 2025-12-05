@@ -5,7 +5,7 @@ from ...pipeline import *
 
 ## SPECIES SUBMODULE
 
-create_species_table = SimpleQuery('create_species_table', query_name= 'gbif_extract_species')
+create_species_table = SimpleQuery('create_species_table', query_name= 'inat_species_extract')
 
 @step 
 async def get_place_id(context:PipelineContext):
@@ -43,7 +43,7 @@ async def get_phenology_wrapper(context:PipelineContext):
                                         chunk_size=1,
                                         overwrite_table= True)._execute(context)
 
-extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_extract_phenology_json')
+extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_extract_phenology_json')
 
 
 @step 
@@ -65,7 +65,7 @@ async def similar_species_wrapper(context:PipelineContext):
                                         chunk_size=1,
                                         overwrite_table= True)._execute(context)
 
-extract_similar_species_json = SimpleQuery('extract_similar_species_json', query_name= 'inat_extract_similar_species_json')
+extract_similar_species_json = SimpleQuery('extract_similar_species_json', query_name= 'inat_species_similar_json')
 
 inat_species_submodule = SubModule("inat_species", [create_species_table,
                                                     get_place_id,

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-04T14:53:43.198454",
+  "timestamp": "2025-12-05T14:58:44.936685",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -32,7 +32,8 @@
     "inat_data.inat_species.extract_phenology_json",
     "inat_data.inat_species.similar_species_wrapper",
     "inat_data.inat_species.extract_similar_species_json",
-    "inat_data.inat_ranges.load_ranges_to_db"
+    "inat_data.inat_ranges.load_ranges_to_db",
+    "init.create_all_schemas.create_labeled_schema"
   ],
   "results": {
     "init.db_connection": {
@@ -40,8 +41,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.731994",
-      "end_time": "2025-12-04T14:46:36.890147",
+      "start_time": "2025-12-05T14:58:44.672889",
+      "end_time": "2025-12-05T14:58:44.921033",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -116,8 +117,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.890351",
-      "end_time": "2025-12-04T14:46:36.891858",
+      "start_time": "2025-12-05T14:58:44.921252",
+      "end_time": "2025-12-05T14:58:44.924359",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -125,8 +126,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.891943",
-      "end_time": "2025-12-04T14:46:36.893260",
+      "start_time": "2025-12-05T14:58:44.924497",
+      "end_time": "2025-12-05T14:58:44.925947",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -134,8 +135,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.893339",
-      "end_time": "2025-12-04T14:46:36.894394",
+      "start_time": "2025-12-05T14:58:44.926030",
+      "end_time": "2025-12-05T14:58:44.927278",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -143,8 +144,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.894474",
-      "end_time": "2025-12-04T14:46:36.895649",
+      "start_time": "2025-12-05T14:58:44.927367",
+      "end_time": "2025-12-05T14:58:44.929202",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -179,8 +180,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-04T14:46:36.895726",
-      "end_time": "2025-12-04T14:46:36.896975",
+      "start_time": "2025-12-05T14:58:44.929328",
+      "end_time": "2025-12-05T14:58:44.931051",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -363,6 +364,15 @@
       "error": "Catalog Error: Table with name gbif_citizen does not exist!\nDid you mean \"clean.gbif_citizen or raw.gbif_citizen\"?\n\nLINE 10: FROM preprocessed.gbif_citizen\n              ^",
       "start_time": "2025-12-04T14:53:38.956658",
       "end_time": "2025-12-04T14:53:43.165564",
+      "attempt_number": 1
+    },
+    "init.create_all_schemas.create_labeled_schema": {
+      "step_name": "init.create_all_schemas.create_labeled_schema",
+      "status": "completed",
+      "output": "labeled",
+      "error": null,
+      "start_time": "2025-12-05T14:58:44.931194",
+      "end_time": "2025-12-05T14:58:44.936237",
       "attempt_number": 1
     }
   }
