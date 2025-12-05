@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW preprocessed.gbif_post_inat_observers AS
+CREATE OR REPLACE TABLE preprocessed.gbif_citizen AS
 SELECT *
 FROM preprocessed.gbif_citizen_no_expert
 WHERE "user_id" IN (

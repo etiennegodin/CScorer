@@ -11,5 +11,5 @@ family,
 genus,
 iucnRedListCategory
 
-FROM preprocessed.gbif_post_inat_observers
+FROM preprocessed.gbif_citizen
 
