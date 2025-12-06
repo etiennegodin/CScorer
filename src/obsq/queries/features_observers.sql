@@ -69,7 +69,7 @@ COUNT(DISTINCT g.gbifID) FILTER (WHERE g.identifiedByID IS NOT NULL) AS expert_i
 ROUND(expert_ids / observations_count, 3) as expert_ids_pct,
 COUNT( DISTINCT expert_match) FILTER ( WHERE g.expert_match = 1 )AS expert_match_count,
 ROUND(expert_match_count / observations_count,4) as expert_match_pct,
-ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time
+ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as avg_id_time,
 --taxonomic
 COUNT(DISTINCT g.class) as class_count,
 COUNT(DISTINCT g."order") as order_count,
@@ -77,7 +77,6 @@ COUNT(DISTINCT g.family) as family_count,
 COUNT(DISTINCT g.genus) as genus_count,
 COUNT(DISTINCT g.species) as species_count,
 -- time
-COUNT(DISTINCT g."month") as unique_month_count, 
 COUNT(DISTINCT g."year") as unique_year_count, 
 COUNT(DISTINCT CAST (g.eventDate AS DATE)) as unique_dates,
 MAX(y.yearly_observations) as max_yearly_observations,
@@ -85,14 +84,13 @@ MAX(m.monthly_observations) as max_monthly_observations,
 ROUND(AVG(y.yearly_observations),2) as avg_yearly_observations,
 ROUND(AVG(m.monthly_observations),2) as avg_monthly_observations,
 --
-COUNT(*) FILTER (WHERE g.coordinateUncertaintyInMeters > 1000 ) as high_cood_un_obs, -- count obs with high uncer
+COUNT(DISTINCT g.coordinateUncertaintyInMeters ) FILTER (WHERE g.coordinateUncertaintyInMeters > 1000 ) as high_cood_un_obs, -- count obs with high uncer
 ROUND(high_cood_un_obs / observations_count, 3) as high_cood_un_pct,
 ROUND(AVG(g.coordinateUncertaintyInMeters),3) as avg_coord_un,
-MAX(g.coordinateUncertaintyInMeters) as max_coord_un,
 ROUND(AVG(g.media_count),2) as avg_media_count,
-ROUND(COUNT(*) FILTER ( WHERE g.sex IS NOT NULL )/observations_count, 3) AS sex_meta_pct,
-ROUND(COUNT(*) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/observations_count, 3) AS reproductiveCondition_meta_pct,
-ROUND(COUNT(*) FILTER ( WHERE g.annotations IS NOT NULL )/observations_count, 3) AS annotations_meta_pct,
+ROUND(COUNT(DISTINCT g.sex ) FILTER ( WHERE g.sex IS NOT NULL )/observations_count, 3) AS sex_meta_pct,
+ROUND(COUNT(DISTINCT g.reproductiveCondition) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/observations_count, 3) AS reproductiveCondition_meta_pct,
+ROUND(COUNT(DISTINCT g.annotations) FILTER ( WHERE g.annotations IS NOT NULL )/observations_count, 3) AS annotations_meta_pct,
 ROUND(AVG(LENGTH("occurrenceRemarks"))) AS avg_description_len
 
 
