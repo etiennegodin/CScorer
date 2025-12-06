@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T20:24:07.026988",
+  "timestamp": "2025-12-05T21:06:30.768340",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -39,7 +39,12 @@
     "extractor_features.community_validation_features",
     "extractor_features.metadata_features",
     "inat_data.inat_species.get_histogram_wrapper",
-    "inat_data.inat_species.extract_histogram_json"
+    "inat_data.inat_species.extract_histogram_json",
+    "inat_data.inat_species.pivot_phenology",
+    "inat_data.inat_species.pivot_histogram",
+    "extractor_features.phenology_features",
+    "extractor_features.taxonomic_features",
+    "extractor_features.histogram_features"
   ],
   "results": {
     "init.db_connection": {
@@ -47,8 +52,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T20:24:06.816965",
-      "end_time": "2025-12-05T20:24:07.016222",
+      "start_time": "2025-12-05T21:06:30.550886",
+      "end_time": "2025-12-05T21:06:30.745842",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -56,8 +61,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.016447",
-      "end_time": "2025-12-05T20:24:07.018395",
+      "start_time": "2025-12-05T21:06:30.746071",
+      "end_time": "2025-12-05T21:06:30.748021",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -65,8 +70,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.018512",
-      "end_time": "2025-12-05T20:24:07.020161",
+      "start_time": "2025-12-05T21:06:30.748146",
+      "end_time": "2025-12-05T21:06:30.749597",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -74,8 +79,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.020270",
-      "end_time": "2025-12-05T20:24:07.021924",
+      "start_time": "2025-12-05T21:06:30.749727",
+      "end_time": "2025-12-05T21:06:30.751267",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -83,8 +88,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.022126",
-      "end_time": "2025-12-05T20:24:07.023894",
+      "start_time": "2025-12-05T21:06:30.751421",
+      "end_time": "2025-12-05T21:06:30.752763",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -159,8 +164,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.024017",
-      "end_time": "2025-12-05T20:24:07.025538",
+      "start_time": "2025-12-05T21:06:30.752869",
+      "end_time": "2025-12-05T21:06:30.754833",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -267,8 +272,8 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-05T20:24:07.025656",
-      "end_time": "2025-12-05T20:24:07.026787",
+      "start_time": "2025-12-05T21:06:30.754954",
+      "end_time": "2025-12-05T21:06:30.756355",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {
@@ -413,8 +418,8 @@
       "status": "completed",
       "output": "raw.inat_histogram",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.838892",
-      "end_time": "2025-12-05T19:42:59.218252",
+      "start_time": "2025-12-05T20:51:17.808519",
+      "end_time": "2025-12-05T20:59:01.477076",
       "attempt_number": 1
     },
     "inat_data.inat_species.extract_histogram_json": {
@@ -422,8 +427,62 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-05T19:49:22.388722",
-      "end_time": "2025-12-05T19:49:22.405671",
+      "start_time": "2025-12-05T20:59:01.477250",
+      "end_time": "2025-12-05T20:59:01.492288",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.pivot_phenology": {
+      "step_name": "inat_data.inat_species.pivot_phenology",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T20:51:17.592500",
+      "end_time": "2025-12-05T20:51:17.808323",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.pivot_histogram": {
+      "step_name": "inat_data.inat_species.pivot_histogram",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T21:03:25.396907",
+      "end_time": "2025-12-05T21:03:25.595682",
+      "attempt_number": 1
+    },
+    "extractor_features.phenology_features": {
+      "step_name": "extractor_features.phenology_features",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T21:03:25.601559",
+      "end_time": "2025-12-05T21:03:25.616623",
+      "attempt_number": 1
+    },
+    "extractor_features.taxonomic_features": {
+      "step_name": "extractor_features.taxonomic_features",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T21:03:25.616878",
+      "end_time": "2025-12-05T21:03:25.632779",
+      "attempt_number": 1
+    },
+    "extractor_features.ecological_features": {
+      "step_name": "extractor_features.ecological_features",
+      "status": "failed",
+      "output": null,
+      "error": "[Errno 2] No such file or directory: '/home/manat/projects/obsq/src/obsq/queries/features_ecological.sql'",
+      "start_time": "2025-12-05T21:05:52.725647",
+      "end_time": "2025-12-05T21:05:55.742999",
+      "attempt_number": 1
+    },
+    "extractor_features.histogram_features": {
+      "step_name": "extractor_features.histogram_features",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T21:06:30.759229",
+      "end_time": "2025-12-05T21:06:30.768147",
       "attempt_number": 1
     }
   }
