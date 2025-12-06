@@ -9,8 +9,6 @@ create_features_schema = CreateSchema("create_features_schema", schema = "featur
 create_observers_schema = CreateSchema("create_observers_schema", schema = "observers")
 create_labeled_schema = CreateSchema("create_labeled_schema", schema = "labeled")
 
-
-
 create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_clean_schema,
                                                 create_preprocessed_schema,
