@@ -1,0 +1,12 @@
+CREATE OR REPLACE VIEW preprocessed.inat_similar_species AS
+SELECT 
+    item_key as taxonID,
+    CAST(json_extract(json, '$.count') AS INTEGER) AS count,
+    
+    -- controlled_attribute fields
+    CAST(json_extract(json, '$.taxon.id') AS INTEGER) AS similar_taxon,
+
+FROM raw.inat_similar_species
+ORDER BY taxonID
+;
+

@@ -1,2 +1,0 @@
-[console_scripts]
-obsq = Cscorer.cli:main

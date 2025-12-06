@@ -6,7 +6,7 @@ class QueryStatus(str, Enum):
     pending = 2
     downloaded = 3
     unziped = 4
-    completed = 5
+    COMPLETED = 5
     
 def func():
     return QueryStatus.downloaded  

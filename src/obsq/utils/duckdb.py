@@ -1,0 +1,197 @@
+import duckdb
+from pathlib import Path
+import logging
+import geopandas as gpd
+import pandas as pd
+from ..utils.core import to_Path, rename_col_df, convert_df_to_gdf
+
+def _open_connection(db_path: str):
+    # always create a fresh connection; use context manager where possible
+    try:
+        con = duckdb.connect(database=db_path)
+        if _load_spatial_extension(con):
+            return con
+        
+    except Exception as e:
+        logging.error(f'Error connection to duckdb {db_path} : \n ', e)
+        raise IOError(f'Error connecting : {e}')
+
+def _load_spatial_extension(con):
+    try:
+        con.execute("INSTALL spatial;")
+        con.execute("LOAD spatial;")
+        return True
+    except Exception as e:
+        logging.error(f"Error loading spatial extension : {e}")
+        return False
+
+async def import_csv_to_db(con :duckdb.DuckDBPyConnection,
+                           file_path:str,
+                           schema:str,
+                           table:str,
+                           columns:list[str] = None,
+                           replace:bool = True,
+                           geo:bool = False,
+                           delete_file: bool = False)->str:
+    """
+    Docstring for import_csv_to_db
+    
+    :param con: Description
+    :type con: duckdb.DuckDBPyConnection
+    :param file_path: Description
+    :type file_path: str
+    :param schema: Description
+    :type schema: str
+    :param table: Description
+    :type table: str
+    :param replace: Description
+    :type replace: bool
+    :param geo: Description
+    :type geo: bool
+    :param delete_file: Description
+    :type delete_file: bool
+    :return: Description
+    :rtype: str
+    """
+    logger = logging.getLogger("import_csv_to_db")
+    
+    # Create or insert into 
+    if (replace) or (f"{schema}.{table}" not in get_all_tables(con)):
+        query = f"""CREATE OR REPLACE TABLE {schema}.{table} AS
+        """
+    else:
+        query = f"""INSERT INTO {schema}.{table}
+        """
+        
+    # Fields from columns or * 
+    if columns is not None:
+        fields = ','.join(str(c) for c in columns)
+        
+        query += f""" SELECT {fields}"""
+    else:
+        query += """ SELECT *, """ 
+        
+    # Rest of query 
+    query += f"""
+                {"ST_Point(decimalLongitude, decimalLatitude) AS geom," if geo else ""}
+                FROM read_csv('{file_path}')
+                """    
+    try:
+        con.execute(query)
+        logger.info(f'Registered {file_path} to {schema}.{table}')
+        return f"{schema}.{table}"
+
+    except Exception as e:
+        logger.error(f'Error creating table {schema}.{table} from file {file_path} : \n ', e)
+        return None
+    
+async def export_to_shp(con :duckdb.DuckDBPyConnection,file_path:str,table_name:str, logger,
+                        schema:str = None,
+                        lon_col:str = "decimalLongitude",
+                        lat_col:str = 'decimalLatitude',\
+                        table_fields:list[str] = '*',
+                        )-> str:
+    
+    if schema is not None:
+        table_name = f"{schema}.{table_name}"
+    
+    
+    if table_fields != '*':
+        select = ""
+        if not isinstance(table_fields, list): 
+            select = f"{table_fields},"
+        else:
+            for field in table_fields:
+                select += f"{field},"
+                
+        select += f"{lon_col}, {lat_col},"
+    else:
+        select = '*'
+        
+    try:
+        df = con.execute(f"SELECT {select} ST_Point({lon_col}, {lat_col}) AS geom FROM {table_name}").fetch_df()
+        gdf = gpd.GeoDataFrame(df.drop(columns=[lon_col, lat_col, 'geom']), geometry=gpd.points_from_xy(df[lon_col], df[lat_col]), crs=4326)
+        #print(gdf)
+        gdf.to_file(file_path)  
+        logger.info(f"Exported shp to : {file_path}")
+    except Exception as e:
+        raise e
+    
+    return file_path    
+
+def set_geom_bbox(con,table_name = None, ):
+
+    try:
+        # Add col for bbox 
+        con.execute(f"ALTER TABLE {table_name} ADD COLUMN minx DOUBLE;")
+        con.execute(f"ALTER TABLE {table_name} ADD COLUMN miny DOUBLE;")
+        con.execute(f"ALTER TABLE {table_name} ADD COLUMN maxx DOUBLE;")
+        con.execute(f"ALTER TABLE {table_name} ADD COLUMN maxy DOUBLE;")
+        # Fill bbox col from geom
+        con.execute(f"""UPDATE {table_name} 
+                            SET minx = ST_XMin(geom),
+                                miny = ST_YMin(geom),
+                                maxx = ST_XMax(geom),
+                                maxy = ST_YMax(geom);""")
+        return True
+    except Exception as e:
+        logging.error(f'Could not set bbox for table {table_name} : \n {e}')
+        return False
+
+def get_all_tables(con)-> list[str]:
+    tables = con.query("""SELECT table_schema, table_name
+                FROM information_schema.tables;""").to_df().apply(lambda x: f"{x['table_schema']}.{x['table_name']}", axis = 1).to_list()
+    return tables
+
+def register_df(con, view_name:str, df:pd.DataFrame):
+    try:
+        con.register(view_name, df)
+        return True
+
+    except Exception as e:
+        logging.error(f'Error registering {view_name} data : \n', e)
+        return False
+    
+
+def gdf_to_duckdb(con:duckdb.DuckDBPyConnection,gdf:gpd.GeoDataFrame,schema:str,table:str):
+    
+    if not isinstance(gdf, gpd.GeoDataFrame):
+        gdf = convert_df_to_gdf(gdf)
+
+    #Replace ":" with "_" in cols yo void conflict in sql query
+    gdf = rename_col_df(gdf, old = ':', new = '_')
+
+    # Convert geoemtry to wkt for duckdb spatial predicates
+    gdf['wkt'] = gdf.geometry.to_wkt()
+    
+    #Remove geoemtry column, cant register to duckdb
+    gdf = gdf.drop('geometry', axis = 1)
+    
+    con.execute(f"""
+    CREATE OR REPLACE TABLE {schema}.{table} AS
+    SELECT *,
+    ST_GeomFromText(wkt) AS geom,
+    FROM gdf
+    """)
+
+    # Create bbox for spatial index use
+    set_geom_bbox(con, table_name= f'{schema}.{table}')
+    con.close()
+    
+    return f"{schema}.{table}"
+
+def get_table_columns(table_name = None, con = None):
+
+    columns = None
+    if table_name is None:
+        raise ValueError('get_table_columns - No table provided ')
+    if con is None:
+        raise ConnectionError("Please provide a valid duck_db connection")
+    
+    #Main 
+    try:
+        columns = con.execute(f"PRAGMA table_info('{table_name}')").df()
+        return columns['name'].tolist()
+    except Exception as e:
+        logging.error(f'Error getting table columns : {e} ')
+

@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Cscorer'
+project = 'obsq'
 copyright = '2025, Etienne Godin'
 author = 'Etienne Godin'
 release = '0.1'

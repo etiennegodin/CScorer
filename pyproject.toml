@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [project]
-name = "CScorer"
+name = "obsq"
 version = "0.1.0"
 description = "Citizen Science Observation Quality Scorer"
 authors = [{ name="Etienne Godin", email="etiennegodin@duck.com" }]
@@ -15,4 +15,4 @@ authors = [{ name="Etienne Godin", email="etiennegodin@duck.com" }]
 dev = ["pytest", "black", "ipykernel", "python-dotenv", "rich", "pre-commit"]
 
 [project.scripts]   # <-- entry point CLI
-obsq = "Cscorer.cli:main"
+obsq = "obsq.cli:main"

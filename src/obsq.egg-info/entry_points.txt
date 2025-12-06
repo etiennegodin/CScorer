@@ -1,0 +1,2 @@
+[console_scripts]
+obsq = obsq.cli:main

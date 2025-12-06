@@ -18,10 +18,10 @@ Creating recipes
 To retrieve a list of random ingredients,
 you can use the ``test.test()`` function:
 
-.. autofunction:: Cscorer.test
+.. autofunction:: obsq.test
 
-.. autofunction:: Cscorer.main.build_full_module
+.. autofunction:: obsq.main.build_full_module
 
-.. autofunction:: Cscorer.main.build_full_submodule
+.. autofunction:: obsq.main.build_full_submodule
 
 
