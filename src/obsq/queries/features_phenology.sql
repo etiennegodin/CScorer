@@ -1,11 +1,7 @@
-CREATE OR REPLACE VIEW features.ecological AS
+CREATE OR REPLACE VIEW features.phenology AS
 
 SELECT
     g.gbifID,
-    g.taxonID,
-    g.month,
-    p.attribute_label,
-    p.value_label,
     p.count AS phenology_total_count,
     -- Raw month counts
     CASE g.month
