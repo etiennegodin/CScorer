@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T19:18:45.836338",
+  "timestamp": "2025-12-05T20:24:07.026988",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -37,7 +37,9 @@
     "extractor_features.process_observers_features",
     "label_data.label_citizen_data",
     "extractor_features.community_validation_features",
-    "extractor_features.metadata_features"
+    "extractor_features.metadata_features",
+    "inat_data.inat_species.get_histogram_wrapper",
+    "inat_data.inat_species.extract_histogram_json"
   ],
   "results": {
     "init.db_connection": {
@@ -45,8 +47,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.676841",
-      "end_time": "2025-12-05T19:18:45.826319",
+      "start_time": "2025-12-05T20:24:06.816965",
+      "end_time": "2025-12-05T20:24:07.016222",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -54,8 +56,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.826509",
-      "end_time": "2025-12-05T19:18:45.828490",
+      "start_time": "2025-12-05T20:24:07.016447",
+      "end_time": "2025-12-05T20:24:07.018395",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -63,8 +65,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.828640",
-      "end_time": "2025-12-05T19:18:45.830284",
+      "start_time": "2025-12-05T20:24:07.018512",
+      "end_time": "2025-12-05T20:24:07.020161",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -72,8 +74,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.830367",
-      "end_time": "2025-12-05T19:18:45.831557",
+      "start_time": "2025-12-05T20:24:07.020270",
+      "end_time": "2025-12-05T20:24:07.021924",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -81,8 +83,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.831645",
-      "end_time": "2025-12-05T19:18:45.832802",
+      "start_time": "2025-12-05T20:24:07.022126",
+      "end_time": "2025-12-05T20:24:07.023894",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -157,8 +159,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.832878",
-      "end_time": "2025-12-05T19:18:45.834168",
+      "start_time": "2025-12-05T20:24:07.024017",
+      "end_time": "2025-12-05T20:24:07.025538",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -265,8 +267,8 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-05T19:18:45.834278",
-      "end_time": "2025-12-05T19:18:45.836093",
+      "start_time": "2025-12-05T20:24:07.025656",
+      "end_time": "2025-12-05T20:24:07.026787",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {
@@ -404,6 +406,24 @@
       "error": null,
       "start_time": "2025-12-05T18:46:43.337911",
       "end_time": "2025-12-05T18:46:43.344890",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.get_histogram_wrapper": {
+      "step_name": "inat_data.inat_species.get_histogram_wrapper",
+      "status": "completed",
+      "output": "raw.inat_histogram",
+      "error": null,
+      "start_time": "2025-12-05T19:18:45.838892",
+      "end_time": "2025-12-05T19:42:59.218252",
+      "attempt_number": 1
+    },
+    "inat_data.inat_species.extract_histogram_json": {
+      "step_name": "inat_data.inat_species.extract_histogram_json",
+      "status": "completed",
+      "output": null,
+      "error": null,
+      "start_time": "2025-12-05T19:49:22.388722",
+      "end_time": "2025-12-05T19:49:22.405671",
       "attempt_number": 1
     }
   }

@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW preprocessed.inat_phenology AS
+CREATE OR REPLACE VIEW clean.inat_phenology AS
 SELECT 
     item_key as taxonID,
     CAST(json_extract(json, '$.count') AS INTEGER) AS count,

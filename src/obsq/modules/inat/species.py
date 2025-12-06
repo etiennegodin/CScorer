@@ -45,6 +45,7 @@ async def get_phenology_wrapper(context:PipelineContext):
                                         overwrite_table= False)._execute(context)
 
 extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_phenology_json')
+pivot_phenology = SimpleQuery('pivot_phenology', query_name= 'inat_species_phenology_pivot')
 
 #Similar species
 @step 
@@ -92,6 +93,7 @@ async def get_histogram_wrapper(context:PipelineContext):
                                         overwrite_table= True)._execute(context)
 
 extract_histogram_json = SimpleQuery('extract_histogram_json', query_name= 'inat_species_histogram_json')
+pivot_histogram = SimpleQuery('pivot_histogram', query_name= 'inat_species_histogram_pivot')
 
 
 
@@ -99,7 +101,9 @@ inat_species_submodule = SubModule("inat_species", [create_species_table,
                                                     get_place_id,
                                                     get_phenology_wrapper,
                                                     extract_phenology_json,
+                                                    pivot_phenology,
                                                     similar_species_wrapper,
                                                     extract_similar_species_json,
                                                     get_histogram_wrapper,
-                                                    extract_histogram_json])
+                                                    extract_histogram_json,
+                                                    pivot_histogram])

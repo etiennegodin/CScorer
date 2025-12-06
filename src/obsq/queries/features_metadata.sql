@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW features.metadaya AS
+CREATE OR REPLACE VIEW features.metadata AS
 SELECT gbifID,
 CAST(media_count AS INTEGER) AS media_count,
 "coordinateUncertaintyInMeters",
