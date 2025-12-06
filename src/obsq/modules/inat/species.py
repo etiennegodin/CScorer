@@ -17,6 +17,7 @@ async def get_place_id(context:PipelineContext):
                                 api_version=2,
                                 per_page=1)._execute(context)
 
+#Phenology
 @step
 async def get_phenology_wrapper(context:PipelineContext):
         
@@ -45,7 +46,7 @@ async def get_phenology_wrapper(context:PipelineContext):
 
 extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_phenology_json')
 
-
+#Similar species
 @step 
 async def similar_species_wrapper(context:PipelineContext):
         
@@ -67,11 +68,38 @@ async def similar_species_wrapper(context:PipelineContext):
 
 extract_similar_species_json = SimpleQuery('extract_similar_species_json', query_name= 'inat_species_similar_json')
 
+# Histogram
+@step
+async def get_histogram_wrapper(context:PipelineContext):
+        
+        place_id = context.get_step_output("get_place_id")
+        histogram_params = {'place_id': place_id['id'] }
+        histogram_fields = {
+        "month_of_year" : True
+        }
+        return inatApiClient('inat_histogram',
+                                        endpoint= 'observations/histogram',
+                                        api_version=2,
+                                        params_key= 'taxon_id',
+                                        explicit_params=histogram_params,
+                                        limiter = 50,
+                                        items_source = 'preprocessed.species',
+                                        items_key= 'taxonID',
+                                        items_limit= None,
+                                        per_page=2,
+                                        chunk_size=1,
+                                        fields= histogram_fields,
+                                        overwrite_table= True)._execute(context)
+
+extract_histogram_json = SimpleQuery('extract_histogram_json', query_name= 'inat_species_histogram_json')
+
+
+
 inat_species_submodule = SubModule("inat_species", [create_species_table,
                                                     get_place_id,
                                                     get_phenology_wrapper,
                                                     extract_phenology_json,
                                                     similar_species_wrapper,
-                                                    extract_similar_species_json])
-
-
+                                                    extract_similar_species_json,
+                                                    get_histogram_wrapper,
+                                                    extract_histogram_json])

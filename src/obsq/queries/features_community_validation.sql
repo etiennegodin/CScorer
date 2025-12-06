@@ -7,15 +7,7 @@ CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE) as id_time,
 CASE
     WHEN identifiedByID IS NULL THEN 0
     ELSE 1
-END AS expert_id,
-
-CASE
-    WHEN occurrenceRemarks IS NULL THEN 0
-    ELSE 1
-END AS occurrenceRemarks,
-ROUND(LENGTH("occurrenceRemarks")) AS description_len,
-
-
+END AS expert_id
 
 FROM labeled.gbif_citizen
 

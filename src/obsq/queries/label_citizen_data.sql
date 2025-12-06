@@ -29,7 +29,7 @@ JOIN c3857 c
         (SELECT geom FROM preprocessed.gbif_citizen WHERE gbifID = c.gbifID),  -- spatial index hit
         0.1
     )
-WHERE ST_DWithin(e.geom, c.geom, 3000) --accurate distance measure
+WHERE ST_DWithin(e.geom, c.geom, 4000) --accurate distance measure
 AND e_taxon = c_taxon --same species  
 
 )

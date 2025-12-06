@@ -282,13 +282,24 @@ class inatApiClient(ClassStep):
                     r.raise_for_status()
                     data = await r.json()    
                     if data and "results" in data:
-                        # Put all results from this multi-ID request into queue
-                        for result in data["results"]:
+                        results = data["results"]
+                        
+                        async def _put_in_queue(result_to_add):
                             try:
-                                await self.queue.put((batch_idx, chunk_idx, item_key, result))
-                                self.logger.debug(f"Fetched result for IDs {item_key}: {result.get('id', 'N/A')}")
+                                await self.queue.put((batch_idx, chunk_idx, item_key, result_to_add))
+                                self.logger.debug(f"Fetched result for IDs {item_key}: {result_to_add.get('id', 'N/A')}")
                             except Exception as e:
                                 self.logger.error(f"FAILED to queue result: {e}")
+                        
+                        # Put all results from this multi-ID request into queue
+                        if isinstance(results,dict):
+                            await _put_in_queue(results) # store dict directly
+
+                        elif isinstance(results, list):
+                            for result in data["results"]: # iterate list of dicts 
+                                await _put_in_queue(result)
+                                
+
                         self.logger.info(f"Fetched {len(data['results'])} results for IDs: {item_key} | {chunk_idx}/{self.item_count}")
                     else:
                         self.logger.warning(f"No results found for IDs {item_key}")
