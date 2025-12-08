@@ -1,6 +1,13 @@
 CREATE OR REPLACE VIEW clean.inat_histogram AS
+
+WITH uniques AS (
+SELECT DISTINCT item_key, * FROM raw.inat_histogram
+
+)
+
 SELECT 
-    item_key as taxonID,
+    DISTINCT item_key as taxonID,
+
 
     -- month_of_year unpivoted
     CAST(json_extract(json, '$.month_of_year."1"') AS INTEGER) AS month_1,
@@ -17,6 +24,6 @@ SELECT
     CAST(json_extract(json, '$.month_of_year."12"') AS INTEGER) AS month_12,
     (month_1+month_2+month_3+month_4+month_5+month_6+month_7+month_8+month_9+month_10+month_11+month_12) AS count
 
-FROM raw.inat_phenology
+FROM uniques
 ORDER BY taxonID
 ;
