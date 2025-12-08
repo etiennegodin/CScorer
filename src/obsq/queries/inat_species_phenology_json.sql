@@ -1,4 +1,10 @@
 CREATE OR REPLACE VIEW clean.inat_phenology AS
+
+WITH uniques AS (
+
+    SELECT DISTINCT item_key, * FROM raw.inat_phenology
+)
+
 SELECT 
     item_key as taxonID,
     CAST(json_extract(json, '$.count') AS INTEGER) AS count,
@@ -25,6 +31,6 @@ SELECT
     CAST(json_extract(json, '$.month_of_year."11"') AS INTEGER) AS month_11,
     CAST(json_extract(json, '$.month_of_year."12"') AS INTEGER) AS month_12
 
-FROM raw.inat_phenology
+FROM uniques
 ORDER BY taxonID, attribute_id, value_id
 ;
