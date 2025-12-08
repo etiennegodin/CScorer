@@ -91,7 +91,10 @@ ROUND(AVG(g.media_count),2) as avg_media_count,
 ROUND(COUNT(DISTINCT g.sex ) FILTER ( WHERE g.sex IS NOT NULL )/observations_count, 3) AS sex_meta_pct,
 ROUND(COUNT(DISTINCT g.reproductiveCondition) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/observations_count, 3) AS reproductiveCondition_meta_pct,
 ROUND(COUNT(DISTINCT g.annotations) FILTER ( WHERE g.annotations IS NOT NULL )/observations_count, 3) AS annotations_meta_pct,
-ROUND(AVG(LENGTH("occurrenceRemarks"))) AS avg_description_len
+CASE
+    WHEN ROUND(AVG(LENGTH("occurrenceRemarks"))) IS NULL THEN 0
+    ELSE ROUND(AVG(LENGTH("occurrenceRemarks"))) 
+END AS avg_description_len
 
 
 FROM labeled.gbif_citizen g
@@ -99,11 +102,12 @@ JOIN yearly_observation y
     ON g.recordedBy = y.recordedBy
 JOIN monthly_observations m 
     ON g.recordedBy = m.recordedBy
-GROUP BY g.recordedBy;
+GROUP BY g.recordedBy
+;
 
 --adding back species obs count
-ALTER TABLE features.observer ADD COLUMN avg_species_obs_count FLOAT;
-ALTER TABLE features.observer ADD COLUMN max_species_obs_count INT;
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS avg_species_obs_count FLOAT;
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS max_species_obs_count INT;
 UPDATE features.observer o
 SET avg_species_obs_count = s.avg_species_obs_count,
     max_species_obs_count = s.max_species_obs_count

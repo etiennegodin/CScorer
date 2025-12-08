@@ -41,15 +41,20 @@ CASE
     ELSE CAST(coordinateUncertaintyInMeters AS INT)
 END AS coordinateUncertaintyInMeters,
 
-(
-    length(g.mediaType) 
-  - length(replace(g.mediaType, 'StillImage', ''))
-) / length('StillImage') AS media_count
+CASE
+    WHEN "mediaType" IS NULL THEN 0
+    ELSE CAST((length(mediaType) - length(REPLACE(mediaType, 'StillImage', ''))) AS INTEGER)
+END AS media_count
 
 FROM {{source_table_name}} g
 )
 
-SELECT * FROM main_cleanup m
+SELECT *,
+
+IFNULL(media_count, 0)
+
+
+FROM main_cleanup m
 
 WHERE m.coordinateUncertaintyInMeters < 3000 
 AND m.taxonRank = 'SPECIES' 
@@ -57,7 +62,9 @@ AND m.month >= 4
 AND m.month < 9
 AND m.hasCoordinate = True
 AND m.taxonID IS NOT NULL
-AND institutionCode = 'iNaturalist';
+AND institutionCode = 'iNaturalist'
+AND dateIdentified IS NOT NULL     
+;            
 
 
 
