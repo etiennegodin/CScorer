@@ -6,18 +6,30 @@ SELECT g.gbifID,
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
     p.* EXCLUDE(p."gbifID"),
+    a.* EXCLUDE(a."gbifID"),
+    m.* EXCLUDE(m."gbifID"),
+
+    t.* EXCLUDE(t."taxonID"),
     t.* EXCLUDE(t."taxonID")
+
 FROM labeled.gbif_citizen g
-JOIN features.observer o
+LEFT JOIN features.observer o
     ON o."recordedBy" = g."recordedBy"
 JOIN features.community_validation c
     ON c."gbifID" = g."gbifID"
+JOIN features.metadata m
+    ON m."gbifID" = g."gbifID"
 JOIN features.histogram h
     ON h."gbifID" = g."gbifID"
-JOIN features.phenology p
+LEFT JOIN features.phenology p
     ON p."gbifID" = g."gbifID"
-JOIN features.taxonomic t
-    ON t."taxonID" = g."taxonID";
+LEFT JOIN features.taxonomic t
+    ON t."taxonID" = g."taxonID"
+JOIN features.temporal a
+    ON a."gbifID" = g."gbifID";
+    
+    
+    ;
 
 
 
