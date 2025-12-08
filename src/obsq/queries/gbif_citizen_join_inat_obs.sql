@@ -10,4 +10,7 @@ FROM clean.gbif_citizen g
 JOIN clean.inat_observations o
     ON g."occurrenceID" = o.url
 
+WHERE o.num_identification_agreements IS NOT NULL
+AND o.num_identification_disagreements IS NOT NULL
+
 ;

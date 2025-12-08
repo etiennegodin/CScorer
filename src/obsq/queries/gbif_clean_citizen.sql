@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW clean.{{target_table_name}} AS 
+CREATE OR REPLACE VIEW clean.gbif_citizen AS 
 
 WITH main_cleanup AS(
 SELECT g.gbifID,
@@ -46,12 +46,11 @@ CASE
     ELSE CAST((length(mediaType) - length(REPLACE(mediaType, 'StillImage', ''))) AS INTEGER)
 END AS media_count
 
-FROM {{source_table_name}} g
+FROM raw.gbif_citizen g
 )
 
-SELECT *,
+SELECT *
 
-IFNULL(media_count, 0)
 
 
 FROM main_cleanup m
