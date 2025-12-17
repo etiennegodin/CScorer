@@ -3,18 +3,18 @@ from obsq.utils import read_config, create_folders
 #from obsq import Pipeline
 from obsq import modules as m
 
-def main(ROOT_FOLDER, work_folder, args):
+def main(root_folder, work_folder, args):
     resume = True
     if args.force:
         resume = False
     #Config as dict
     try:
         config = read_config(work_folder / args.config)
-    except FileNotFoundError:
-        raise FileNotFoundError("Please provide a valid config file")
+    except Exception as e:
+        raise ("Please provide a valid config file")
     
     # Create folder structure
-    config["paths"] = create_folders(ROOT_FOLDER, work_folder)
+    config["paths"] = create_folders(root_folder, work_folder)
       
     pipeline = Pipeline('pipe_test', [m.db_init, m.gbif_ingest,
                                       m.gbif_preprocess,

@@ -1,8 +1,8 @@
-CREATE OR REPLACE VIEW preprocessed.inat_similar_species AS
+CREATE OR REPLACE VIEW clean.inat_similar_species AS
 
 WITH uniques AS (
 
-    SELECT DISTINCT item_key, * raw.inat_similar_species
+    SELECT DISTINCT item_key, * FROM raw.inat_similar_species
 )
 
 

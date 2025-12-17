@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-07T22:17:03.333449",
+  "timestamp": "2025-12-08T09:41:59.260321",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -54,8 +54,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/dev/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-07T22:17:02.986075",
-      "end_time": "2025-12-07T22:17:03.317600",
+      "start_time": "2025-12-08T09:41:50.503478",
+      "end_time": "2025-12-08T09:41:50.898610",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_raw_schema": {
@@ -63,8 +63,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.317931",
-      "end_time": "2025-12-07T22:17:03.320186",
+      "start_time": "2025-12-08T09:41:50.898876",
+      "end_time": "2025-12-08T09:41:50.904214",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -72,8 +72,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.320415",
-      "end_time": "2025-12-07T22:17:03.322646",
+      "start_time": "2025-12-08T09:41:50.904420",
+      "end_time": "2025-12-08T09:41:50.907209",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -81,8 +81,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.322816",
-      "end_time": "2025-12-07T22:17:03.325110",
+      "start_time": "2025-12-08T09:41:50.907434",
+      "end_time": "2025-12-08T09:41:50.910082",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -90,8 +90,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.325411",
-      "end_time": "2025-12-07T22:17:03.327889",
+      "start_time": "2025-12-08T09:41:50.910261",
+      "end_time": "2025-12-08T09:41:50.913008",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -166,8 +166,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.328095",
-      "end_time": "2025-12-07T22:17:03.330642",
+      "start_time": "2025-12-08T09:41:50.913457",
+      "end_time": "2025-12-08T09:41:50.916061",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -193,8 +193,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:08.105258",
-      "end_time": "2025-12-07T22:13:08.125931",
+      "start_time": "2025-12-08T09:41:50.930614",
+      "end_time": "2025-12-08T09:41:50.975561",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -202,8 +202,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:08.126236",
-      "end_time": "2025-12-07T22:13:08.139875",
+      "start_time": "2025-12-08T09:41:50.975828",
+      "end_time": "2025-12-08T09:41:50.984497",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.import_inat_observations": {
@@ -211,8 +211,8 @@
       "status": "completed",
       "output": "raw.inat_observations",
       "error": null,
-      "start_time": "2025-12-07T22:13:08.140395",
-      "end_time": "2025-12-07T22:13:09.908562",
+      "start_time": "2025-12-08T09:41:50.984967",
+      "end_time": "2025-12-08T09:41:53.174501",
       "attempt_number": 1
     },
     "preprocess_gbif.preprocess_inat_observations.clean_inat_observations": {
@@ -220,8 +220,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.908663",
-      "end_time": "2025-12-07T22:13:09.915592",
+      "start_time": "2025-12-08T09:41:53.174662",
+      "end_time": "2025-12-08T09:41:53.184264",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_citizen_join_inat_obs": {
@@ -229,8 +229,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.915849",
-      "end_time": "2025-12-07T22:13:09.923331",
+      "start_time": "2025-12-08T09:41:53.184603",
+      "end_time": "2025-12-08T09:41:53.199902",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.extract_all_observers": {
@@ -238,8 +238,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.923656",
-      "end_time": "2025-12-07T22:13:09.931453",
+      "start_time": "2025-12-08T09:41:53.200756",
+      "end_time": "2025-12-08T09:41:53.215836",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_expert": {
@@ -247,8 +247,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.931716",
-      "end_time": "2025-12-07T22:13:09.944080",
+      "start_time": "2025-12-08T09:41:53.216121",
+      "end_time": "2025-12-08T09:41:53.226308",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.get_citizen_observers": {
@@ -256,8 +256,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.944276",
-      "end_time": "2025-12-07T22:13:09.953402",
+      "start_time": "2025-12-08T09:41:53.226790",
+      "end_time": "2025-12-08T09:41:53.238996",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_preprocess_observers.gbif_observers_obs_shuffle": {
@@ -265,8 +265,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:09.953687",
-      "end_time": "2025-12-07T22:13:10.313972",
+      "start_time": "2025-12-08T09:41:53.239265",
+      "end_time": "2025-12-08T09:41:53.745853",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_labeled_schema": {
@@ -274,8 +274,8 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-07T22:17:03.330904",
-      "end_time": "2025-12-07T22:17:03.333042",
+      "start_time": "2025-12-08T09:41:50.916314",
+      "end_time": "2025-12-08T09:41:50.923031",
       "attempt_number": 1
     },
     "inat_data.inat_observers.inat_observers": {
@@ -292,8 +292,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:10.317213",
-      "end_time": "2025-12-07T22:13:10.327986",
+      "start_time": "2025-12-08T09:41:53.749816",
+      "end_time": "2025-12-08T09:41:53.760313",
       "attempt_number": 1
     },
     "inat_data.inat_observers.clean_observer": {
@@ -301,8 +301,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:10.328244",
-      "end_time": "2025-12-07T22:13:10.337626",
+      "start_time": "2025-12-08T09:41:53.760518",
+      "end_time": "2025-12-08T09:41:53.774957",
       "attempt_number": 1
     },
     "inat_data.clean_gbif_post_inat": {
@@ -310,8 +310,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:10.338421",
-      "end_time": "2025-12-07T22:13:11.263467",
+      "start_time": "2025-12-08T09:41:53.775531",
+      "end_time": "2025-12-08T09:41:54.816029",
       "attempt_number": 1
     },
     "inat_data.inat_species.create_species_table": {
@@ -319,8 +319,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.264287",
-      "end_time": "2025-12-07T22:13:11.271472",
+      "start_time": "2025-12-08T09:41:54.816733",
+      "end_time": "2025-12-08T09:41:54.824290",
       "attempt_number": 1
     },
     "inat_data.inat_species.get_place_id": {
@@ -348,8 +348,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.271680",
-      "end_time": "2025-12-07T22:13:11.280201",
+      "start_time": "2025-12-08T09:41:54.824507",
+      "end_time": "2025-12-08T09:41:54.837621",
       "attempt_number": 1
     },
     "inat_data.inat_species.similar_species_wrapper": {
@@ -366,8 +366,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.344391",
-      "end_time": "2025-12-07T22:13:11.351528",
+      "start_time": "2025-12-08T09:41:54.931069",
+      "end_time": "2025-12-08T09:41:54.939264",
       "attempt_number": 1
     },
     "inat_data.inat_ranges.load_ranges_to_db": {
@@ -384,8 +384,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:12.230462",
-      "end_time": "2025-12-07T22:13:13.700763",
+      "start_time": "2025-12-08T09:41:55.904865",
+      "end_time": "2025-12-08T09:41:57.678950",
       "attempt_number": 1
     },
     "label_data.label_citizen_data": {
@@ -393,8 +393,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.421931",
-      "end_time": "2025-12-07T22:13:12.226670",
+      "start_time": "2025-12-08T09:41:54.993658",
+      "end_time": "2025-12-08T09:41:55.897777",
       "attempt_number": 1
     },
     "extractor_features.community_validation_features": {
@@ -402,8 +402,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.700963",
-      "end_time": "2025-12-07T22:13:13.707918",
+      "start_time": "2025-12-08T09:41:57.679207",
+      "end_time": "2025-12-08T09:41:57.688606",
       "attempt_number": 1
     },
     "extractor_features.metadata_features": {
@@ -411,8 +411,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.708148",
-      "end_time": "2025-12-07T22:13:13.715416",
+      "start_time": "2025-12-08T09:41:57.688928",
+      "end_time": "2025-12-08T09:41:57.697965",
       "attempt_number": 1
     },
     "inat_data.inat_species.get_histogram_wrapper": {
@@ -438,8 +438,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.280570",
-      "end_time": "2025-12-07T22:13:11.344178",
+      "start_time": "2025-12-08T09:41:54.838671",
+      "end_time": "2025-12-08T09:41:54.930800",
       "attempt_number": 1
     },
     "inat_data.inat_species.pivot_histogram": {
@@ -447,8 +447,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:11.351743",
-      "end_time": "2025-12-07T22:13:11.416899",
+      "start_time": "2025-12-08T09:41:54.939479",
+      "end_time": "2025-12-08T09:41:54.990077",
       "attempt_number": 1
     },
     "extractor_features.phenology_features": {
@@ -456,8 +456,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.715638",
-      "end_time": "2025-12-07T22:13:13.729218",
+      "start_time": "2025-12-08T09:41:57.698238",
+      "end_time": "2025-12-08T09:41:57.709067",
       "attempt_number": 1
     },
     "extractor_features.taxonomic_features": {
@@ -465,8 +465,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.729476",
-      "end_time": "2025-12-07T22:13:13.741911",
+      "start_time": "2025-12-08T09:41:57.709527",
+      "end_time": "2025-12-08T09:41:57.725038",
       "attempt_number": 1
     },
     "extractor_features.ecological_features": {
@@ -483,8 +483,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.750393",
-      "end_time": "2025-12-07T22:13:13.762705",
+      "start_time": "2025-12-08T09:41:57.738980",
+      "end_time": "2025-12-08T09:41:57.749841",
       "attempt_number": 1
     },
     "extractor_features.combined_features": {
@@ -492,8 +492,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.762970",
-      "end_time": "2025-12-07T22:13:18.099739",
+      "start_time": "2025-12-08T09:41:57.750178",
+      "end_time": "2025-12-08T09:41:59.260000",
       "attempt_number": 1
     },
     "extractor_features.temporal_features": {
@@ -501,8 +501,8 @@
       "status": "completed",
       "output": null,
       "error": null,
-      "start_time": "2025-12-07T22:13:13.742207",
-      "end_time": "2025-12-07T22:13:13.750042",
+      "start_time": "2025-12-08T09:41:57.725420",
+      "end_time": "2025-12-08T09:41:57.738739",
       "attempt_number": 1
     }
   }
