@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-05T15:25:54.352946",
+  "timestamp": "2025-12-15T22:31:34.859966",
   "pipeline_name": "pipe_test",
   "completed_steps": [
     "init.db_connection",
@@ -42,8 +42,8 @@
       "status": "completed",
       "output": "/home/manat/projects/obsq/work/pipe_test/data/data.duckdb",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.197207",
-      "end_time": "2025-12-05T15:25:54.343944",
+      "start_time": "2025-12-15T22:31:34.562627",
+      "end_time": "2025-12-15T22:31:34.846541",
       "attempt_number": 1
     },
     "ingest_gbif.create_custom_predicates": {
@@ -118,8 +118,8 @@
       "status": "completed",
       "output": "raw",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.344142",
-      "end_time": "2025-12-05T15:25:54.345901",
+      "start_time": "2025-12-15T22:31:34.846823",
+      "end_time": "2025-12-15T22:31:34.849651",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_clean_schema": {
@@ -127,8 +127,8 @@
       "status": "completed",
       "output": "clean",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.346001",
-      "end_time": "2025-12-05T15:25:54.347260",
+      "start_time": "2025-12-15T22:31:34.849789",
+      "end_time": "2025-12-15T22:31:34.851566",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_preprocessed_schema": {
@@ -136,8 +136,8 @@
       "status": "completed",
       "output": "preprocessed",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.347339",
-      "end_time": "2025-12-05T15:25:54.348516",
+      "start_time": "2025-12-15T22:31:34.851686",
+      "end_time": "2025-12-15T22:31:34.853258",
       "attempt_number": 1
     },
     "init.create_all_schemas.create_features_schema": {
@@ -145,8 +145,8 @@
       "status": "completed",
       "output": "features",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.348595",
-      "end_time": "2025-12-05T15:25:54.349861",
+      "start_time": "2025-12-15T22:31:34.853385",
+      "end_time": "2025-12-15T22:31:34.855240",
       "attempt_number": 1
     },
     "ingest_gbif.store_all_gbif.store_gbif_citizen_csv": {
@@ -181,8 +181,8 @@
       "status": "completed",
       "output": "observers",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.349952",
-      "end_time": "2025-12-05T15:25:54.351153",
+      "start_time": "2025-12-15T22:31:34.855373",
+      "end_time": "2025-12-15T22:31:34.857133",
       "attempt_number": 1
     },
     "preprocess_gbif.gbif_clean.clean_gbif_expert": {
@@ -372,8 +372,8 @@
       "status": "completed",
       "output": "labeled",
       "error": null,
-      "start_time": "2025-12-05T15:25:54.351234",
-      "end_time": "2025-12-05T15:25:54.352685",
+      "start_time": "2025-12-15T22:31:34.857266",
+      "end_time": "2025-12-15T22:31:34.859681",
       "attempt_number": 1
     },
     "label_data.label_citizen_data": {

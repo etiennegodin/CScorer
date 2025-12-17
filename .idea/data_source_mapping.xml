@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/.idea/queries/Query_4.sql" value="b4743ca7-3f8d-42ba-bf36-3c89c541ce44" />
+    <file url="file://$PROJECT_DIR$/src/obsq/queries/features_community_validation.sql" value="b4743ca7-3f8d-42ba-bf36-3c89c541ce44" />
+    <file url="file://$PROJECT_DIR$/src/obsq/queries/features_temporal.sql" value="b4743ca7-3f8d-42ba-bf36-3c89c541ce44" />
+  </component>
+</project>

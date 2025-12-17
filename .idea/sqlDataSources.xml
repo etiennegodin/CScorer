@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="bfedd298-cb5d-4c7c-ba93-c33217ce6f50" name="DuckDB Mapping">
+      <data-sources db="b678a219-78bd-4cd7-8bf6-013bd6eb2912" />
+    </mapping>
+  </component>
+</project>
