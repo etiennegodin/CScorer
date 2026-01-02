@@ -27,7 +27,6 @@ def run(root_folder:Path, work_folder:Path, args):
                                       extractor_features_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
-    #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")
     pipeline.run(
                  resume_from_checkpoint = resume,
                  from_module= args.from_module,
