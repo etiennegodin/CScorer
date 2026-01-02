@@ -46,9 +46,7 @@ def main():
     )
     
     
-    file = global_parser.parse_args().config
-    work_folder = Path(file).resolve().parents[0] 
-    ROOT_FOLDER = Path(__file__).resolve().parents[0] 
+
 
     """
     pipe_config = read_config(work_folder / "pipe_config.yaml")
@@ -63,14 +61,19 @@ def main():
     # Debugger
     if args.debug:
         launch_debugger()
-    ROOT_FOLDER  
+
+    WORK_FOLDER = os.getcwd()
+
     # Run main of current pipeline    
-    if "config.yaml" in os.listdir(work_folder):
+    if "config.yaml" in os.listdir(WORK_FOLDER):
+        ROOT_FOLDER = Path(__file__).resolve().parents[0] 
         if args.step == "data":
-            data.main(args)
+            to_run = data.run
         elif args.step == "model":
-            model.main(args)
+            to_run = model.run
+        print(to_run)
+        to_run(ROOT_FOLDER, WORK_FOLDER, args)
 
 
     else:
-        logging.error(f" No 'config file found in {work_folder}")
+        logging.error(f" No 'config file found in {WORK_FOLDER}")

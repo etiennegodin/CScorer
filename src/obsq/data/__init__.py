@@ -1,2 +1,2 @@
-from . import get, transform 
 
+from .main import run
