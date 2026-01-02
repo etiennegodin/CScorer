@@ -42,14 +42,11 @@ async def store_gbif_expert_csv(context:PipelineContext)->str:
 # COLLECT
 collect_citizen_data = GbifApi('collect_citizen_data')
 collect_expert_data = GbifApi('collect_expert_data')
-sm_collect_all_gbif = SubModule("collect_all_gbif",[collect_citizen_data,
-                                                    collect_expert_data])
-
-# STORE
-sm_store_all_gbif = SubModule("store_all_gbif",[store_gbif_citizen_csv,
-                                                store_gbif_expert_csv])
 
 
-gbif_ingest = Module("ingest_gbif",[create_custom_predicates,
-                                           sm_collect_all_gbif,
-                                           sm_store_all_gbif])
+ingest_gbif_module = Module("ingest_gbif",[create_custom_predicates,
+                                           collect_citizen_data,
+                                           collect_expert_data,
+                                           store_gbif_citizen_csv,
+                                           store_gbif_expert_csv
+                                           ])
