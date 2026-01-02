@@ -1,5 +1,5 @@
 from ...pipeline import * 
-from ...steps import SimpleQuery
+from ...db import *
 
 # Set target variable 
 # Label citizen obs 

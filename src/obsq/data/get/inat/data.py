@@ -1,8 +1,8 @@
 from .observers import inat_observers_submodule
 from .species import inat_species_submodule
 from .ranges import inat_ranges_submodule
-from ...steps import *
-from ...pipeline import *
+from ....db import *
+from ....pipeline import *
 
 clean_gbif_post_inat = SimpleQuery('clean_gbif_post_inat', query_name= 'gbif_clean_post_inat')
 
