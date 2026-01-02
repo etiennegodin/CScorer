@@ -1,5 +1,4 @@
 
-from .core import Module,SubModule,FunctionStep,ClassStep, step, PipelineContext,Pipeline, StepStatus
+from .core import Pipeline, Module, SubModule, FunctionStep, ClassStep, step, PipelineContext, StepStatus
 
-
-__all__ = ["Module", "SubModule", "FunctionStep", "ClassStep", "step", "PipelineContext", "StepStatus"]
+__all__ = ["Pipeline", "Module", "SubModule", "FunctionStep", "ClassStep", "step", "PipelineContext", "StepStatus"]
