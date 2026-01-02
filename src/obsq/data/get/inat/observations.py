@@ -7,14 +7,17 @@ from ....db import *
 async def import_inat_observations(context:PipelineContext):
     
     # Find csv file
-    
     files = glob.glob(f"{context.config['paths']['inat_folder']}/*.csv")
-    if len(files) == 1:
+    n_files = len(files)
+    if n_files == 0:
+        raise ValueError("Found no csv in inat")
+    elif n_files > 1:
+        raise ValueError("Found multiple csv in inat")
+    else:
         table_name = import_csv_to_db(context.con, files[0],
                                       'raw',
                                       'inat_observations')
-    else:
-        raise ValueError("Found multiple csv in inat")
+
     return table_name
 
 clean_inat_observations = SimpleQuery('clean_inat_observations', query_name= "inat_clean_observations" )
