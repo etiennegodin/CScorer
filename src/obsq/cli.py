@@ -38,7 +38,6 @@ def main():
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
     global_parser.add_argument("--skip_modules","-s", help = "Skip these modules (list of module names)")
     global_parser.add_argument("--force", action= 'store_true', help = "Ignore last checkpoint")
-    global_parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
 
     parser = argparse.ArgumentParser(
                     prog='obsq',
@@ -47,8 +46,6 @@ def main():
                     parents=[global_parser]
     )
     
-    
-
 
     """
     pipe_config = read_config(work_folder / "pipe_config.yaml")
@@ -59,11 +56,6 @@ def main():
     """
     
     args = parser.parse_args()
-    
-    # Debugger
-    if args.debug:
-        launch_debugger()
-
 
 
     # Run main of current pipeline    
@@ -80,3 +72,7 @@ def main():
 
     else:
         logging.error(f" No 'config file found in {WORK_FOLDER}")
+
+
+if __name__ == "__main__":
+    main()
