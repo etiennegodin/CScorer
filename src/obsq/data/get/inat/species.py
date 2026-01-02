@@ -1,7 +1,7 @@
 from .api import inatApiClient, inatApiRequest
-from ...steps import DataBaseLoader, SimpleQuery
-from ...utils import gdf_to_duckdb
-from ...pipeline import *
+from ....db import DataBaseLoader, SimpleQuery
+from ....utils import gdf_to_duckdb
+from ....pipeline import *
 
 ## SPECIES SUBMODULE
 

@@ -1,7 +1,7 @@
 from .api import inatApiClient
-from ...steps import *
-from ...utils import gdf_to_duckdb
-from ...pipeline import *
+from ....db import *
+from ....utils import gdf_to_duckdb
+from ....pipeline import *
 
 ## OBSERVER SUBMODULE
 get_observers_data = inatApiClient('inat_observers',

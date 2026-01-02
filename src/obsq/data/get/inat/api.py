@@ -5,10 +5,10 @@ from pprint import pprint
 import json
 import requests
 from concurrent.futures import ThreadPoolExecutor
-from ...pipeline import *
-from ...steps import DataBaseLoader
-from ...utils.core import _ask_yes_no
-from ...utils.duckdb import get_all_tables
+from ....pipeline import *
+from ....db import DataBaseLoader
+from ....utils.core import _ask_yes_no
+from ....utils.duckdb import get_all_tables
 
 
 class inatApiRequest(ClassStep):

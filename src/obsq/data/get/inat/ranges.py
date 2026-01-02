@@ -3,8 +3,8 @@ import pandas as pd
 from shapely import wkt
 from pathlib import Path
 import glob
-from ...pipeline import *
-from ...utils import gdf_to_duckdb
+from ....pipeline import *
+from ....utils import gdf_to_duckdb
 
     
 @step

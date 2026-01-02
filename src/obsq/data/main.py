@@ -3,8 +3,10 @@ from ..pipeline import *
 from ..db import * 
 from .get import *
 from .transform import * 
+from pathlib import Path
 
-def run(root_folder, work_folder, args):
+def run(root_folder:Path, work_folder:Path, args):
+
     resume = True
     if args.force:
         resume = False
@@ -17,12 +19,12 @@ def run(root_folder, work_folder, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('data', [db_init, gbif_ingest,
-                                      gbif_preprocess,
-                                      inat_data,
+    pipeline = Pipeline('data', [db_init, ingest_gbif_module,
+                                      preprocess_gbif_module,
+                                      inat_data_module,
                                       #spatial data,
-                                      label_data,
-                                      extractor_features],
+                                      label_data_module,
+                                      extractor_features_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
     #pipeline = Pipeline('pipe_test', [init], work_folder/ "checkpoints_test")

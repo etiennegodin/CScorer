@@ -6,7 +6,7 @@ import logging
 from .utils.debug import launch_debugger
 from . import data, model
 
-WORK_FOLDER = os.getcwd()
+WORK_FOLDER = Path(os.getcwd())
 ROOT_FOLDER = Path(__file__).resolve().parents[0] 
 
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
@@ -74,7 +74,7 @@ def main():
             to_run = data.run
         elif args.step == "model":
             to_run = model.run
-        print(to_run)
+
         to_run(ROOT_FOLDER, WORK_FOLDER, args)
 
 

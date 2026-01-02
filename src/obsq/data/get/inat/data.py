@@ -9,7 +9,7 @@ clean_gbif_post_inat = SimpleQuery('clean_gbif_post_inat', query_name= 'gbif_cle
 gbif_post_inat_observers = SubModule("gbif_post_inat_observers", [clean_gbif_post_inat])
 
 
-inat_data = Module('inat_data',[inat_observers_submodule,
+inat_data_module = Module('inat_data',[inat_observers_submodule,
                                     clean_gbif_post_inat,
                                        inat_species_submodule,
                                        inat_ranges_submodule], always_run= False )
