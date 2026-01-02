@@ -70,8 +70,7 @@ def main():
             to_run = model.run
 
         to_run(ROOT_FOLDER, WORK_FOLDER, args)
-
-
+        
     else:
         logging.error(f" No 'config file found in {WORK_FOLDER}")
 

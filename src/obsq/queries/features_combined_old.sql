@@ -5,8 +5,12 @@ SELECT g.gbifID,
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
+    p.* EXCLUDE(p."gbifID"),
     a.* EXCLUDE(a."gbifID"),
-    m.* EXCLUDE(m."gbifID")
+    m.* EXCLUDE(m."gbifID"),
+
+    t.* EXCLUDE(t."taxonID"),
+    t.* EXCLUDE(t."taxonID")
 
 FROM labeled.gbif_citizen g
 LEFT JOIN features.observer o
@@ -17,6 +21,10 @@ JOIN features.metadata m
     ON m."gbifID" = g."gbifID"
 JOIN features.histogram h
     ON h."gbifID" = g."gbifID"
+LEFT JOIN features.phenology p
+    ON p."gbifID" = g."gbifID"
+LEFT JOIN features.taxonomic t
+    ON t."taxonID" = g."taxonID"
 JOIN features.temporal a
     ON a."gbifID" = g."gbifID";
     
