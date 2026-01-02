@@ -1,6 +1,5 @@
 from . import GbifApi
 from ....pipeline import *
-from ....steps import *
 from ....utils import import_csv_to_db
 
 @step 

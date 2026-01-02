@@ -1,4 +1,4 @@
-from ..steps import CreateSchema, DataBaseConnection
+from .functions import CreateSchema, DataBaseConnection
 from ..pipeline import Module, SubModule
 # CREATE ALL SCHEMAS FOR FUTURE TABLE AND VIEWS
 

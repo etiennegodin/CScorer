@@ -1,8 +1,9 @@
 from ..utils import *
 from ..pipeline import *
-from ..core import * 
+from ..db import * 
 from .get import *
 from .transform import * 
+
 def run(root_folder, work_folder, args):
     resume = True
     if args.force:
@@ -32,8 +33,3 @@ def run(root_folder, work_folder, args):
                  only_modules=args.only_modules,
                  skip_modules=args.skip_modules
                  )
-
-    
-
-if __name__ == "__main__":
-    print('main')

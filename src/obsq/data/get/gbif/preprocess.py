@@ -1,9 +1,7 @@
 from .clean import gbif_clean_submodule
 from ....pipeline import *
-from ....steps import *
+from ....db import *
 from ..inat.observations import preprocess_inat_observations_submodule
-
-
 
 # Join gbif_citizen to inat_observations
 gbif_citizen_join_inat_obs = SimpleQuery("gbif_citizen_join_inat_obs", query_name= "gbif_citizen_join_inat_obs")

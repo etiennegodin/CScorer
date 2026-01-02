@@ -1,5 +1,5 @@
 from ....pipeline import *
-from ....steps import SimpleQuery
+from ....db import SimpleQuery
 from ....utils.sql import read_sql_template
 
 
