@@ -29,4 +29,4 @@ def load_ranges_to_db(context:PipelineContext):
     return table_name
 
 
-inat_ranges_submodule =  SubModule("inat_ranges", [load_ranges_to_db])
+inat_ranges_module =  Module("inat_ranges", [load_ranges_to_db])

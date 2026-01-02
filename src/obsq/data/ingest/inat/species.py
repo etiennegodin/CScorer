@@ -97,7 +97,7 @@ pivot_histogram = SimpleQuery('pivot_histogram', query_name= 'inat_species_histo
 
 
 
-inat_species_submodule = SubModule("inat_species", [create_species_table,
+inat_species_module = Module("inat_species", [create_species_table,
                                                     get_place_id,
                                                     get_phenology_wrapper,
                                                     extract_phenology_json,
