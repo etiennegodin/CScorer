@@ -1,8 +1,3 @@
-from .pipeline import Pipeline
-from . import modules
+from . import data, model, pipeline
 
-__all__ = ["Pipeline",
-           "modules"
-           
-           ]
 

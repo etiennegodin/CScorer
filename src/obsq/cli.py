@@ -5,6 +5,8 @@ import importlib.util
 import logging
 from .utils.debug import launch_debugger
 from .utils.core import read_config
+from . import data, model
+
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
     raise NotImplementedError("dynamic_pipe_argparse not implemented")
 
@@ -28,7 +30,7 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
 def main():
     
     global_parser = argparse.ArgumentParser(add_help = False)
-    global_parser.add_argument("config", help = 'Config File')
+    global_parser.add_argument("step", help = 'Pipeline step')
     global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
     global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
@@ -63,15 +65,12 @@ def main():
         launch_debugger()
     ROOT_FOLDER  
     # Run main of current pipeline    
-    if "main.py" in os.listdir(work_folder):
-        spec=importlib.util.spec_from_file_location("pipe_main",f"{work_folder}/main.py")
-        
-        # creates a new module based on spec
-        pipe_main = importlib.util.module_from_spec(spec)
-        # executes the module in its own namespace
-        # when a module is imported or reloaded.
-        spec.loader.exec_module(pipe_main)
-        
-        pipe_main.main(ROOT_FOLDER, work_folder, args)
+    if "config.yaml" in os.listdir(work_folder):
+        if args.step == "data":
+            data.main(args)
+        elif args.step == "model":
+            model.main(args)
+
+
     else:
-        logging.error(f" No 'main.py' found in {work_folder}")
+        logging.error(f" No 'config file found in {work_folder}")
