@@ -1,9 +1,8 @@
-from ..utils import *
-from ..pipeline import *
-from ..db import * 
-from .get import *
-from .transform import * 
+from ...utils import *
+from ...pipeline import *
+from ...db import * 
 from pathlib import Path
+from . import *
 
 def run(root_folder:Path, work_folder:Path, args):
 
@@ -21,10 +20,13 @@ def run(root_folder:Path, work_folder:Path, args):
     
     pipeline = Pipeline('data', [db_init, ingest_gbif_module,
                                       preprocess_gbif_module,
-                                      inat_data_module,
-                                      #spatial data,
-                                      label_data_module,
-                                      extractor_features_module],
+                                      inat_observers_module,
+                                      gbif_post_inat_observers_module,
+                                      inat_species_module,
+                                      inat_ranges_module
+                                      
+                                      #spatial data
+                                       ],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(
