@@ -1,7 +1,7 @@
 from . import GbifApi
-from ...pipeline import *
-from ...steps import *
-from ...utils import import_csv_to_db
+from ....pipeline import *
+from ....steps import *
+from ....utils import import_csv_to_db
 
 @step 
 def create_custom_predicates(context:PipelineContext):

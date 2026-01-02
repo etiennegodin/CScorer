@@ -1,6 +1,6 @@
 from .clean import gbif_clean_submodule
-from ...pipeline import *
-from ...steps import *
+from ....pipeline import *
+from ....steps import *
 from ..inat.observations import preprocess_inat_observations_submodule
 
 

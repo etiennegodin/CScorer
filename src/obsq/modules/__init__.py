@@ -1,8 +1,8 @@
 from .gbif import gbif_ingest, gbif_preprocess
-from .db import db_init
+from ..core.db import db_init
 from .inat import inatApiClient, inat_data
-from .label import label_data
-from .features import extractor_features
+from ..data.transform.label import label_data
+from ..data.transform.features import extractor_features
 
 __all__ = ["db_init",
            "gbif_ingest",
