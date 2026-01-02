@@ -1,6 +1,6 @@
-from ...pipeline import *
-from ...steps import SimpleQuery
-from ...utils.sql import read_sql_template
+from ....pipeline import *
+from ....steps import SimpleQuery
+from ....utils.sql import read_sql_template
 
 
 clean_gbif_expert = SimpleQuery('clean_gbif_expert', query_name= 'gbif_clean_expert')

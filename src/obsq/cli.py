@@ -4,8 +4,10 @@ import os
 import importlib.util
 import logging
 from .utils.debug import launch_debugger
-from .utils.core import read_config
 from . import data, model
+
+WORK_FOLDER = os.getcwd()
+ROOT_FOLDER = Path(__file__).resolve().parents[0] 
 
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
     raise NotImplementedError("dynamic_pipe_argparse not implemented")
@@ -30,7 +32,7 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
 def main():
     
     global_parser = argparse.ArgumentParser(add_help = False)
-    global_parser.add_argument("step", help = 'Pipeline step')
+    global_parser.add_argument("step", choices= ['data','model'], help = 'Pipeline step')
     global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
     global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
@@ -62,11 +64,12 @@ def main():
     if args.debug:
         launch_debugger()
 
-    WORK_FOLDER = os.getcwd()
+
 
     # Run main of current pipeline    
     if "config.yaml" in os.listdir(WORK_FOLDER):
-        ROOT_FOLDER = Path(__file__).resolve().parents[0] 
+
+
         if args.step == "data":
             to_run = data.run
         elif args.step == "model":

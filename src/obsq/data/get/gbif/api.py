@@ -3,7 +3,7 @@ import asyncio
 from pygbif import occurrences as occ
 from pathlib import Path
 from pprint import pprint #debug
-from ...pipeline import *
+from ....pipeline import *
 
 class GbifApi(ClassStep):
     """
