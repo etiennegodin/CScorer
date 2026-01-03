@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW features.histogram AS
 
 SELECT
     g.gbifID,
-    p.count AS taxon_observations_total_count,
+    p.count AS histo_taxon_obs_ttl_count,
     -- Raw month counts
     CASE g.month
         WHEN 1 THEN p.month_1
@@ -17,7 +17,7 @@ SELECT
         WHEN 10 THEN p.month_10
         WHEN 11 THEN p.month_11
         WHEN 12 THEN p.month_12
-    END AS taxon_observation_month_count,
+    END AS histo_taxon_obs_month_count,
     -- Month density (normalized by total count)
     CASE g.month
         WHEN 1 THEN p.month_1_density
@@ -32,7 +32,8 @@ SELECT
         WHEN 10 THEN p.month_10_density
         WHEN 11 THEN p.month_11_density
         WHEN 12 THEN p.month_12_density
-    END AS taxon_observation_month_density
+    END AS histo_taxon_obs_month_density
+    
 FROM labeled.gbif_citizen g
 LEFT JOIN preprocessed.inat_histogram_pivoted p
     ON g.taxonID = p.taxonID

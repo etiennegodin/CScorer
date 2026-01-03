@@ -7,7 +7,7 @@ CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE) as cmva_id_time,
 CASE
     WHEN identifiedByID IS NULL THEN 0
     ELSE 1
-END AS expert_id
+END AS cmva_expert_id
 
 FROM labeled.gbif_citizen
 
