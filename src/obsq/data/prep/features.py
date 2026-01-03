@@ -1,7 +1,7 @@
 from ...pipeline import *
 from ...db import *
 
-observer_feature = SimpleQuery('process_observers_features', "features_observers")
+observer_feature = SimpleQuery('observers_features', "features_observers")
 community_validation_features = SimpleQuery('community_validation_features', "features_community_validation")
 metadata_features = SimpleQuery('metadata_features', "features_metadata")
 temporal_features = SimpleQuery('temporal_features', "features_temporal")
