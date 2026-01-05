@@ -15,7 +15,7 @@ combined_features = SimpleQuery('combined_features', "features_combined")
 extractor_features_module = Module('extractor_features', [observer_feature,
                                                    community_validation_features,
                                                    metadata_features,
-                                                   phenology_features,
+                                                   
                                                    taxonomic_features,
                                                    temporal_features,
                                                    histogram_features,
