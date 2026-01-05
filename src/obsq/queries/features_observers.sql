@@ -88,9 +88,9 @@ COUNT(DISTINCT g.coordinateUncertaintyInMeters ) FILTER (WHERE g.coordinateUncer
 ROUND(obsv_high_cood_un_obs / obsv_obs_count, 3) as obsv_high_cood_un_pct,
 ROUND(AVG(g.coordinateUncertaintyInMeters),3) as obsv_avg_coord_un,
 ROUND(AVG(g.media_count),2) as obsv_avg_media_count,
-ROUND(COUNT(DISTINCT g.sex ) FILTER ( WHERE g.sex IS NOT NULL )/obsv_obs_count, 3) AS obsv_sex_meta_pct,
-ROUND(COUNT(DISTINCT g.reproductiveCondition) FILTER ( WHERE g.reproductiveCondition IS NOT NULL )/obsv_obs_count, 3) AS obsv_repro_cond_meta_pct,
-ROUND(COUNT(DISTINCT g.annotations) FILTER ( WHERE g.annotations IS NOT NULL )/obsv_obs_count, 3) AS obsv_annot_meta_pct,
+ROUND(COUNT(DISTINCT g.pheno_sex ) FILTER ( WHERE g.pheno_sex IS NOT NULL )/obsv_obs_count, 3) AS obsv_sex_meta_pct,
+ROUND(COUNT(DISTINCT g.pheno_repro) FILTER ( WHERE g.pheno_repro IS NOT NULL )/obsv_obs_count, 3) AS obsv_repro_cond_meta_pct,
+ROUND(COUNT(DISTINCT g.pheno_leaves) FILTER ( WHERE g.pheno_leaves IS NOT NULL )/obsv_obs_count, 3) AS obsv_annot_meta_pct,
 CASE
     WHEN ROUND(AVG(LENGTH("occurrenceRemarks"))) IS NULL THEN 0
     ELSE ROUND(AVG(LENGTH("occurrenceRemarks"))) 

@@ -4,17 +4,17 @@ CAST(media_count AS INTEGER) AS meta_media_count,
 "coordinateUncertaintyInMeters" AS meta_coordinateUncertaintyInMeters,
 
 CASE
-    WHEN reproductiveCondition IS NULL THEN 0
+    WHEN pheno_repro IS NULL THEN 0
     ELSE 1
 END AS meta_pheno_01,
 
 CASE
-    WHEN annotations IS NULL THEN 0
+    WHEN pheno_leaves IS NULL THEN 0
     ELSE 1
 END AS meta_pheno_02,
 
 CASE
-    WHEN sex IS NULL THEN 0
+    WHEN pheno_sex IS NULL THEN 0
     ELSE 1
 END AS meta_pheno_03,
 
