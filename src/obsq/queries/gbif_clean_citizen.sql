@@ -5,7 +5,7 @@ SELECT "gbifID",
 CAST(g.dynamicProperties AS JSON) as annotations
 
 FROM raw.gbif_citizen g
-
+WHERE institutionCode = 'iNaturalist'
 
 ),
 
@@ -14,6 +14,18 @@ json_extracted AS(
 SELECT t."gbifID", e.key, e.value
 FROM cast_json t,
      json_each(try_cast(t.annotations AS JSON)) e
+),
+
+json_first_only AS(
+
+    SELECT gbifID,
+CASE
+  WHEN NOT json_valid(value) THEN NULL
+  WHEN json_type(value) = 'ARRAY'
+       THEN json_extract(value, '$[0]')
+  ELSE value
+END AS value_cleaned
+FROM json_extracted
 ),
 
 
@@ -63,7 +75,7 @@ CASE reproductiveCondition
     WHEN 'fruits or seeds' THEN 14
     ELSE -1
 END AS pheno_repro,
-CASE j.value
+CASE j.value_cleaned
     WHEN 'no live leaves' THEN 40
     WHEN 'green leaves' THEN 38
     WHEN 'breaking leaf buds' THEN 37
@@ -81,7 +93,7 @@ CASE
 END AS media_count
 
 FROM raw.gbif_citizen g
-JOIN json_extracted j
+JOIN json_first_only j
     ON g."gbifID" = j.gbifID
 )
 
