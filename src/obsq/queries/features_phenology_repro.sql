@@ -1,25 +1,7 @@
-CREATE OR REPLACE VIEW features.phenology AS
+CREATE OR REPLACE VIEW features.phenology_repro AS
 
 SELECT
     g.gbifID,
-
-    p.count AS pheno_total_count,
-    -- Raw month counts
-    CASE g.month
-        WHEN 1 THEN p.month_1
-        WHEN 2 THEN p.month_2
-        WHEN 3 THEN p.month_3
-        WHEN 4 THEN p.month_4
-        WHEN 5 THEN p.month_5
-        WHEN 6 THEN p.month_6
-        WHEN 7 THEN p.month_7
-        WHEN 8 THEN p.month_8
-        WHEN 9 THEN p.month_9
-        WHEN 10 THEN p.month_10
-        WHEN 11 THEN p.month_11
-        WHEN 12 THEN p.month_12
-    END AS phenology_month_count,
-    -- Month density (normalized by total count)
     CASE g.month
         WHEN 1 THEN p.month_1_density
         WHEN 2 THEN p.month_2_density
@@ -33,11 +15,13 @@ SELECT
         WHEN 10 THEN p.month_10_density
         WHEN 11 THEN p.month_11_density
         WHEN 12 THEN p.month_12_density
-    END AS phenology_month_density
-FROM joined_observations g
+    END AS pheno_repro_month_density
+
+
+FROM labeled.gbif_citizen g
 
 JOIN preprocessed.inat_phenology_pivoted p
     ON g."taxonID" = p."taxonID"
-    AND p.value_label = g.pheno_anot
+    AND p.value_id = g.pheno_repro
 
-ORDER BY g.gbifID, g.taxonID, p.attribute_label, p.value_label
+ORDER BY g.gbifID, g.taxonID, p.value_id
