@@ -92,7 +92,7 @@ CASE
 END AS media_count
 
 FROM raw.gbif_citizen g
-JOIN json_first_only j
+LEFT JOIN json_first_only j
     ON g."gbifID" = j.gbifID
 )
 
