@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW preprocessed.gbif_citizen_inat AS
+CREATE OR REPLACE TABLE preprocessed.gbif_citizen_inat AS
 SELECT g.*,
 o.user_login,
 o.user_id,

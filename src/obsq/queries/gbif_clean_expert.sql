@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW clean.gbif_expert AS 
+CREATE OR REPLACE TABLE clean.gbif_expert AS 
 
 WITH main_cleanup AS(
 SELECT g.gbifID,
@@ -26,17 +26,18 @@ g.genus,
 g.species,
 g.taxonRank,
 g.taxonID,
-g.sex,
-g.reproductiveCondition,
-g.dynamicProperties as annotations,
 g.decimalLatitude,
 g.decimalLongitude,
-occurrenceStatus,
 g.iucnRedListCategory,
 g.issue,
 g.hasCoordinate,
 g.geom,
-g.coordinateUncertaintyInMeters
+g.sex AS pheno_sex,
+g.reproductiveCondition AS pheno_repro,
+g.dynamicProperties AS pheno_leaves,
+g.coordinateUncertaintyInMeters,
+g.mediaType AS media_count
+
 
 FROM raw.gbif_expert g
 )

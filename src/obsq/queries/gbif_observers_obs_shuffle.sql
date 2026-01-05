@@ -1,17 +1,17 @@
 -- create table from gbif_citizen_inat without expert observations
-CREATE OR REPLACE VIEW preprocessed.gbif_citizen_no_expert AS
+CREATE OR REPLACE TABLE preprocessed.gbif_citizen_no_expert AS
 SELECT *
 FROM preprocessed.gbif_citizen_inat
 WHERE recordedBy NOT IN (SELECT recordedBy FROM observers.expert)
 ;
 
--- create base gbif_expert table (table instaed of view to insert into)
+-- create base gbif_expert table (table instaed of TABLE to insert into)
 CREATE OR REPLACE TABLE preprocessed.gbif_expert AS
 SELECT *
 FROM clean.gbif_expert;
 
--- CREATE VIEW OF observations from citizen expert 
-CREATE OR REPLACE VIEW preprocessed.citizen_obs_from_expert AS
+-- CREATE TABLE OF observations from citizen expert 
+CREATE OR REPLACE TABLE preprocessed.citizen_obs_from_expert AS
 SELECT *
 FROM preprocessed.gbif_citizen_inat
 WHERE recordedBy IN (SELECT recordedBy FROM observers.expert);
