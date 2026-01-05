@@ -21,8 +21,7 @@ INSERT INTO preprocessed.gbif_expert
 SELECT * EXCLUDE (user_login,
                     user_id,
                     num_identification_agreements,
-                    num_identification_disagreements,
-                    media_count
+                    num_identification_disagreements
                     )
 FROM preprocessed.citizen_obs_from_expert;
 
