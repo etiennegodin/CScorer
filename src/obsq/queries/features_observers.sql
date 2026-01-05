@@ -67,8 +67,6 @@ ROUND(COUNT(DISTINCT g.gbifID) / SUM(COUNT(DISTINCT "gbifID")) OVER (), 5) AS ob
 -- ids
 COUNT(DISTINCT g.gbifID) FILTER (WHERE g.identifiedByID IS NOT NULL) AS obsv_expert_ids,
 ROUND(obsv_expert_ids / obsv_obs_count, 3) as obsv_expert_ids_pct,
-COUNT( DISTINCT expert_match) FILTER ( WHERE g.expert_match = 1 )AS obsv_expert_match_count,
-ROUND(obsv_expert_match_count / obsv_obs_count,4) as obsv_expert_match_pct,
 ROUND(AVG(CAST("dateIdentified" AS DATE) - CAST("eventDate" AS DATE))) as obsv_avg_id_time,
 --taxonomic
 COUNT(DISTINCT g.class) as obsv_class_count,

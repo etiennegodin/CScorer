@@ -1,1 +1,0 @@
-PRAGMA table_info(preprocessed.citizen_obs_from_expert)
