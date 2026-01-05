@@ -6,17 +6,17 @@ CAST(media_count AS INTEGER) AS meta_media_count,
 CASE
     WHEN pheno_repro IS NULL THEN 0
     ELSE 1
-END AS meta_pheno_01,
+END AS meta_pheno_repro,
 
 CASE
     WHEN pheno_leaves IS NULL THEN 0
     ELSE 1
-END AS meta_pheno_02,
+END AS meta_pheno_leaves,
 
 CASE
     WHEN pheno_sex IS NULL THEN 0
     ELSE 1
-END AS meta_pheno_03,
+END AS meta_pheno_sex,
 
 CASE
     WHEN occurrenceRemarks IS NULL THEN 0
