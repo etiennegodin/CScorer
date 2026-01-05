@@ -75,7 +75,7 @@ CASE reproductiveCondition
     WHEN 'fruits or seeds' THEN 14
     ELSE -1
 END AS pheno_repro,
-CASE j.value_cleaned
+CASE replace(j.value_cleaned, '"', '')
     WHEN 'no live leaves' THEN 40
     WHEN 'green leaves' THEN 38
     WHEN 'breaking leaf buds' THEN 37

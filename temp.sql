@@ -24,16 +24,18 @@ CASE
   WHEN json_type(value) = 'ARRAY'
        THEN json_extract(value, '$[0]')
   ELSE value
-END AS value_cleaned
+END AS value
 FROM json_extracted
 )
 
 SELECT gbifID,
-CASE j.value_cleaned
-    WHEN "no live leaves" THEN 40
-    WHEN "green leaves" THEN 38
-    WHEN "breaking leaf buds" THEN 37
-    WHEN "colored leaves" THEN 39
+value,
+CASE replace(value, '"', '')
+    WHEN 'no live leaves' THEN 40
+    WHEN 'green leaves' THEN 38
+    WHEN 'breaking leaf buds' THEN 37
+    WHEN 'colored leaves' THEN 39
     ELSE -1
 END AS pheno_leaves
-FROM json_first_only j
+
+FROM json_first_only 
