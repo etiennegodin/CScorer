@@ -15,7 +15,7 @@ taxonomic_features = SimpleQuery('taxonomic_features', "features_taxonomic")
 histogram_features = SimpleQuery('histogram_features', "features_histogram")
 combined_features = SimpleQuery('combined_features', "features_combined")
 
-spatial_clustering = SpatialClustering('spatial_clustering', max_dist= 5)
+spatial_clustering = SpatialClustering('spatial_clustering', type= 'kmeans', k= 6)
 
 extractor_features_module = Module('extractor_features', [observer_feature,
                                                    community_validation_features,
