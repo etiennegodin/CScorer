@@ -1,26 +1,5 @@
 CREATE OR REPLACE VIEW features.phenology AS
 
-WITH extracted_pheno AS(
-
-SELECT t."gbifID", e.key, e.value
-FROM labeled.gbif_citizen t,
-     json_each(try_cast(t.annotations AS JSON)) e
-   
-),
-
-joined_observations AS (
-
-SELECT g.*,
-        e.key as attribute_label
-        e.value as value_label
-
-FROM labeled.gbif_citizen g
-JOIN extracted_pheno e
-    ON g."gbifID" = e."gbifID"
-
-
-)
-
 SELECT
     g.gbifID,
 

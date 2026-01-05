@@ -72,14 +72,14 @@ CASE reproductiveCondition
     WHEN 'no flowers or fruits' THEN 21
     WHEN 'flowers' THEN 13
     WHEN 'fruits or seeds' THEN 14
-    ELSE -1
+    ELSE NULL
 END AS pheno_repro,
 CASE replace(j.value_cleaned, '"', '')
     WHEN 'no live leaves' THEN 40
     WHEN 'green leaves' THEN 38
     WHEN 'breaking leaf buds' THEN 37
     WHEN 'colored leaves' THEN 39
-    ELSE -1
+    ELSE NULL
 END AS pheno_leaves,
 CASE
     WHEN coordinateUncertaintyInMeters IS NULL THEN 0

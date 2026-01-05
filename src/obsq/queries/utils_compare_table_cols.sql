@@ -1,17 +1,8 @@
--- Columns in table1 but not in table2
-SELECT column_name
-FROM information_schema.columns
-WHERE table_name = 'table1'
-EXCEPT
-SELECT column_name
-FROM information_schema.columns
-WHERE table_name = 'table2';
-
--- Columns in table2 but not in table1
-SELECT column_name
-FROM information_schema.columns
-WHERE table_name = 'table2'
-EXCEPT
-SELECT column_name
-FROM information_schema.columns
-WHERE table_name = 'table1';
+-- Table1 columns
+SELECT name AS col, 'preprocessed.gbif_expert' AS table_name
+FROM pragma_table_info('preprocessed.gbif_expert')
+UNION ALL
+-- Table2 columns
+SELECT name AS col, 'preprocessed.citizen_obs_from_expert' AS table_name
+FROM pragma_table_info('preprocessed.citizen_obs_from_expert')
+ORDER BY col, table_name;

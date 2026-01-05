@@ -3,7 +3,9 @@ CREATE OR REPLACE TABLE preprocessed.inat_phenology_pivoted AS
 SELECT
     taxonID,
     attribute_label,
+    attribute_id,
     value_label,
+    value_id,
     count,
     CAST(month_1 AS FLOAT) / NULLIF(count, 0) AS month_1_density,
     CAST(month_2 AS FLOAT) / NULLIF(count, 0) AS month_2_density,
