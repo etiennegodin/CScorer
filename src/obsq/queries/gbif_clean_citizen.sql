@@ -1,6 +1,23 @@
 CREATE OR REPLACE VIEW clean.gbif_citizen AS 
 
-WITH main_cleanup AS(
+WITH cast_json AS(
+SELECT "gbifID",
+CAST(g.dynamicProperties AS JSON) as annotations
+
+FROM raw.gbif_citizen g
+
+
+),
+
+json_extracted AS(
+
+SELECT t."gbifID", e.key, e.value
+FROM cast_json t,
+     json_each(try_cast(t.annotations AS JSON)) e
+),
+
+
+main_cleanup AS(
 SELECT g.gbifID,
 g.occurrenceID,
 g.year,
@@ -26,9 +43,6 @@ g.genus,
 g.species,
 g.taxonRank,
 g.taxonID,
-g.sex,
-g.reproductiveCondition,
-CAST(g.dynamicProperties AS JSON) as annotations,
 g.decimalLatitude,
 g.decimalLongitude,
 occurrenceStatus,
@@ -36,6 +50,26 @@ g.iucnRedListCategory,
 g.issue,
 g.hasCoordinate,
 g.geom,
+CASE g.sex
+    WHEN 'Male' THEN 11
+    WHEN 'Female' THEN 10
+    ELSE 20
+END AS pheno_sex,
+CASE reproductiveCondition
+    WHEN 'flower buds' THEN 15
+    WHEN 'flowers|flower buds' THEN 15
+    WHEN 'no flowers or fruits' THEN 21
+    WHEN 'flowers' THEN 13
+    WHEN 'fruits or seeds' THEN 14
+    ELSE -1
+END AS pheno_repro,
+CASE j.value
+    WHEN 'no live leaves' THEN 40
+    WHEN 'green leaves' THEN 38
+    WHEN 'breaking leaf buds' THEN 37
+    WHEN 'colored leaves' THEN 39
+    ELSE -1
+END AS pheno_leaves,
 CASE
     WHEN coordinateUncertaintyInMeters IS NULL THEN 0
     ELSE CAST(coordinateUncertaintyInMeters AS INT)
@@ -47,6 +81,8 @@ CASE
 END AS media_count
 
 FROM raw.gbif_citizen g
+JOIN json_extracted j
+    ON g."gbifID" = j.gbifID
 )
 
 SELECT *
