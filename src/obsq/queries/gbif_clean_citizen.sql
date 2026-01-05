@@ -64,7 +64,7 @@ g.geom,
 CASE g.sex
     WHEN 'Male' THEN 11
     WHEN 'Female' THEN 10
-    ELSE 20
+    ELSE NULL
 END AS pheno_sex,
 CASE reproductiveCondition
     WHEN 'flower buds' THEN 15
