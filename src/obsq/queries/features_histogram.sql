@@ -2,23 +2,7 @@ CREATE OR REPLACE VIEW features.histogram AS
 
 SELECT
     g.gbifID,
-    p.count AS histo_taxon_obs_ttl_count,
-    -- Raw month counts
-    CASE g.month
-        WHEN 1 THEN p.month_1
-        WHEN 2 THEN p.month_2
-        WHEN 3 THEN p.month_3
-        WHEN 4 THEN p.month_4
-        WHEN 5 THEN p.month_5
-        WHEN 6 THEN p.month_6
-        WHEN 7 THEN p.month_7
-        WHEN 8 THEN p.month_8
-        WHEN 9 THEN p.month_9
-        WHEN 10 THEN p.month_10
-        WHEN 11 THEN p.month_11
-        WHEN 12 THEN p.month_12
-    END AS histo_taxon_obs_month_count,
-    -- Month density (normalized by total count)
+    p.count AS histo_taxon_ttl_obs_count,
     CASE g.month
         WHEN 1 THEN p.month_1_density
         WHEN 2 THEN p.month_2_density
