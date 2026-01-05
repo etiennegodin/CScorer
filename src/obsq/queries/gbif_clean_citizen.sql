@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW clean.gbif_citizen AS 
+CREATE OR REPLACE TABLE clean.gbif_citizen AS 
 
 WITH cast_json AS(
 SELECT "gbifID",
@@ -57,7 +57,6 @@ g.taxonRank,
 g.taxonID,
 g.decimalLatitude,
 g.decimalLongitude,
-occurrenceStatus,
 g.iucnRedListCategory,
 g.issue,
 g.hasCoordinate,
