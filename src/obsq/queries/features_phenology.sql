@@ -1,8 +1,30 @@
 CREATE OR REPLACE VIEW features.phenology AS
 
+WITH extracted_pheno AS(
+
+SELECT t."gbifID", e.key, e.value
+FROM labeled.gbif_citizen t,
+     json_each(try_cast(t.annotations AS JSON)) e
+   
+),
+
+joined_observations AS (
+
+SELECT g.*,
+        e.key as attribute_label
+        e.value as value_label
+
+FROM labeled.gbif_citizen g
+JOIN extracted_pheno e
+    ON g."gbifID" = e."gbifID"
+
+
+)
+
 SELECT
     g.gbifID,
-    p.count AS phenology_total_count,
+
+    p.count AS pheno_total_count,
     -- Raw month counts
     CASE g.month
         WHEN 1 THEN p.month_1
@@ -33,8 +55,10 @@ SELECT
         WHEN 11 THEN p.month_11_density
         WHEN 12 THEN p.month_12_density
     END AS phenology_month_density
-FROM labeled.gbif_citizen g
-LEFT JOIN preprocessed.inat_phenology_pivoted p
-    ON g.taxonID = p.taxonID
-    AND p.attribute_label IS NOT NULL
+FROM joined_observations g
+
+JOIN preprocessed.inat_phenology_pivoted p
+    ON g."taxonID" = p."taxonID"
+    AND p.value_label = g.pheno_anot
+
 ORDER BY g.gbifID, g.taxonID, p.attribute_label, p.value_label
