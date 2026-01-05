@@ -2,6 +2,7 @@ CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
     g.expert_match,
+    g.species,
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
