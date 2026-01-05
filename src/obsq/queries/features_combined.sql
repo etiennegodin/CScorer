@@ -11,10 +11,11 @@ SELECT g.gbifID,
     l.* EXCLUDE(l."gbifID"),
     s.* EXCLUDE(s."gbifID"),
     r.* EXCLUDE(r."gbifID"),
-    t.* EXCLUDE(t."taxonID")
-
+    t.* EXCLUDE(t."taxonID"),
+    sp.spatial_cluster
 
 FROM labeled.gbif_citizen g
+
 INNER JOIN features.observer o
     ON o."recordedBy" = g."recordedBy"
 INNER JOIN features.taxonomic t
@@ -32,7 +33,9 @@ LEFT JOIN features.phenology_leaves l
 LEFT JOIN features.phenology_sex s
     on g."gbifID" = s."gbifID"
 LEFT JOIN features.phenology_repro r
-    on g."gbifID" = r."gbifID";
+    on g."gbifID" = r."gbifID"
+INNER JOIN features.spatial sp
+    on g."gbifID" = sp."gbifID"
 
     ;
 
