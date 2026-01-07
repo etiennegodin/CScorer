@@ -4,7 +4,7 @@ import os
 import importlib.util
 import logging
 from .utils.debug import launch_debugger
-from . import data, model
+from . import data, model, test
 
 WORK_FOLDER = Path(os.getcwd())
 ROOT_FOLDER = Path(__file__).resolve().parents[0] 
@@ -68,8 +68,8 @@ def main():
             to_run = data.prep.run
         elif args.step == "model":
             to_run = model.run
-        elif args.step == "model":
-            to_run = model.run
+        elif args.step == "test":
+            to_run = test.run
 
         to_run(ROOT_FOLDER, WORK_FOLDER, args)
         

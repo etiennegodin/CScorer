@@ -1,4 +1,4 @@
-from ....pipeline import ClassStep, PipelineContext
+from ....pipeline import ClassStep, PipelineContext, step
 from ....utils.duckdb import _open_connection
 import pandas as pd
 from shapely import wkt
@@ -29,6 +29,11 @@ def wkt_string_to_geojson(wkt_string:str)->dict:
     return geojson_dict
 
 
+@step
+def gee_init(context:PipelineContext):
+    # Gee Init
+    ee.Authenticate()
+    ee.Initialize(project = 'observationscorer')
 @dataclass
 class GeeContext:
     """Result of a step execution"""

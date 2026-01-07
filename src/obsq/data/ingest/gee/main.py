@@ -1,22 +1,20 @@
 from ....pipeline import PipelineContext, step, Module
-from .core import GeeContext, GeePointSampler, wkt_string_to_geojson
+from .core import GeeContext, GeePointSampler, wkt_string_to_geojson, gee_init
 import ee
 
 @step
 def gee_features_citizen(context:PipelineContext):
     config = context.config
     aoi_wkt = wkt_string_to_geojson(config['gbif_loader']['GEOMETRY'])
-    aoi = ee.Geometry.Polygon(aoi)
+    aoi = ee.Geometry.Polygon(aoi_wkt)
     points = ee.FeatureCollection('projects/observationscorer/assets/citizen_occurences')
-    context = GeeContext(aoi, points, config['time']['start'], config['time']['end']
+    context = GeeContext(aoi, points, config['time']['start'], config['time']['end'])
                          
     print(context)
 
-    )
+    
 
-gee_features_module = Module('gee_features',[gee_features_citizen])
-
-
+gee_features_module = Module('gee_features',[gee_init, gee_features_citizen])
 
 
 
