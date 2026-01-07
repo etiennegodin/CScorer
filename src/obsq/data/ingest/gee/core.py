@@ -29,19 +29,21 @@ def wkt_string_to_geojson(wkt_string:str)->dict:
     return geojson_dict
 
 
-@step
-def gee_init(context:PipelineContext):
-    # Gee Init
-    ee.Authenticate()
-    ee.Initialize(project = 'observationscorer')
 @dataclass
 class GeeContext:
-    """Result of a step execution"""
     aoi: ee.Geometry.Polygon
     points: ee.FeatureCollection
     date_min: str
     date_max:str
-
+    
+def init_gee():
+    load_dotenv()
+    try:
+        ee.Authenticate()
+        ee.Initialize(project=os.getenv("GEE_PROJECT_ID"))
+        return True
+    except Exception as e:
+        raise Exception(e)
 class GeeRandomPoints(ClassStep):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
@@ -49,16 +51,15 @@ class GeeRandomPoints(ClassStep):
 class GeePointSampler(ClassStep):
     def __init__(self, name, gee_context:GeeContext, scale:int = 30 ,**kwargs):
         self.gee_context = gee_context
-        self._init_gee()
         self.chunk_size = 5000
-        self.table_name = f"gee_{name}"
+        self.table_name = f"raw.gee_{name}"
         self.point_count = self.gee_context.points.size().getInfo()
         self.scale = scale
-
+        self.df = pd.DataFrame()
         super().__init__(name, **kwargs)
 
     async def _execute(self, context:PipelineContext):
-        self.logger.info(f'Launching sampling procees for {self.name}')
+        self.logger.info(f'Launching sampling process for {self.name}')
 
         #Set chunks
         num_chunks = (self.point_count + self.chunk_size - 1) // self.chunk_size
@@ -80,14 +81,7 @@ class GeePointSampler(ClassStep):
         table = await self._save_to_db(context, self.table_name)
         self.logger.info(f"Finished getting gee data for {self.name}")
 
-    def _init_gee(self):
-        load_dotenv()
-        try:
-            ee.Authenticate()
-            ee.Initialize(project=os.getenv("GEE_PROJECT_ID"))
-            return True
-        except Exception as e:
-            raise Exception(e)
+
         
     async def _load_rasters(self,context:PipelineContext)-> list[Image]:
         datasets = context.config['gee_datasets']
@@ -106,7 +100,7 @@ class GeePointSampler(ClassStep):
                 .filterDate(f"{self.gee_context.date_min}", f"{self.gee_context.date_max}") \
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
             
-            median = img_col.median().clip(self.aoi)        
+            median = img_col.median().clip(self.gee_context.aoi)        
             rasters.append(median)        
 
         self.logger.info(f"Loaded {len(rasters)} rasters to sample")
