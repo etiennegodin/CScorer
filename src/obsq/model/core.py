@@ -171,7 +171,7 @@ class ObservationQualityScorer:
         scale_pos_weight = n_neg / n_pos
         
         # Define models with balanced class weights
-        models = {}
+        models = {
             'Random Forest': RandomForestClassifier(
                 n_estimators=100,
                 class_weight='balanced',

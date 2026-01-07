@@ -30,9 +30,9 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
             submodule_parser = module_subparser.add_parser(sub_name, help = description, parents=[global_parser])
 
 def main():
-    
+    modules = ['data_ingest','data_prep','model', 'test']
     global_parser = argparse.ArgumentParser(add_help = False)
-    global_parser.add_argument("step", choices= ['data_ingest','data_prep','model'], help = 'Pipeline step')
+    global_parser.add_argument("step", choices= modules,help = 'Pipeline step')
     global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
     global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
@@ -66,6 +66,8 @@ def main():
             to_run = data.ingest.run
         elif args.step == "data_prep":
             to_run = data.prep.run
+        elif args.step == "model":
+            to_run = model.run
         elif args.step == "model":
             to_run = model.run
 
