@@ -171,12 +171,7 @@ class ObservationQualityScorer:
         scale_pos_weight = n_neg / n_pos
         
         # Define models with balanced class weights
-        models = {
-            'Logistic Regression': LogisticRegression(
-                class_weight='balanced',
-                max_iter=1000,
-                random_state=self.random_state
-            ),
+        models = {}
             'Random Forest': RandomForestClassifier(
                 n_estimators=100,
                 class_weight='balanced',
