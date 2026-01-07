@@ -18,7 +18,7 @@ def run(root_folder:Path, work_folder:Path, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('data', [db_init, ingest_gbif_module,
+    pipeline = Pipeline('data_ingest', [db_init, ingest_gbif_module,
                                       preprocess_gbif_module,
                                       inat_observers_module,
                                       gbif_post_inat_observers_module,

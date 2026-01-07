@@ -1,5 +1,5 @@
-from .pipeline import ClassStep, PipelineContext
-from .utils.duckdb import _open_connection
+from ....pipeline import ClassStep, PipelineContext
+from ....utils.duckdb import _open_connection
 import pandas as pd
 from shapely import wkt
 import ee
@@ -10,14 +10,24 @@ import os
 from dotenv import load_dotenv 
 from pathlib import Path
 import asyncio
+import json
 from pprint import pprint
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union, Callable
+from shapely import to_geojson, wkt
 
 
 def string_to_coords(geo_string)->list:
     geo = wkt.loads(geo_string)
     return list(geo.exterior.coords)
+
+def wkt_string_to_geojson(wkt_string:str)->dict:
+
+    geometry = wkt.loads(wkt_string)
+    geo_json_string = to_geojson(geometry)
+    geojson_dict = json.loads(geo_json_string)
+    return geojson_dict
+
 
 @dataclass
 class GeeContext:
@@ -62,7 +72,7 @@ class GeePointSampler(ClassStep):
             await self._store_sample_to_df(samples)
             print(f"Saved samples for chunk {i+1}/{num_chunks} (points {start_idx}-{end_idx})")
         #Save final samples to db
-        table = await self._save_to_db(context, table_name)
+        table = await self._save_to_db(context, self.table_name)
         self.logger.info(f"Finished getting gee data for {self.name}")
 
     def _init_gee(self):

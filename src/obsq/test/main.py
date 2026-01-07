@@ -1,8 +1,6 @@
-from ...utils import *
-from ...pipeline import *
-from ...db import * 
-from . import *
-from . import * 
+from ..utils import *
+from ..pipeline import *
+from ..db import * 
 from pathlib import Path
 
 def run(root_folder:Path, work_folder:Path, args):
@@ -19,9 +17,8 @@ def run(root_folder:Path, work_folder:Path, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('data_prep', [db_init,
-                                      label_data_module,
-                                      extractor_features_module],
+    pipeline = Pipeline('test_pipe', [db_init,
+                                      ],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(
