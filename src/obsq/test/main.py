@@ -2,6 +2,8 @@ from ..utils import *
 from ..pipeline import *
 from ..db import * 
 from pathlib import Path
+from ..data.ingest.gee.main import gee_features_module
+
 
 def run(root_folder:Path, work_folder:Path, args):
 
@@ -18,7 +20,7 @@ def run(root_folder:Path, work_folder:Path, args):
     config["paths"] = create_folders(root_folder, work_folder)
     
     pipeline = Pipeline('test_pipe', [db_init,
-                                      ],
+                                      gee_features_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(

@@ -1,4 +1,4 @@
-from ....pipeline import PipelineContext, step
+from ....pipeline import PipelineContext, step, Module
 from .core import GeeContext, GeePointSampler, wkt_string_to_geojson
 import ee
 
@@ -10,7 +10,13 @@ def gee_features_citizen(context:PipelineContext):
     points = ee.FeatureCollection('projects/observationscorer/assets/citizen_occurences')
     context = GeeContext(aoi, points, config['time']['start'], config['time']['end']
                          
-
+    print(context)
 
     )
+
+gee_features_module = Module('gee_features',[gee_features_citizen])
+
+
+
+
 
