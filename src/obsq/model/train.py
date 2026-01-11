@@ -15,18 +15,13 @@ def train_model(context:PipelineContext):
     df = con.execute(f"""SELECT* FROM features.combined""" ).df()
     df = df.set_index('gbifID')
 
-    #Factorize categorical columns 
-    df = scorer.factorize_categorical_features(df, to_ignore= 'tempo_eventDate')
-
     X = df.drop(columns=['expert_match'])
     y = df['expert_match']
-
-
 
     strat_var = scorer.create_stratification_bins(
         df,
         spatial_col='spatial_cluster',  # or use a grid_cell_id if you have one
-        species_col='species',
+        species_col='species_encoded',
         time_col='tempo_month',
         n_spatial_bins=6,
         n_time_bins=12

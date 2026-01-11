@@ -16,7 +16,7 @@ class Encoder(ClassStep):
         self.features_name = name
         self.table_id = table_id
         self.input_table_name = f"features.{name}"
-        self.output_table_name = f"features.pca_{name}"
+        self.output_table_name = f"encoded.{name}"
         self.pca_variance_threshold = pca_variance_threshold
         self.factorize_rare_threshold = factorize_rare_threshold
         super().__init__(name, retry_attempts =1,**kwargs)
@@ -43,6 +43,8 @@ class Encoder(ClassStep):
         #Factorize categorical features 
         df_out = self.factorize_categorical_features(df_out)
         print(df_out.head())
+
+
 
         context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df_out")
 
