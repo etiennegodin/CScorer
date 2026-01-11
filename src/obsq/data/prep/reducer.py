@@ -5,7 +5,7 @@ import pandas as pd
 
 
 class Reducer(ClassStep):
-    def __init__(self, name, features_list:list,variance_threshold = 0.98,**kwargs):
+    def __init__(self, name,variance_threshold = 0.98,**kwargs):
         """
         Pca wrapper
         """
@@ -15,14 +15,21 @@ class Reducer(ClassStep):
         self.table_name = f"features.pca_{name}"
         self.variance_threshold = variance_threshold
 
-        if not isinstance(features_list,list):
-            raise TypeError("Provided features for pca is not a list")
-        self.features_list = features_list
-
     def _execute(self, context):
-        df = context.con.execute("SELECT * FROM features.combined").df()
-        
-        df_pca = self._pca_reducer(df)
+        #Load df
+        df = context.con.execute(f"SELECT * FROM features.{self.name}").df()
+        #Split columns, keep non-numeric for later
+        cat_col = df.select_dtypes(include='object')
+        # Find highligh correlated features 
+        to_reduce = self._find_correlated(df)
+        #Reduce with pca
+        df_pca = self._pca_reducer(df, to_reduce)
+
+        #Set output
+        df_out = df[['gbifID'].extend(cat_col)]
+        df_out = pd.merge(df_out, df_pca)
+
+        context.con.execute(f"CREATE OR REPLACE TABLE {self.table_name} AS SELECT * FROM df_out")
 
         return super()._execute(context)
         
@@ -33,16 +40,17 @@ class Reducer(ClassStep):
         upper_tri = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
         
         return [column for column in upper_tri.columns if any(upper_tri[column].abs() > 0.8)]
-    def _pca_reducer(self, df):
+    
+    def _pca_reducer(self, df, features_list:list)->pd.DataFrame:
         variance = 0.0
         n_components = 1
         self.retry_wait_maxcat_col = df.select_dtypes(include='object')
 
         ids = df['gbifID']
-        df_pruned = df[self.features_list]
+        df_pruned = df[features_list]
 
         #Iterate until variance explained
-        for i in range(len(self.features_list)):
+        for i in range(len(features_list)):
             if variance > self.variance_threshold:
                 break
             n_components += 1
