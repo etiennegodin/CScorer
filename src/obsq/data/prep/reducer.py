@@ -5,17 +5,17 @@ import pandas as pd
 
 
 class Reducer(ClassStep):
-    def __init__(self, name, table_id:str, variance_threshold = 0.98,**kwargs):
+    def __init__(self, name, table_id:str = 'gbifID', variance_threshold = 0.98,**kwargs):
         """
         Pca wrapper
         """
-        super().__init__(name, retry_attempts =1,**kwargs)
-
-        self.name = name
+        self.features_name = name
         self.table_id = table_id
         self.input_table_name = f"features.{name}"
         self.output_table_name = f"features.pca_{name}"
         self.variance_threshold = variance_threshold
+        super().__init__(name, retry_attempts =1,**kwargs)
+
 
     def _execute(self, context):
         #Load df
@@ -26,12 +26,17 @@ class Reducer(ClassStep):
         df_out = df.select_dtypes(include='object')
         # Find highligh correlated features 
         to_reduce = self._find_correlated(df)
+        if len(to_reduce) == 0:
+            return 
         #Reduce with pca
         df_pca = self._pca_reducer(df, to_reduce)
 
         #Set output
-        df_out[self.table_id] = ids
-        df_out = pd.merge(df_out, df_pca)
+        if df_out.empty != True:
+            df_out[self.table_id] = ids
+            df_out = pd.merge(df_out, df_pca, on = self.table_id)
+        else:
+            df_out = df_pca
 
         context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df_out")
 
@@ -49,7 +54,7 @@ class Reducer(ClassStep):
         n_components = 1
         self.retry_wait_maxcat_col = df.select_dtypes(include='object')
 
-        ids = df['gbifID']
+        ids = df[self.table_id]
         df_pruned = df[features_list]
 
         #Iterate until variance explained
@@ -60,7 +65,9 @@ class Reducer(ClassStep):
             pca = PCA(n_components=n_components)
             pca.fit(df_pruned)
             variance = sum(pca.explained_variance_ratio_)
-            
+
+        self.logger.info(f'Ran pca on {self.features_name} | {n_components} components explained {round(variance,3)}% of variance')
+
         #Transform original data 
         df_pca = pd.DataFrame(pca.transform(df_pruned))
 
@@ -68,13 +75,14 @@ class Reducer(ClassStep):
         columns_rename = self._create_rename_dict(n_components)
         df_pca = df_pca.rename(columns=columns_rename)
 
-        self.logger.info(f'Ran pca on {self.name} | {n_components} components explained {round(variance,3)}% of variance')
+        df_pca[self.table_id] = ids
+
         return df_pca
     
     def _create_rename_dict(self, n_components)->dict:
         columns_rename = {}
         for i in range(n_components):
-            columns_rename[i] = f"{self.name}_pca{i}"
+            columns_rename[i] = f"{self.features_name}_pca{i}"
         return columns_rename
     
 
