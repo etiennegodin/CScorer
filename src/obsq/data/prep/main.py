@@ -1,8 +1,9 @@
 from ...utils import *
 from ...pipeline import *
 from ...db import * 
-from . import *
-from . import * 
+from .label import label_data_module
+from .extract import extract_features_module
+from .reduce import reduce_features_module
 from pathlib import Path
 
 def run(root_folder:Path, work_folder:Path, args):
@@ -21,7 +22,8 @@ def run(root_folder:Path, work_folder:Path, args):
     
     pipeline = Pipeline('data_prep', [db_init,
                                       label_data_module,
-                                      extractor_features_module],
+                                      extract_features_module,
+                                      reduce_features_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(
