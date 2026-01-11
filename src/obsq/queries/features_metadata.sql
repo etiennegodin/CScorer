@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW features.metadata AS
-SELECT gbifID,
+SELECT gbifID,species,
 CAST(media_count AS INTEGER) AS meta_media_count,
 "coordinateUncertaintyInMeters" AS meta_coordinateUncertaintyInMeters,
 

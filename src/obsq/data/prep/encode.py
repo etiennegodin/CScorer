@@ -1,25 +1,25 @@
 from ...pipeline import Module, SubModule, step, PipelineContext
-from .reducer import Reducer
+from .encoder import Encoder
 import pandas as pd
 import numpy as np
 
 
 ### Auto load all features and 
 
-obsv_reducer = Reducer(name = 'observer', table_id='recordedBy' )
-spatial_reducer = Reducer(name = 'spatial')
-community_validation_reducer = Reducer(name = 'community_validation')
-histogram_reducer = Reducer(name = 'histogram')
-metadata_reducer = Reducer(name = 'metadata')
-phenology_leaves_reducer = Reducer(name = 'phenology_leaves')
-phenology_repro_reducer = Reducer(name = 'phenology_repro')
-phenology_sex_reducer = Reducer(name = 'phenology_sex')
-taxonomic_reducer = Reducer(name = 'taxonomic', table_id='taxonID' )
-temporal_repro_reducer = Reducer(name = 'temporal')
-gee_reducer = Reducer(name = 'gee')
+obsv_reducer = Encoder(name = 'observer', table_id='recordedBy' )
+spatial_reducer = Encoder(name = 'spatial')
+community_validation_reducer = Encoder(name = 'community_validation')
+histogram_reducer = Encoder(name = 'histogram')
+metadata_reducer = Encoder(name = 'metadata')
+phenology_leaves_reducer = Encoder(name = 'phenology_leaves')
+phenology_repro_reducer = Encoder(name = 'phenology_repro')
+phenology_sex_reducer = Encoder(name = 'phenology_sex')
+taxonomic_reducer = Encoder(name = 'taxonomic', table_id='taxonID' )
+temporal_repro_reducer = Encoder(name = 'temporal')
+gee_reducer = Encoder(name = 'gee')
 
 
-reduce_features_module = Module('reduce_features', [obsv_reducer,
+encode_features_module = Module('encode_features', [obsv_reducer,
                                                     spatial_reducer,
                                                     community_validation_reducer,
                                                     histogram_reducer,

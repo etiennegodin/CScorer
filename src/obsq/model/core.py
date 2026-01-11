@@ -1,7 +1,4 @@
-
-
-
-
+from typing import Union
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -43,7 +40,9 @@ class ObservationQualityScorer:
         self.scaler = StandardScaler()
         self.models = {}
         self.results = {}
-        
+    
+
+    
     def create_stratification_bins(self, df, spatial_col, species_col, time_col, 
                                    n_spatial_bins=10, n_time_bins=12):
         """
@@ -119,10 +118,11 @@ class ObservationQualityScorer:
             stratify=stratification_var,
             random_state=self.random_state
         )
+
+        
         
         # Get stratification var for temp set
         strat_temp = stratification_var.loc[X_temp.index]
-        
         # Second split: separate train and validation
         val_ratio = self.val_size / (self.train_size + self.val_size)
         X_train, X_val, y_train, y_val = train_test_split(

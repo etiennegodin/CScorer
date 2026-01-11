@@ -2,7 +2,6 @@ CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
     g.expert_match,
-    g.species,
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
@@ -18,7 +17,7 @@ SELECT g.gbifID,
 
 FROM labeled.gbif_citizen g
 
-INNER JOIN features.observer o
+INNER JOIN features.pca_observer o
     ON o."recordedBy" = g."recordedBy"
 INNER JOIN features.taxonomic t
     ON t."taxonID" = g."taxonID"
@@ -38,7 +37,7 @@ LEFT JOIN features.phenology_repro r
     on g."gbifID" = r."gbifID"
 INNER JOIN features.spatial sp
     on g."gbifID" = sp."gbifID"
-INNER JOIN clean.gee gee
+INNER JOIN features.pca_gee gee
     on g."gbifID" = gee."gbifID"
 
     ;

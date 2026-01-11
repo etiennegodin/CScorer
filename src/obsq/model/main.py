@@ -18,8 +18,8 @@ def run(root_folder:Path, work_folder:Path, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('model', [db_init
-                                 ],
+    pipeline = Pipeline('model', [db_init,
+                                 train_model_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(

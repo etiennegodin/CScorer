@@ -3,13 +3,6 @@ from ..pipeline import step, PipelineContext, Module
 
 @step
 def train_model(context:PipelineContext):
-    # Example usage:
-
-    con = context.con
-    df = con.execute(f"""SELECT* FROM features.combined""" ).df()
-    X = df.drop(columns=['expert_match'])
-    y = df['expert_match']
-
     # Initialize scorer
     scorer = ObservationQualityScorer(
         train_size=0.7,
@@ -17,6 +10,18 @@ def train_model(context:PipelineContext):
         test_size=0.15,
         random_state=42
     )
+    # Get data
+    con = context.con
+    df = con.execute(f"""SELECT* FROM features.combined""" ).df()
+    df = df.set_index('gbifID')
+
+    #Factorize categorical columns 
+    df = scorer.factorize_categorical_features(df, to_ignore= 'tempo_eventDate')
+
+    X = df.drop(columns=['expert_match'])
+    y = df['expert_match']
+
+
 
     strat_var = scorer.create_stratification_bins(
         df,
@@ -27,6 +32,7 @@ def train_model(context:PipelineContext):
         n_time_bins=12
     )
 
+
     X_train, X_val, X_test, y_train, y_val, y_test = scorer.split_data(X, y, strat_var)
 
     scorer.fit_and_evaluate(X_train, X_val, X_test, y_train, y_val, y_test)
@@ -35,5 +41,5 @@ def train_model(context:PipelineContext):
 
 
 
-train_model_module = Module('train_model', [train_model])
+train_model_module = Module('train', [train_model])
 
