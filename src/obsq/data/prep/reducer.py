@@ -5,40 +5,43 @@ import pandas as pd
 
 
 class Reducer(ClassStep):
-    def __init__(self, name,variance_threshold = 0.98,**kwargs):
+    def __init__(self, name, table_id:str, variance_threshold = 0.98,**kwargs):
         """
         Pca wrapper
         """
         super().__init__(name, retry_attempts =1,**kwargs)
 
         self.name = name
-        self.table_name = f"features.pca_{name}"
+        self.table_id = table_id
+        self.input_table_name = f"features.{name}"
+        self.output_table_name = f"features.pca_{name}"
         self.variance_threshold = variance_threshold
 
     def _execute(self, context):
         #Load df
-        df = context.con.execute(f"SELECT * FROM features.{self.name}").df()
+        df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
+
+        ids = df[self.table_id]
         #Split columns, keep non-numeric for later
-        cat_col = df.select_dtypes(include='object')
+        df_out = df.select_dtypes(include='object')
         # Find highligh correlated features 
         to_reduce = self._find_correlated(df)
         #Reduce with pca
         df_pca = self._pca_reducer(df, to_reduce)
 
         #Set output
-        df_out = df[['gbifID'].extend(cat_col)]
+        df_out[self.table_id] = ids
         df_out = pd.merge(df_out, df_pca)
 
-        context.con.execute(f"CREATE OR REPLACE TABLE {self.table_name} AS SELECT * FROM df_out")
+        context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df_out")
 
         return super()._execute(context)
         
 
     def _find_correlated(self, df:pd.DataFrame)->list:
-        
+        df = df.drop(columns=[self.table_id])
         corr = df.corr(numeric_only=True)
         upper_tri = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
-        
         return [column for column in upper_tri.columns if any(upper_tri[column].abs() > 0.8)]
     
     def _pca_reducer(self, df, features_list:list)->pd.DataFrame:
