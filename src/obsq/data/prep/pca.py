@@ -1,13 +1,14 @@
-from ..pipeline import PipelineContext, ClassStep
-import pandas as pd
+from ...pipeline import PipelineContext, ClassStep
 from sklearn.decomposition import PCA
+import numpy as np
+import pandas as pd
 
 
-class runPCA(ClassStep):
-    def __init__(self, name,
-                  features_list:list,
-                  variance_threshold = 0.98,**kwargs):
-        
+class Reducer(ClassStep):
+    def __init__(self, name, features_list:list,variance_threshold = 0.98,**kwargs):
+        """
+        Pca wrapper
+        """
         super().__init__(name, retry_attempts =1,**kwargs)
 
         self.name = name
@@ -19,11 +20,26 @@ class runPCA(ClassStep):
         self.features_list = features_list
 
     def _execute(self, context):
+        df = context.con.execute("SELECT * FROM features.combined").df()
+        
+        df_pca = self._pca_reducer(df)
+
+        return super()._execute(context)
+        
+
+    def _find_correlated(self, df:pd.DataFrame)->list:
+        
+        corr = df.corr(numeric_only=True)
+        upper_tri = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
+        
+        return [column for column in upper_tri.columns if any(upper_tri[column].abs() > 0.8)]
+    def _pca_reducer(self, df):
         variance = 0.0
         n_components = 1
-        df_raw = context.con.execute("SELECT * FROM features.combined").df()
-        ids = df_raw['gbifID']
-        df_pruned = df_raw[self.features_list]
+        self.retry_wait_maxcat_col = df.select_dtypes(include='object')
+
+        ids = df['gbifID']
+        df_pruned = df[self.features_list]
 
         #Iterate until variance explained
         for i in range(len(self.features_list)):
@@ -41,13 +57,8 @@ class runPCA(ClassStep):
         columns_rename = self._create_rename_dict(n_components)
         df_pca = df_pca.rename(columns=columns_rename)
 
-        #Add back ids
-        df_pca['gbifID'] = ids
-
-        #Export
-        context.con.execute(f"CREATE OR REPLACE TABLE {self.table_name} AS SELECT * FROM df_pca")
         self.logger.info(f'Ran pca on {self.name} | {n_components} components explained {round(variance,3)}% of variance')
-        return super()._execute(context)
+        return df_pca
     
     def _create_rename_dict(self, n_components)->dict:
         columns_rename = {}
