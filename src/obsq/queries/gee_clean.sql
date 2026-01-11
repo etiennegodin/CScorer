@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE clean.gee AS
+CREATE OR REPLACE TABLE features.gee AS
 SELECT l."gbifID", g.* EXCLUDE( g."gee_id", g.'coordinates', g."gbifID")
 FROM raw.gee_citizen_occurences g 
 INNER JOIN labeled.gbif_citizen l
