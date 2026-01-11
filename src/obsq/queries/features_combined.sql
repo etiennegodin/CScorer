@@ -12,7 +12,9 @@ SELECT g.gbifID,
     s.* EXCLUDE(s."gbifID"),
     r.* EXCLUDE(r."gbifID"),
     t.* EXCLUDE(t."taxonID"),
+    gee.* EXCLUDE(gee."gbifID"),
     sp.spatial_cluster
+
 
 FROM labeled.gbif_citizen g
 
@@ -36,6 +38,8 @@ LEFT JOIN features.phenology_repro r
     on g."gbifID" = r."gbifID"
 INNER JOIN features.spatial sp
     on g."gbifID" = sp."gbifID"
+INNER JOIN clean.gee gee
+    on g."gbifID" = gee."gbifID"
 
     ;
 

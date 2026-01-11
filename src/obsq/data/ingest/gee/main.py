@@ -28,7 +28,7 @@ async def gee_features_expert(context:PipelineContext):
     sampler = GeePointSampler('expert_occurences', gee_context)
     return sampler._execute(context)
 
-gee_features_module = Module('gee_features',[gee_features_expert])
+gee_features_module = Module('gee_features',[gee_features_expert, gee_features_citizen])
 
 
 

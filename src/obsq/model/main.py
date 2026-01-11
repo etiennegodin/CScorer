@@ -3,6 +3,7 @@ from ..pipeline import *
 from ..db import * 
 from .train import train_model_module 
 from pathlib import Path
+from .feature_selection import pca_module
 
 def run(root_folder:Path, work_folder:Path, args):
 
@@ -18,8 +19,8 @@ def run(root_folder:Path, work_folder:Path, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('data', [db_init,
-                                 train_model_module],
+    pipeline = Pipeline('model', [db_init,pca_module
+                                 ],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(
