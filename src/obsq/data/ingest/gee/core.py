@@ -56,7 +56,7 @@ class GeePointSampler(ClassStep):
         self.point_count = self.gee_context.points.size().getInfo()
         self.scale = scale
         self.df = pd.DataFrame()
-        super().__init__(name, **kwargs)
+        super().__init__(name, retry_attempts = 1, **kwargs)
 
     async def _execute(self, context:PipelineContext):
         self.logger.info(f'Launching sampling process for {self.name}')
