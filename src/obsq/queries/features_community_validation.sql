@@ -9,7 +9,7 @@ CASE
     ELSE 1
 END AS cmva_expert_id
 
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen
 
 
 

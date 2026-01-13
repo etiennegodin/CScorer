@@ -13,8 +13,10 @@ features_phenology_sex = SimpleQuery('features_phenology_sex', "features_phenolo
 
 taxonomic_features = SimpleQuery('taxonomic_features', "features_taxonomic")
 histogram_features = SimpleQuery('histogram_features', "features_histogram")
+species_ranges_features = SimpleQuery('species_ranges_features', "features_species_ranges")
 
 spatial_clustering = SpatialClustering('spatial_clustering', type= 'kmeans', k= 6)
+
 
 extract_features_module = Module('extract_features', [observer_feature,
                                                    community_validation_features,
@@ -25,4 +27,5 @@ extract_features_module = Module('extract_features', [observer_feature,
                                                    features_phenology_leaves,
                                                    features_phenology_repro,
                                                    features_phenology_sex,
+                                                   species_ranges_features,
                                                    spatial_clustering])

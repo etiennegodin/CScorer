@@ -18,7 +18,7 @@ SELECT
     END AS pheno_sex_month_density
 
 
-FROM labeled.gbif_citizen g
+FROM preprocessed.gbif_citizen g
 
 JOIN preprocessed.inat_phenology_pivoted p
     ON g."taxonID" = p."taxonID"

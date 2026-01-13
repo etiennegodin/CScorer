@@ -3,4 +3,4 @@ COUNT(*) as obs_count,
 SUM(expert_match),
 (SUM(expert_match) / obs_count) as match_pct
 
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen

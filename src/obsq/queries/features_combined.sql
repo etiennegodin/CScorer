@@ -1,7 +1,7 @@
 CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
-    g.expert_match,
+
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
@@ -15,7 +15,7 @@ SELECT g.gbifID,
     sp.spatial_cluster
 
 
-FROM labeled.gbif_citizen g
+FROM preprocessed.gbif_citizen g
 
 INNER JOIN encoded.observer o
     ON o."recordedBy" = g."recordedBy"
