@@ -7,13 +7,13 @@ SELECT g.gbifID,
     c.* EXCLUDE(c."gbifID"),
     a.* EXCLUDE(a."gbifID"),
     m.* EXCLUDE(m."gbifID"),
-    l.* EXCLUDE(l."gbifID"),
-    s.* EXCLUDE(s."gbifID"),
-    r.* EXCLUDE(r."gbifID"),
+    pl.* EXCLUDE(l."gbifID"),
+    ps.* EXCLUDE(s."gbifID"),
+    pr.* EXCLUDE(r."gbifID"),
     t.* EXCLUDE(t."taxonID"),
     gee.* EXCLUDE(gee."gbifID"),
-    sp.spatial_cluster
-
+    sp.spatial_cluster,
+    r.range
 
 FROM preprocessed.gbif_citizen g
 
@@ -29,17 +29,20 @@ INNER JOIN encoded.histogram h
     ON h."gbifID" = g."gbifID"
 INNER JOIN encoded.temporal a
     ON a."gbifID" = g."gbifID"
-LEFT JOIN encoded.phenology_leaves l
+LEFT JOIN encoded.phenology_leaves pl
     on g."gbifID" = l."gbifID"
-LEFT JOIN encoded.phenology_sex s
+LEFT JOIN encoded.phenology_sex ps
     on g."gbifID" = s."gbifID"
-LEFT JOIN encoded.phenology_repro r
+LEFT JOIN encoded.phenology_repro pr
     on g."gbifID" = r."gbifID"
 INNER JOIN encoded.spatial sp
     on g."gbifID" = sp."gbifID"
 INNER JOIN encoded.gee gee
     on g."gbifID" = gee."gbifID"
-
+INNER JOIN encoded.gee gee
+    on g."gbifID" = gee."gbifID"
+INNER JOIN features.ranges r
+    on g."gbifID" = r."gbifID"
     ;
 
 
