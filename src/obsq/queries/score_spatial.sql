@@ -19,8 +19,7 @@ e3857 AS(
 )
 
 -- main label rules 
-SELECT e.gbifID as e_id, e.species as e_taxon,
-    c.gbifID as c_id, c.species as c_taxon,
+SELECT c.gbifID,
 
 CASE 
     WHEN ST_Distance(e.geom, c.geom) <= 1000 THEN 1.0
@@ -36,7 +35,7 @@ JOIN c3857 c
         (SELECT geom FROM preprocessed.gbif_citizen WHERE gbifID = c.gbifID),  -- spatial index hit
         0.1
     )
-WHERE e_taxon = c_taxon --same species  
+WHERE e.species = c.species --same species  
 
 
 
