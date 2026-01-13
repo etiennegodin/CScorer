@@ -42,9 +42,6 @@ class Encoder(ClassStep):
 
         #Factorize categorical features 
         df_out = self.factorize_categorical_features(df_out)
-        print(df_out.head())
-
-
 
         context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df_out")
 
