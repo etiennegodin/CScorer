@@ -27,7 +27,7 @@ class SpatialClustering(ClassStep):
     
     def _execute(self, context:PipelineContext):
         con = context.con
-        df_init = con.execute("SELECT gbifID, decimalLatitude, decimalLongitude FROM labeled.gbif_citizen" ).df()
+        df_init = con.execute("SELECT gbifID, decimalLatitude, decimalLongitude FROM preprocessed.gbif_citizen" ).df()
 
         if self.type == 'dbscan':
             df = self._db_scan(df_init)

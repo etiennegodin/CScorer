@@ -6,4 +6,4 @@ year AS tempo_year,
 --eventDate AS tempo_eventDate
 -- probability density from histogram 
 
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen

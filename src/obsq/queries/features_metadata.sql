@@ -25,7 +25,7 @@ END AS meta_occurrenceRemarks,
 
 
 
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen
 
 
 

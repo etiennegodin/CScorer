@@ -18,7 +18,7 @@ SELECT
         WHEN 12 THEN p.month_12_density
     END AS histo_taxon_obs_month_density
     
-FROM labeled.gbif_citizen g
+FROM preprocessed.gbif_citizen g
 LEFT JOIN preprocessed.inat_histogram_pivoted p
     ON g.taxonID = p.taxonID
 ORDER BY g.gbifID, g.taxonID

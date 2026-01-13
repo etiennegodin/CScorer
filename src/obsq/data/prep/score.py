@@ -12,4 +12,4 @@ expert_validation = SimpleQuery('score_expert_validation')
 community_consensus = SimpleQuery('')
 phenology_match = SimpleQuery('')
 
-label_data_module = Module('score_observations',[spatial_match, expert_validation])
+score_obsv_module = Module('score_observations',[spatial_match, expert_validation])

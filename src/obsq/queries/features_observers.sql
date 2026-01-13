@@ -7,7 +7,7 @@ WITH species_count AS(
 SELECT
 COUNT(*) as species_obs,
 "recordedBy", "species"
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen
 GROUP BY "recordedBy", species
 )
 
@@ -45,7 +45,7 @@ SELECT
 COUNT(*) as yearly_observations,
 "recordedBy",
 year
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen
 GROUP BY recordedBy, year
 ),
 
@@ -56,7 +56,7 @@ COUNT(*) as monthly_observations,
 "recordedBy",
 year,
 month
-FROM labeled.gbif_citizen
+FROM preprocessed.gbif_citizen
 GROUP BY recordedBy, year, month
 ) 
 
@@ -95,7 +95,7 @@ CASE
 END AS obsv_avg_descr_len
 
 
-FROM labeled.gbif_citizen g
+FROM preprocessed.gbif_citizen g
 JOIN yearly_observation y
     ON g.recordedBy = y.recordedBy
 JOIN monthly_observations m 
