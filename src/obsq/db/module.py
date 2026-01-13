@@ -8,6 +8,7 @@ create_preprocessed_schema = CreateSchema("create_preprocessed_schema", schema =
 create_features_schema = CreateSchema("create_features_schema", schema = "features" )
 create_observers_schema = CreateSchema("create_observers_schema", schema = "observers")
 create_labeled_schema = CreateSchema("create_labeled_schema", schema = "labeled")
+create_score_schema = CreateSchema("create_labeled_schema", schema = "score")
 create_encoded_schema = CreateSchema("create_encoded_schema", schema = "encoded")
 
 
@@ -17,6 +18,7 @@ create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_features_schema,
                                                 create_observers_schema,
                                                 create_labeled_schema,
+                                                create_score_schema,
                                                 create_encoded_schema])
 
 
