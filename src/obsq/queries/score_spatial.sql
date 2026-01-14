@@ -23,9 +23,9 @@ SELECT c.gbifID,
 
 CASE 
     WHEN  <= 1000 THEN 1.0
-    WHEN ST_Distance(e.geom, c.geom) <= 5000 THEN 0.66
-    WHEN ST_Distance(e.geom, c.geom) <= 10000 THEN 0.33
-    ELSE 0.0
+    WHEN ST_Distance(e.geom, c.geom) <= 5000 THEN 0.8
+    WHEN ST_Distance(e.geom, c.geom) <= 10000 THEN 0.5
+    ELSE 0.3
 END AS spatial_match
 
 FROM e3857 e

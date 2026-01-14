@@ -88,7 +88,7 @@ END AS coordinateUncertaintyInMeters,
 
 CASE
     WHEN "mediaType" IS NULL THEN 0
-    ELSE CAST((length(mediaType) - length(REPLACE(mediaType, 'StillImage', ''))) AS INTEGER)
+    ELSE CAST((length(mediaType) - length(REPLACE(mediaType, 'StillImage', ''))) /10 AS INTEGER) 
 END AS media_count
 
 FROM raw.gbif_citizen g
