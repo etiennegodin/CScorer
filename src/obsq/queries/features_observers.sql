@@ -23,32 +23,7 @@ GROUP BY "recordedBy"
 -- main features
 CREATE OR REPLACE TABLE features.observer AS
 
-WITH inat_data AS (
-
-SELECT 
-    c."recordedBy",
-    SUM(i.observations_count) AS inat_obsv_count,
-    SUM(i.identifications_count) AS inat_id_count,
-    SUM(i.species_count) AS inat_species_count,
-    SUM(i.universal_search_rank) AS inat_total,
-    STDDEV_POP(i.observations_count) AS inat_obv_std,
-    STDDEV_POP(i.identifications_count) AS inat_id_std,
-    STDDEV_POP(i.species_count) AS inat_sp_std,
-    STDDEV_POP(i.universal_search_rank) AS inat_rank_std
-
-
-
-    FROM events
-    GROUP BY user_id
-)
-
-FROM observers.inat_data i 
-JOIN observers.citizen c ON i.user_id = c.user_id
-GROUP BY c."recordedBy"
-
-),
-
-yearly_observation AS(
+WITH yearly_observation AS(
 
 SELECT 
 COUNT(*) as yearly_observations,
@@ -70,12 +45,6 @@ GROUP BY recordedBy, year, month
 ) 
 
 SELECT g.recordedBy,
-i.inat_obsv_count,
-i.inat_id_count, 
-i.inat_species_count, 
-i.inat_total,
-i.inat_obv_std,
-
 --counts
 COUNT(DISTINCT g.gbifID) as obsv_obs_count, 
 ROUND(COUNT(DISTINCT g.gbifID) / SUM(COUNT(DISTINCT "gbifID")) OVER (), 5) AS obsv_total_pct,
@@ -115,14 +84,8 @@ JOIN yearly_observation y
     ON g.recordedBy = y.recordedBy
 JOIN monthly_observations m 
     ON g.recordedBy = m.recordedBy
-JOIN inat_data i on g."recordedBy" = i."recordedBy"
 
-GROUP BY g.recordedBy,
-i.inat_obsv_count,
-i.inat_id_count, 
-i.inat_species_count, 
-i.inat_total,
-i.inat_obv_std
+GROUP BY g.recordedBy
 ;
 
 --adding back species obs count
