@@ -20,7 +20,7 @@ async def import_inat_observations(context:PipelineContext):
 
     return table_name
 
-clean_inat_observations = SimpleQuery('clean_inat_observations', query_name= "inat_clean_observations" )
+clean_inat_observations = SqlQuery('clean_inat_observations', query_name= "inat_clean_observations" )
 
 preprocess_inat_observations_submodule = SubModule("preprocess_inat_observations", [import_inat_observations, clean_inat_observations])
 

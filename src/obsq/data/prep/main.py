@@ -1,7 +1,7 @@
 from ...utils import *
 from ...pipeline import *
 from ...db import * 
-from .score import score_obsv_module
+from .score import score_obs_module
 from .extract import extract_features_module
 from .encode import encode_features_module
 from .combine import combine_features_module
@@ -23,7 +23,7 @@ def run(root_folder:Path, work_folder:Path, args):
     
     pipeline = Pipeline('data_prep', [db_init,
                                       extract_features_module,
-                                      score_obsv_module,
+                                      score_obs_module,
                                       encode_features_module,
                                       combine_features_module],
                                     work_folder/ "checkpoints", 

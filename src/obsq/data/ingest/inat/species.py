@@ -1,11 +1,11 @@
 from .api import inatApiClient, inatApiRequest
-from ....db import DataBaseLoader, SimpleQuery
+from ....db import DataBaseLoader, SqlQuery
 from ....utils import gdf_to_duckdb
 from ....pipeline import *
 
 ## SPECIES SUBMODULE
 
-create_species_table = SimpleQuery('create_species_table', query_name= 'inat_species_extract')
+create_species_table = SqlQuery('create_species_table', query_name= 'inat_species_extract')
 
 @step 
 async def get_place_id(context:PipelineContext):
@@ -44,8 +44,8 @@ async def get_phenology_wrapper(context:PipelineContext):
                                         chunk_size=1,
                                         overwrite_table= False)._execute(context)
 
-extract_phenology_json = SimpleQuery('extract_phenology_json', query_name= 'inat_species_phenology_json')
-pivot_phenology = SimpleQuery('pivot_phenology', query_name= 'inat_species_phenology_pivot')
+extract_phenology_json = SqlQuery('extract_phenology_json', query_name= 'inat_species_phenology_json')
+pivot_phenology = SqlQuery('pivot_phenology', query_name= 'inat_species_phenology_pivot')
 
 #Similar species
 @step 
@@ -67,7 +67,7 @@ async def similar_species_wrapper(context:PipelineContext):
                                         chunk_size=1,
                                         overwrite_table= False)._execute(context)
 
-extract_similar_species_json = SimpleQuery('extract_similar_species_json', query_name= 'inat_species_similar_json')
+extract_similar_species_json = SqlQuery('extract_similar_species_json', query_name= 'inat_species_similar_json')
 
 # Histogram
 @step
@@ -92,8 +92,8 @@ async def get_histogram_wrapper(context:PipelineContext):
                                         fields= histogram_fields,
                                         overwrite_table= True)._execute(context)
 
-extract_histogram_json = SimpleQuery('extract_histogram_json', query_name= 'inat_species_histogram_json')
-pivot_histogram = SimpleQuery('pivot_histogram', query_name= 'inat_species_histogram_pivot')
+extract_histogram_json = SqlQuery('extract_histogram_json', query_name= 'inat_species_histogram_json')
+pivot_histogram = SqlQuery('pivot_histogram', query_name= 'inat_species_histogram_pivot')
 
 
 

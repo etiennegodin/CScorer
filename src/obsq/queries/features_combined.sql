@@ -7,9 +7,7 @@ SELECT g.gbifID,
     c.* EXCLUDE(c."gbifID"),
     a.* EXCLUDE(a."gbifID"),
     m.* EXCLUDE(m."gbifID"),
-    pl.* EXCLUDE(pl."gbifID"),
-    ps.* EXCLUDE(ps."gbifID"),
-    pr.* EXCLUDE(pr."gbifID"),
+    p.* EXCLUDE(p."gbifID"),
     t.* EXCLUDE(t."taxonID"),
     gee.* EXCLUDE(gee."gbifID"),
     sp.spatial_cluster,
@@ -30,12 +28,8 @@ INNER JOIN encoded.histogram h
     ON h."gbifID" = g."gbifID"
 INNER JOIN encoded.temporal a
     ON a."gbifID" = g."gbifID"
-LEFT JOIN encoded.phenology_leaves pl
-    on g."gbifID" = pl."gbifID"
-LEFT JOIN encoded.phenology_sex ps
-    on g."gbifID" = ps."gbifID"
-LEFT JOIN encoded.phenology_repro pr
-    on g."gbifID" = pr."gbifID"
+LEFT JOIN encoded.phenology p
+    on g."gbifID" = p."gbifID"
 INNER JOIN encoded.spatial sp
     on g."gbifID" = sp."gbifID"
 INNER JOIN encoded.gee gee
