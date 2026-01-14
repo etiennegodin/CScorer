@@ -14,5 +14,4 @@ score_total = SqlQuery('score_sum')
 score_class = SqlQuery('score_class')
 
 
-#score_obs_module = Module('score_observations',[spatial_match, expert_validation, score_total])
-score_obs_module = Module('score_observations',[score_class])
+score_obs_module = Module('score_observations',[spatial_match, expert_validation, score_total])
