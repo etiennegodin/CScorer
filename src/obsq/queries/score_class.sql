@@ -53,10 +53,10 @@ all_rules AS (
         JOIN features.metadata m ON g.gbifID = m.gbifID
 
         WHERE d.month = g.month 
-        AND d.distance < 2000 
+        AND d.distance < 3000 
         AND cv.cmva_expert_id =1 
-        AND m.meta_media_count >=2 
-        AND m."meta_coordinateUncertaintyInMeters" < 300
+        AND m.meta_media_count >=2
+        AND m."meta_coordinateUncertaintyInMeters" < 500
 
     UNION ALL
 
@@ -75,7 +75,7 @@ all_rules AS (
 
         WHERE d.distance < 5000 
         AND h.histo_taxon_obs_month_density > 0.5 
-        AND (cv.cmva_expert_id = 1 OR (cv.cmva_id_agree_rate = 1 AND cv.cmva_id_count >=3))
+        AND (cv.cmva_expert_id = 1 OR (cv.cmva_id_agree_rate = 1 AND cv.cmva_id_count >=2))
         AND m.meta_media_count >=2 
 
     UNION ALL
@@ -90,8 +90,8 @@ all_rules AS (
         JOIN features.observers_taxon_id o ON g."identifiedBy" = g."identifiedBy"
 
         WHERE r.range = 1
-        AND o.taxon_id_count > 5 
-        AND cv.cmva_id_count >= 3 
+        AND o.taxon_id_count > 3 
+        AND cv.cmva_id_count >= 2
 
     UNION ALL
 
@@ -132,7 +132,7 @@ all_rules AS (
 
 SELECT
     g."gbifID",
-    COALESCE(r.class, -1) AS class
+    COALESCE(r.class, 1) AS class
 
 FROM preprocessed.gbif_citizen g
 LEFT JOIN ranked r
