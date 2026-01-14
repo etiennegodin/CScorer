@@ -2,23 +2,28 @@ from ...pipeline import *
 from ...db import *
 from .spatial_cluster import SpatialClustering 
 
-observer_feature = SimpleQuery('observers_features', "features_observers")
-community_validation_features = SimpleQuery('community_validation_features', "features_community_validation")
-metadata_features = SimpleQuery('metadata_features', "features_metadata")
-temporal_features = SimpleQuery('temporal_features', "features_temporal")
+observer_feature = SqlQuery('observers_features', "features_observers")
+features_taxon_observers = SqlQuery('features_taxon_observers', "features_taxon_observers")
 
-features_phenology_leaves = SimpleQuery('features_phenology_leaves', "features_phenology_leaves")
-features_phenology_repro = SimpleQuery('features_phenology_repro', "features_phenology_repro")
-features_phenology_sex = SimpleQuery('features_phenology_sex', "features_phenology_sex")
+community_validation_features = SqlQuery('community_validation_features', "features_community_validation")
+metadata_features = SqlQuery('metadata_features', "features_metadata")
+temporal_features = SqlQuery('temporal_features', "features_temporal")
 
-taxonomic_features = SimpleQuery('taxonomic_features', "features_taxonomic")
-histogram_features = SimpleQuery('histogram_features', "features_histogram")
-species_ranges_features = SimpleQuery('species_ranges_features', "features_species_ranges")
+features_phenology_leaves = SqlQuery('features_phenology_leaves', "features_phenology_leaves")
+features_phenology_repro = SqlQuery('features_phenology_repro', "features_phenology_repro")
+features_phenology_sex = SqlQuery('features_phenology_sex', "features_phenology_sex")
+features_phenology_merge = SqlQuery('features_phenology_merge', "features_phenology_merge")
+
+
+taxonomic_features = SqlQuery('taxonomic_features', "features_taxonomic")
+histogram_features = SqlQuery('histogram_features', "features_histogram")
+species_ranges_features = SqlQuery('species_ranges_features', "features_species_ranges")
 
 spatial_clustering = SpatialClustering('spatial_clustering', type= 'kmeans', k= 6)
 
 
 extract_features_module = Module('extract_features', [observer_feature,
+                                                      features_taxon_observers,
                                                    community_validation_features,
                                                    metadata_features,
                                                    taxonomic_features,
@@ -27,5 +32,6 @@ extract_features_module = Module('extract_features', [observer_feature,
                                                    features_phenology_leaves,
                                                    features_phenology_repro,
                                                    features_phenology_sex,
+                                                   features_phenology_merge,
                                                    species_ranges_features,
                                                    spatial_clustering])

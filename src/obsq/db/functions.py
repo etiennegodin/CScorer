@@ -78,7 +78,7 @@ class DbQuery(ClassStep):
             
 
 
-class SimpleQuery(DbQuery):
+class SqlQuery(DbQuery):
 
     def __init__(self, name, query_name:str = None, **kwargs):
         """_summary_
@@ -104,7 +104,7 @@ class SimpleQuery(DbQuery):
             raise e 
         
 
-class TemplateQuery(DbQuery):
+class SqlQueryTemplate(DbQuery):
 
     def __init__(self, name, fields:dict,  query_name:str = None, **kwargs):
         """_summary_

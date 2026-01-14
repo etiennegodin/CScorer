@@ -11,9 +11,7 @@ spatial_reducer = Encoder(name = 'spatial')
 community_validation_reducer = Encoder(name = 'community_validation')
 histogram_reducer = Encoder(name = 'histogram')
 metadata_reducer = Encoder(name = 'metadata')
-phenology_leaves_reducer = Encoder(name = 'phenology_leaves')
-phenology_repro_reducer = Encoder(name = 'phenology_repro')
-phenology_sex_reducer = Encoder(name = 'phenology_sex')
+phenology_reducer = Encoder(name = 'phenology')
 taxonomic_reducer = Encoder(name = 'taxonomic', table_id='taxonID' )
 temporal_repro_reducer = Encoder(name = 'temporal')
 gee_reducer = Encoder(name = 'gee')
@@ -24,9 +22,7 @@ encode_features_module = Module('encode_features', [obsv_reducer,
                                                     community_validation_reducer,
                                                     histogram_reducer,
                                                     metadata_reducer,
-                                                    phenology_leaves_reducer,
-                                                    phenology_repro_reducer,
-                                                    phenology_sex_reducer,
+                                                    phenology_reducer,
                                                     taxonomic_reducer,
                                                     temporal_repro_reducer,
                                                     gee_reducer])

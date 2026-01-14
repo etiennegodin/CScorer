@@ -14,7 +14,7 @@ get_observers_data = inatApiClient('get_inat_observers_data',
                                    per_page=1,
                                    overwrite_table= False)
 
-extract_observer_json = SimpleQuery('extract_observer_json', query_name= 'inat_observers_observers_json')
-clean_observer = SimpleQuery('clean_observer', query_name= 'inat_clean_observers')
+extract_observer_json = SqlQuery('extract_observer_json', query_name= 'inat_observers_observers_json')
+clean_observer = SqlQuery('clean_observer', query_name= 'inat_clean_observers')
 
 inat_observers_module = Module("inat_observers", [get_observers_data, extract_observer_json, clean_observer])
