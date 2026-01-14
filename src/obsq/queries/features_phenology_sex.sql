@@ -22,7 +22,7 @@ SELECT
 
 FROM preprocessed.gbif_citizen g
 
-JOIN preprocessed.inat_phenology_pivoted p
+LEFT JOIN preprocessed.inat_phenology_pivoted p
     ON g."taxonID" = p."taxonID"
     AND p.value_id = g.pheno_sex
 

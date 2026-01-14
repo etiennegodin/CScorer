@@ -1,22 +1,23 @@
 CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
-
+    s.score,
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
     a.* EXCLUDE(a."gbifID"),
     m.* EXCLUDE(m."gbifID"),
-    pl.* EXCLUDE(l."gbifID"),
-    ps.* EXCLUDE(s."gbifID"),
-    pr.* EXCLUDE(r."gbifID"),
+    pl.* EXCLUDE(pl."gbifID"),
+    ps.* EXCLUDE(ps."gbifID"),
+    pr.* EXCLUDE(pr."gbifID"),
     t.* EXCLUDE(t."taxonID"),
     gee.* EXCLUDE(gee."gbifID"),
     sp.spatial_cluster,
     r.range
 
 FROM preprocessed.gbif_citizen g
-
+INNER JOIN score.main s
+    on g."gbifID" = s."gbifID"
 INNER JOIN encoded.observer o
     ON o."recordedBy" = g."recordedBy"
 INNER JOIN encoded.taxonomic t
@@ -30,15 +31,13 @@ INNER JOIN encoded.histogram h
 INNER JOIN encoded.temporal a
     ON a."gbifID" = g."gbifID"
 LEFT JOIN encoded.phenology_leaves pl
-    on g."gbifID" = l."gbifID"
+    on g."gbifID" = pl."gbifID"
 LEFT JOIN encoded.phenology_sex ps
-    on g."gbifID" = s."gbifID"
+    on g."gbifID" = ps."gbifID"
 LEFT JOIN encoded.phenology_repro pr
-    on g."gbifID" = r."gbifID"
+    on g."gbifID" = pr."gbifID"
 INNER JOIN encoded.spatial sp
     on g."gbifID" = sp."gbifID"
-INNER JOIN encoded.gee gee
-    on g."gbifID" = gee."gbifID"
 INNER JOIN encoded.gee gee
     on g."gbifID" = gee."gbifID"
 INNER JOIN features.ranges r
