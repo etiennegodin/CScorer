@@ -23,9 +23,9 @@ def run(root_folder:Path, work_folder:Path, args):
     
     pipeline = Pipeline('data_prep', [db_init,
                                       extract_features_module,
-                                      score_obs_module,
                                       encode_features_module,
-                                      combine_features_module],
+                                      combine_features_module,
+                                      score_obs_module],
                                     work_folder/ "checkpoints", 
                                     config = config)
     pipeline.run(
