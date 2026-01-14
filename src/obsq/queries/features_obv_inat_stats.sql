@@ -20,16 +20,16 @@ WITH stats AS (
 SELECT
     c."recordedBy",
     (LOG(1 + i.observations_count) - s.obv_mean_log)
-        / NULLIF(s.obv_std_log, 0) AS inat_obv_z_score,
+        / NULLIF(s.obv_std_log, 0) AS inat_obv_log_z_score,
 
     (LOG(1 + i.identifications_count) - s.id_mean_log)
-        / NULLIF(s.id_std_log, 0) AS inat_id_z_score,
+        / NULLIF(s.id_std_log, 0) AS inat_id_log_z_score,
 
     (LOG(1 + i.species_count) - s.sp_mean_log)
-        / NULLIF(s.sp_std_log, 0) AS inat_sp_z_score,
+        / NULLIF(s.sp_std_log, 0) AS inat_sp_log_z_score,
 
     (LOG(1 + i.universal_search_rank) - s.rank_mean_log)
-        / NULLIF(s.rank_std_log, 0) AS inat_rank_z_score
+        / NULLIF(s.rank_std_log, 0) AS inat_rank_log_z_score
 FROM observers.inat_data i
 JOIN observers.citizen c on i.user_id = c.user_id
 CROSS JOIN stats s;
