@@ -1,7 +1,7 @@
 CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
-    s.score,
+    s.* EXCLUDE (s."gbifID"),
     o.* EXCLUDE(o."recordedBy"),
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),

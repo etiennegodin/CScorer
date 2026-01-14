@@ -10,6 +10,6 @@ CASE
 END AS cmva_expert_id
 
 FROM preprocessed.gbif_citizen
-
+WHERE num_identification_agreements > 0
 
 
