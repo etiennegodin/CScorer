@@ -83,12 +83,31 @@ p.species_entropy
 ORDER BY g.recordedBy
 ;
 
-#ALTER TABLE features.observer DROP COLUMN IF EXISTS obsv_obs_count;
-SELECT
-"recordedBy",
-CAST(eventDate AS DATE)AS eventDate ,
-CAST(LAG(eventDate, 1) OVER (PARTITION BY "recordedBy" ORDER BY eventDate) AS DATE) AS PriorDate,
-CAST(datediff('day', PriorDate, CAST(eventDate AS DATE)) AS INT) AS DaysBetweenEvents,
-ABS(CAST(datediff('day', CAST(dateIdentified AS DATE), CAST(eventDate AS DATE)) AS INT )) AS id_time
 
-FROM preprocessed.gbif_citizen
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_id_time FLOAT;
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_obs_time FLOAT;
+WITH time_diffs AS(
+    SELECT
+    "recordedBy",
+    CAST(eventDate AS DATE)AS eventDate ,
+    CAST(LAG(eventDate, 1) OVER (PARTITION BY "recordedBy" ORDER BY eventDate) AS DATE) AS PriorDate,
+    CAST(datediff('day', PriorDate, CAST(eventDate AS DATE)) AS INT) AS DaysBetweenEvents,
+    ABS(CAST(datediff('day', CAST(dateIdentified AS DATE), CAST(eventDate AS DATE)) AS INT )) AS id_time
+    FROM preprocessed.gbif_citizen
+
+), time_stats AS(
+
+SELECT "recordedBy",
+COALESCE(AVG(DaysBetweenEvents),-1) as obsv_avg_obs_time,
+AVG(id_time) AS obsv_avg_id_time
+FROM time_diffs
+GROUP BY "recordedBy"
+)
+
+UPDATE features.observer o
+SET obsv_avg_id_time = t.obsv_avg_id_time,
+    obsv_avg_obs_time = t.obsv_avg_obs_time
+FROM time_stats t
+WHERE o."recordedBy" = t."recordedBy";
+
+#ALTER TABLE features.observer DROP COLUMN IF EXISTS obsv_obs_count;
