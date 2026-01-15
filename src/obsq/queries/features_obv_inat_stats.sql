@@ -29,7 +29,13 @@ SELECT
         / NULLIF(s.sp_std_log, 0) AS inat_sp_log_z_score,
 
     (LOG(1 + i.universal_search_rank) - s.rank_mean_log)
-        / NULLIF(s.rank_std_log, 0) AS inat_rank_log_z_score
+        / NULLIF(s.rank_std_log, 0) AS inat_rank_log_z_score,
+
+
+    ROUND(PERCENT_RANK() OVER (ORDER BY i.observations_count),3) AS obs_p_rank,
+    ROUND(PERCENT_RANK() OVER (ORDER BY i.observations_count),3) AS id_p_rank,
+    ROUND(PERCENT_RANK() OVER (ORDER BY i.observations_count),3) AS sp_p_rank,
+    ROUND(PERCENT_RANK() OVER (ORDER BY i.observations_count),3) AS rank_p_rank
 FROM observers.inat_data i
 JOIN observers.citizen c on i.user_id = c.user_id
 CROSS JOIN stats s;
