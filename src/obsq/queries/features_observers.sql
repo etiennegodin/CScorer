@@ -51,7 +51,6 @@ COUNT(DISTINCT g.gbifID) AS obsv_obs_count,
 -- ids
 ROUND(COUNT(DISTINCT g.gbifID) FILTER (WHERE g.identifiedByID IS NOT NULL) /
  obsv_obs_count, 3) AS obsv_expert_ids_pct,
-
 --time
 COUNT(DISTINCT g."year") AS obsv_unique_year_count, 
 COUNT(DISTINCT CAST (g.eventDate AS DATE)) AS obsv_unique_dates,
@@ -84,30 +83,71 @@ ORDER BY g.recordedBy
 ;
 
 
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_id_time FLOAT;
+-- id counts 
 ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_obs_time FLOAT;
-WITH time_diffs AS(
+
+id_count AS(
+
+
+SELECT g.identifiedBy,
+COUNT(g.identifiedBy) FILTER (WHERE g.identifiedBy != g.recordedBy) AS obsv_id_count,
+FROM preprocessed.gbif_citizen g 
+GROUP BY g.identifiedBy
+ORDER BY g.identifiedBy ASC
+)
+
+
+-- time between observations
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_obs_time FLOAT;
+WITH obs_time_diffs AS(
     SELECT
     "recordedBy",
     CAST(eventDate AS DATE)AS eventDate ,
     CAST(LAG(eventDate, 1) OVER (PARTITION BY "recordedBy" ORDER BY eventDate) AS DATE) AS PriorDate,
     CAST(datediff('day', PriorDate, CAST(eventDate AS DATE)) AS INT) AS DaysBetweenEvents,
-    ABS(CAST(datediff('day', CAST(dateIdentified AS DATE), CAST(eventDate AS DATE)) AS INT )) AS id_time
     FROM preprocessed.gbif_citizen
 
-), time_stats AS(
+), obs_time_stats AS(
 
 SELECT "recordedBy",
-COALESCE(AVG(DaysBetweenEvents),-1) as obsv_avg_obs_time,
-AVG(id_time) AS obsv_avg_id_time
-FROM time_diffs
+AVG(DaysBetweenEvents) as obsv_avg_obs_time, -- -1 if only one obs 
+FROM obs_time_diffs
 GROUP BY "recordedBy"
 )
 
 UPDATE features.observer o
-SET obsv_avg_id_time = t.obsv_avg_id_time,
-    obsv_avg_obs_time = t.obsv_avg_obs_time
-FROM time_stats t
+SET obsv_avg_obs_time = t.obsv_avg_obs_time
+FROM obs_time_stats t
 WHERE o."recordedBy" = t."recordedBy";
+
+
+--id time from users 
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_id_time FLOAT;
+
+WITH distinct_ids AS(
+
+SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "recordedBy"
+),
+
+
+id_time_diffs AS(
+    SELECT
+    "identifiedBy",
+    ABS(CAST(datediff('day', CAST(dateIdentified AS DATE), CAST(eventDate AS DATE)) AS INT )) AS id_time
+    FROM distinct_ids
+
+), id_time_stats AS(
+
+SELECT "identifiedBy",
+AVG(id_time) AS obsv_avg_id_time
+FROM id_time_diffs
+GROUP BY "identifiedBy"
+)
+
+UPDATE features.observer o
+SET obsv_avg_id_time = t.obsv_avg_id_time,
+FROM id_time_stats t
+WHERE o."recordedBy" = t."identifiedBy";
+
 
 #ALTER TABLE features.observer DROP COLUMN IF EXISTS obsv_obs_count;
