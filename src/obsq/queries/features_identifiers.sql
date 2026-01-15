@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW features.identifiers AS
 
 WITH distinct_ids AS(
 
-SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "recordedBy"
+SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "identifiedBy"
 ),
 -- id counts 
 id_count AS(
@@ -27,15 +27,60 @@ SELECT "identifiedBy",
 AVG(id_time) AS obsv_avg_id_time
 FROM id_time_diffs
 GROUP BY "identifiedBy"
+),
+
+yearly_observation AS(
+
+SELECT 
+COUNT(*) AS yearly_observations,
+"identifiedBy",
+year
+FROM preprocessed.gbif_citizen
+GROUP BY identifiedBy, year
+),
+
+monthly_observations AS(
+
+SELECT 
+COUNT(*) AS monthly_observations,
+"identifiedBy",
+year,
+month
+FROM preprocessed.gbif_citizen
+GROUP BY identifiedBy, year, month
+),
+
+species_count AS(
+
+    SELECT "identifiedBy", species, COUNT(*) AS count
+    FROM preprocessed.gbif_citizen
+    GROUP BY "identifiedBy", species
+),
+
+species_probability AS(
+SELECT s."identifiedBy", s.species, s.count,
+SUM(s.count) OVER (PARTITION BY s."identifiedBy") AS TotalCount,
+CAST(s.count AS DECIMAL(10, 4)) / SUM(s.count) OVER (PARTITION BY s."identifiedBy") AS Probability
+FROM species_count s
+),
+
+species_entropy AS(
+SELECT p."identifiedBy",
+ROUND(ABS(-SUM(p.Probability * LOG(2, p.Probability))),4)AS species_entropy -- LOG(2, value) for bASe-2 log
+FROM species_probability p
+GROUP BY p."identifiedBy"
 )
 
 SELECT d."identifiedBy",
 c.id_count,
-t.obsv_avg_id_time
-
-
-
+t.obsv_avg_id_time,
+s.species_entropy,
+y.yearly_observations,
+m.monthly_observations
 
 FROM distinct_ids d
 JOIN id_count c ON d."identifiedBy"= c.identifiedBy
 JOIN id_time_stats t ON d."identifiedBy"= t.identifiedBy
+JOIN species_entropy s ON d.identifiedBy = s."identifiedBy"
+JOIN yearly_observation y ON d.identifiedBy = y."identifiedBy"
+JOIN monthly_observations m ON d.identifiedBy = m."identifiedBy"
