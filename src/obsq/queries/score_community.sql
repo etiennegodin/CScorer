@@ -1,7 +1,7 @@
 CREATE OR REPLACE VIEW score.community AS
 
 
-SELECT "gbifID", 
+SELECT "gbifID"
 
 
 
