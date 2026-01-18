@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW features.identifiers AS
 
 WITH distinct_ids AS(
 
-SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "identifiedBy"
+SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "recordedBy"
 ),
 -- id counts 
 id_count AS(
@@ -24,7 +24,7 @@ id_time_diffs AS(
 ), id_time_stats AS(
 
 SELECT "identifiedBy",
-AVG(id_time) AS obsv_avg_id_time
+ROUND(AVG(id_time),2) AS obsv_avg_id_time
 FROM id_time_diffs
 GROUP BY "identifiedBy"
 ),
@@ -35,7 +35,7 @@ SELECT
 COUNT(*) AS yearly_observations,
 "identifiedBy",
 year
-FROM preprocessed.gbif_citizen
+FROM distinct_ids
 GROUP BY identifiedBy, year
 ),
 
@@ -46,14 +46,14 @@ COUNT(*) AS monthly_observations,
 "identifiedBy",
 year,
 month
-FROM preprocessed.gbif_citizen
+FROM distinct_ids
 GROUP BY identifiedBy, year, month
 ),
 
 species_count AS(
 
     SELECT "identifiedBy", species, COUNT(*) AS count
-    FROM preprocessed.gbif_citizen
+    FROM distinct_ids
     GROUP BY "identifiedBy", species
 ),
 
@@ -74,9 +74,9 @@ GROUP BY p."identifiedBy"
 SELECT d."identifiedBy",
 c.id_count,
 t.obsv_avg_id_time,
-s.species_entropy,
-y.yearly_observations,
-m.monthly_observations
+s.species_entropy AS id_species_entropy,
+ROUND(AVG(m.monthly_observations),2) AS id_avg_monthly_obs,
+ROUND(AVG(y.yearly_observations),2) AS id_avg_yearly_obs
 
 FROM distinct_ids d
 JOIN id_count c ON d."identifiedBy"= c.identifiedBy
@@ -84,3 +84,9 @@ JOIN id_time_stats t ON d."identifiedBy"= t.identifiedBy
 JOIN species_entropy s ON d.identifiedBy = s."identifiedBy"
 JOIN yearly_observation y ON d.identifiedBy = y."identifiedBy"
 JOIN monthly_observations m ON d.identifiedBy = m."identifiedBy"
+
+GROUP BY d.identifiedBy,
+c.id_count,
+t.obsv_avg_id_time,
+s.species_entropy 
+ORDER BY d.identifiedBy
