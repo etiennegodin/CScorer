@@ -3,7 +3,7 @@ from ...db import *
 from .core import Transformer
 
 
-features_obv_inat_stats = SqlQuery('features_obv_inat_stats', "features_obv_inat_stats")
+features_obv_inat_stats = SqlQuery('transform_obv_inat', "transform_obv_inat")
 
 features_obsv_transformed = Transformer('observer', table_id = 'recordedBy',transform_dict= { 'linear': ['obsv_unique_year_count',
                                                                                  'obsv_unique_dates',
@@ -19,8 +19,5 @@ features_obsv_transformed = Transformer('observer', table_id = 'recordedBy',tran
                                                                               'obsv_avg_descr_len'
                                                                               ]
 })
-
-
-
 
 transform_features_module = Module('transform_features', [features_obv_inat_stats])
