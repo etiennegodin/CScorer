@@ -6,11 +6,12 @@ def train_model(context:PipelineContext):
 
     # Get data
     con = context.con
-    df = con.execute(f"""SELECT* FROM features.combined""" ).df()
+    df = con.execute(f"""SELECT* FROM score.main""" ).df()
     df = df.set_index('gbifID')
-
-    X = df.drop(columns=['expert_match'])
-    y = df['expert_match']
+    target = 'score'
+    X = df.drop(columns=[target])
+    y = df.pop(target)
+    X.head()
 
 
     # Initialize scorer
@@ -34,7 +35,7 @@ def train_model(context:PipelineContext):
 
     scorer.fit_and_evaluate(X_train, X_val, X_test, y_train, y_val, y_test)
     scorer.plot_comparison()
-    scorer.evaluate_test_set(X_test, y_test, model_name='XGBoost')
+    scorer.evaluate_test_set(X_test, y_test, model_name='Random Forest')
 
 
 

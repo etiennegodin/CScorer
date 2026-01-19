@@ -2,9 +2,9 @@ from typing import Union
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
 from sklearn.metrics import (
     classification_report, 
     confusion_matrix, 
@@ -171,15 +171,17 @@ class ObservationQualityScorer:
         scale_pos_weight = n_neg / n_pos
         
         # Define models with balanced class weights
-        models = {
-            'Random Forest': RandomForestClassifier(
-                n_estimators=100,
-                class_weight='balanced',
-                max_depth=10,
-                random_state=self.random_state,
-                n_jobs=-1
+        models = { 'Linear Regression' : LinearRegression(),
+            'Random Forest': RandomForestRegressor(
+        n_estimators=500,
+        max_depth=None,
+        min_samples_split=5,
+        min_samples_leaf=2,
+        max_features='sqrt',
+        random_state=42,
+        n_jobs=-1
             ),
-            'XGBoost': XGBClassifier(
+            'XGBoost': XGBRegressor(
                 n_estimators=100,
                 max_depth=6,
                 scale_pos_weight=scale_pos_weight,
@@ -196,7 +198,7 @@ class ObservationQualityScorer:
             print(f"{'='*60}")
             
             # Use scaled data for LogReg, original for tree-based
-            if name == 'Logistic Regression':
+            if name == 'Linear Regression':
                 model.fit(X_train_scaled, y_train)
                 y_val_pred = model.predict(X_val_scaled)
                 y_val_proba = model.predict_proba(X_val_scaled)[:, 1]
