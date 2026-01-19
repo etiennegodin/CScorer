@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE transformed.observer_inat AS
+CREATE OR REPLACE TABLE features.observer_inat AS
 
 WITH stats AS (
     SELECT

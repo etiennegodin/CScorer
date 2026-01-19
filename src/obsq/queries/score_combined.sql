@@ -1,8 +1,11 @@
-CREATE OR REPLACE VIEW score.main AS
+CREATE OR REPLACE VIEW score.combined AS
 
 SELECT c.gbifID,
-(1 * s.spatial_score + 1 * p.pheno_score + 1 * o.observer_score + 1 *  i.identifier_score +  1 * e.expert_id_score ) as score,
-c.* EXCLUDE(c.'gbifID')
+s.spatial_score,
+p.pheno_score,
+o.observer_score,
+i.identifier_score,
+e.expert_id_score 
 
 FROM features.combined_p c
 JOIN score.spatial s ON c."gbifID" = s."gbifID"
