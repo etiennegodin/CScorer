@@ -1,6 +1,7 @@
-from obsq.data.ingest.inat.api import inatObservationApi
-import asyncio
+from obsq.api.core import Obsq
 
 id = 298621336
 
-request = asyncio.run(inatObservationApi('id_request', id).request())
+scorer = Obsq()
+
+data = scorer.data_ingest(id)

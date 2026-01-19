@@ -56,10 +56,7 @@ class inatObservationApi:
                                 print(r.url)
                                 r.raise_for_status()
                                 data = await r.json()    
-                                if data and "results" in data:
-                                    #print(data)
-                                    with open('data.json', 'w') as json_file:
-                                        json.dump(data, json_file, indent=4) 
+                                if data and "results" in data: 
                                     return data['results']
 
     
