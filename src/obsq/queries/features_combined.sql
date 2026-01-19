@@ -3,6 +3,9 @@ CREATE OR REPLACE TABLE features.combined AS
 SELECT g.gbifID,
     s.* EXCLUDE (s."gbifID"),
     o.* EXCLUDE(o."recordedBy"),
+    oi.* EXCLUDE(oi."recordedBy"),
+    i.* EXCLUDE(i."identifiedBy"),
+
     h.* EXCLUDE(h."gbifID"),
     c.* EXCLUDE(c."gbifID"),
     a.* EXCLUDE(a."gbifID"),
@@ -18,6 +21,10 @@ INNER JOIN score.main s
     on g."gbifID" = s."gbifID"
 INNER JOIN encoded.observer o
     ON o."recordedBy" = g."recordedBy"
+INNER JOIN encoded.observer_inat oi
+    ON oi."recordedBy" = g."recordedBy"
+LEFT JOIN encoded.identifiers i
+    ON  g."recordedBy" = i."identifiedBy"
 INNER JOIN encoded.taxonomic t
     ON t."taxonID" = g."taxonID"
 INNER JOIN encoded.community_validation c

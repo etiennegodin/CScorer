@@ -83,18 +83,6 @@ ORDER BY g.recordedBy
 ;
 
 
--- id counts 
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_obs_time FLOAT;
-
-id_count AS(
-
-
-SELECT g.identifiedBy,
-COUNT(g.identifiedBy) FILTER (WHERE g.identifiedBy != g.recordedBy) AS obsv_id_count,
-FROM preprocessed.gbif_citizen g 
-GROUP BY g.identifiedBy
-ORDER BY g.identifiedBy ASC
-)
 
 
 -- time between observations
@@ -119,35 +107,3 @@ UPDATE features.observer o
 SET obsv_avg_obs_time = t.obsv_avg_obs_time
 FROM obs_time_stats t
 WHERE o."recordedBy" = t."recordedBy";
-
-
---id time from users 
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obsv_avg_id_time FLOAT;
-
-WITH distinct_ids AS(
-
-SELECT * FROM preprocessed.gbif_citizen WHERE "identifiedBy" != "recordedBy"
-),
-
-
-id_time_diffs AS(
-    SELECT
-    "identifiedBy",
-    ABS(CAST(datediff('day', CAST(dateIdentified AS DATE), CAST(eventDate AS DATE)) AS INT )) AS id_time
-    FROM distinct_ids
-
-), id_time_stats AS(
-
-SELECT "identifiedBy",
-AVG(id_time) AS obsv_avg_id_time
-FROM id_time_diffs
-GROUP BY "identifiedBy"
-)
-
-UPDATE features.observer o
-SET obsv_avg_id_time = t.obsv_avg_id_time,
-FROM id_time_stats t
-WHERE o."recordedBy" = t."identifiedBy";
-
-
-#ALTER TABLE features.observer DROP COLUMN IF EXISTS obsv_obs_count;
