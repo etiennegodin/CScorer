@@ -7,10 +7,8 @@ SELECT g."gbifID",
 (0.1 * oi.inat_obv_log_z_score) +
 (0.1 * oi.inat_sp_log_z_score ) as observer_score
 
-
-
 FROM preprocessed.gbif_citizen g
-JOIN transformed
+JOIN transformed.observer o on g.recordedBy = o.recordedBy
 JOIN transformed.observer_inat oi on g."recordedBy" = oi."recordedBy"
 
 

@@ -20,7 +20,7 @@ features_obsv_transformed = Transformer('observer', table_id = 'recordedBy',tran
                                                                               ]
 })
 
-features_id_transformed = Transformer('identifiers', table_id = 'identifiedBy',transform_dict= { 'linear': ['id_count',
+features_id_transformed = Transformer('identifier', table_id = 'identifiedBy',transform_dict= { 'linear': ['id_count',
                                                                                  'id_species_entropy'
                                                                                  ],
                                                                      'log' : ['obsv_avg_id_time',

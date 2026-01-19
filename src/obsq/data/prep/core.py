@@ -45,7 +45,7 @@ class Encoder(ClassStep):
         
         # Find highligh correlated features 
         to_reduce = self._find_correlated(df)
-        if len(to_reduce) > 0:
+        if len(to_reduce) > 1:
             #Reduce with pca
             df_pca = self.pca_reducer(df, to_reduce)
             if df_pca is not None: 

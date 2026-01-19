@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW features.identifiers AS
+CREATE OR REPLACE VIEW features.identifier AS
 
 
 WITH distinct_ids AS(

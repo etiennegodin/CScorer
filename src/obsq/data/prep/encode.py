@@ -8,7 +8,7 @@ import numpy as np
 
 obsv_reducer = Encoder(name = 'observer', table_id='recordedBy' )
 obsv_inat_reducer = Encoder(name = 'observer_inat', table_id='recordedBy' )
-id_reducer = Encoder(name = 'identifiers', table_id='identifiedBy' )
+id_reducer = Encoder(name = 'identifier', table_id='identifiedBy' )
 
 spatial_reducer = Encoder(name = 'spatial')
 community_validation_reducer = Encoder(name = 'community_validation')

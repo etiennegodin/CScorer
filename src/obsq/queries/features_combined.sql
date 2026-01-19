@@ -20,7 +20,7 @@ INNER JOIN encoded.observer o
     ON o."recordedBy" = g."recordedBy"
 INNER JOIN encoded.observer_inat oi
     ON oi."recordedBy" = g."recordedBy"
-LEFT JOIN encoded.identifiers i
+LEFT JOIN encoded.identifier i
     ON  g."recordedBy" = i."identifiedBy"
 INNER JOIN encoded.taxonomic t
     ON t."taxonID" = g."taxonID"

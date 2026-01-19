@@ -20,7 +20,7 @@ e3857 AS(
 
 -- main label rules 
 SELECT c.gbifID,
-ST_Distance(e.geom, c.geom) as dist,
+--ST_Distance(e.geom, c.geom) as dist,
 1 / (1 + EXP(0.5 * (ST_Distance(e.geom, c.geom) - 10))) AS spatial_score
 
 FROM e3857 e
