@@ -5,7 +5,7 @@ import pandas as pd
 from typing import Union, Literal, Dict
 
 TRANSFORMER_TYPES = Literal["linear", "log"]
-
+COMBINE_TYPE = Literal['left', 'right', 'outer', 'inner', 'cross']
 
 
 class Encoder(ClassStep):
@@ -33,7 +33,7 @@ class Encoder(ClassStep):
         try:
             df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
         except Exception as e:
-            self.logger.info(f"Error loading features from {self.input_table_name}. Trying with default features")
+            self.logger.warning(f"Error loading features from {self.input_table_name}. Trying with default features")
             self.input_table_name = f'features.{self.features_name}'
             try:
                 df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
@@ -158,5 +158,38 @@ class Transformer(ClassStep):
         return super()._execute(context)
     
     
+class Combine(ClassStep):
+    def __init__(self, name, combine_dict:Dict[str,tuple[str,COMBINE_TYPE]],  **kwargs):
+        self.combine_dict = combine_dict
+        super().__init__(name, **kwargs)
+
+    def _execute(self, context):
+        schema_list = ['encoded', 'transformed', 'features']
+        #Load df
+        init_table = "preprocessed.gbif_citizen"
+        id_cols = ['gbifID', 'recordedBy', 'taxonID', 'identifiedBy']
+
+        id_string = ""
+        for id in id_cols:
+            id_string += id
+            id_string += ','
+
+        df_out = context.con.execute(f"SELECT {id_string} FROM {init_table} ").df()
+        print(df_out)
+        for feature, (key, how) in self.combine_dict.items():
+            for schema in schema_list:
+                table_name = f"{schema}.{feature}"
+                try:
+                    df = context.con.execute(f"SELECT * FROM {table_name}").df()
+                    break
+                except Exception as e:
+                    self.logger.warning(f"Error loading features from {self.input_table_name}. Trying with default features")
+
+            df_out = pd.merge(df_out, df, on = key, how = how)
+        print(df_out)
+        df_out.drop(columns=id_cols[1:], inplace=True)
+        context.con.execute(f"CREATE OR REPLACE TABLE {'features.combined_p'} AS SELECT * FROM df_out")
+
+        return super()._execute(context)
     
         
