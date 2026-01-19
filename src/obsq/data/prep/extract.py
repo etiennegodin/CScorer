@@ -6,7 +6,6 @@ observer_feature = SqlQuery('observers_features', "features_observers")
 features_identifiers = SqlQuery('features_identifiers', "features_identifiers")
 
 features_taxon_observers = SqlQuery('features_taxon_observers', "features_taxon_observers")
-features_obv_inat_stats = SqlQuery('features_obv_inat_stats', "features_obv_inat_stats")
 
 
 community_validation_features = SqlQuery('community_validation_features', "features_community_validation")
@@ -27,7 +26,6 @@ spatial_clustering = SpatialClustering('spatial_clustering', type= 'kmeans', k= 
 
 
 extract_features_module = Module('extract_features', [observer_feature,
-                                                   features_obv_inat_stats,
                                                    features_identifiers,
                                                    features_taxon_observers,
                                                    community_validation_features,

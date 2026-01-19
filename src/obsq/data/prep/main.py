@@ -1,9 +1,10 @@
 from ...utils import *
 from ...pipeline import *
 from ...db import * 
-from .score import score_obs_module
 from .extract import extract_features_module
+from .transform import transform_features_module
 from .encode import encode_features_module
+from .score import score_obs_module
 from .combine import combine_features_module
 from pathlib import Path
 
@@ -23,6 +24,7 @@ def run(root_folder:Path, work_folder:Path, args):
     
     pipeline = Pipeline('data_prep', [db_init,
                                       extract_features_module,
+                                      transform_features_module,
                                       encode_features_module,
                                       combine_features_module,
                                       score_obs_module],

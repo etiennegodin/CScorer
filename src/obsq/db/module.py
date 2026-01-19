@@ -10,6 +10,7 @@ create_observers_schema = CreateSchema("create_observers_schema", schema = "obse
 create_labeled_schema = CreateSchema("create_labeled_schema", schema = "labeled")
 create_score_schema = CreateSchema("create_labeled_schema", schema = "score")
 create_encoded_schema = CreateSchema("create_encoded_schema", schema = "encoded")
+create_transformed_schema = CreateSchema("create_transformed_schema", schema = "transformed")
 
 
 create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
@@ -19,7 +20,8 @@ create_all_schemas = SubModule('create_all_schemas',[create_raw_schema,
                                                 create_observers_schema,
                                                 create_labeled_schema,
                                                 create_score_schema,
-                                                create_encoded_schema])
+                                                create_encoded_schema,
+                                                create_transformed_schema])
 
 
 #Create init module with db connection d
