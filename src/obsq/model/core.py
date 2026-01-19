@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Literal
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -12,6 +12,8 @@ from sklearn.metrics import (auc, mean_squared_error, mean_absolute_error, r2_sc
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+model_types = Literal['Linear Regression', 'Random Forest', 'XGBoost']
 
 class ObservationQualityScorer:
     """
@@ -172,7 +174,7 @@ class ObservationQualityScorer:
                 n_jobs=-1
             ),
             'XGBoost': XGBRegressor(
-                n_estimators=100,
+                n_estimators=500,
                 max_depth=6,
                 learning_rate=0.1,
                 random_state=self.random_state,
@@ -200,13 +202,16 @@ class ObservationQualityScorer:
             # Store model and results
             self.models[name] = model
             self.results[name] = {
-                'score': model.score(),
+                'validation_metrics': val_metrics,
                 'y_val_pred': y_val_pred,
             }
             
             # Print results
             print(f"\nValidation Results:")
-            print(f"  F1 Score: {val_metrics['f1']:.4f}")
+            print(f"Mean Absolute Error (MAE): {val_metrics['mae']:.4f}")
+            print(f"Mean Squared Error (MSE): {val_metrics['mse']:.4f}")
+            print(f"R-squared (R²): {val_metrics['r2']:.4f}")
+            print(f"Root Mean Squared Error (RMSE): {val_metrics['rmse']:.4f}")
     
     def _calculate_metrics(self, y_true, y_pred):
         """Calculate comprehensive metrics for imbalanced classification"""
@@ -218,7 +223,7 @@ class ObservationQualityScorer:
             'rmse' : np.sqrt(mse)
         }
     
-    def evaluate_test_set(self, X_test, y_test, model_name, scale_features=True):
+    def evaluate_test_set(self, X_test, y_test, model_name:model_types, scale_features=True):
         """
         Evaluate final model on held-out test set
         
@@ -238,55 +243,47 @@ class ObservationQualityScorer:
             X_test = self.scaler.transform(X_test)
         
         y_test_pred = model.predict(X_test)
-        y_test_proba = model.predict_proba(X_test)[:, 1]
         
-        test_metrics = self._calculate_metrics(y_test, y_test_pred, y_test_proba)
+        test_metrics = self._calculate_metrics(y_test, y_test_pred)
         
         print(f"\n{'='*60}")
         print(f"TEST SET RESULTS - {model_name}")
         print(f"{'='*60}")
-        print(f"ROC-AUC: {test_metrics['roc_auc']:.4f}")
-        print(f"PR-AUC: {test_metrics['pr_auc']:.4f}")
-        print(f"F1 Score: {test_metrics['f1']:.4f}")
-        print(f"\nClassification Report:")
-        print(test_metrics['classification_report'])
-        
+        # Print results
+        print(f"\nValidation Results:")
+        print(f"Mean Absolute Error (MAE): {test_metrics['mae']:.4f}")
+        print(f"Mean Squared Error (MSE): {test_metrics['mse']:.4f}")
+        print(f"R-squared (R²): {test_metrics['r2']:.4f}")
+        print(f"Root Mean Squared Error (RMSE): {test_metrics['rmse']:.4f}")
+
         return test_metrics
     
     def plot_comparison(self):
         """Plot comparison of models on validation set"""
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
         
         # Plot 1: ROC-AUC and PR-AUC comparison
         metrics_data = []
         for name, results in self.results.items():
             metrics_data.append({
                 'Model': name,
-                'ROC-AUC': results['validation_metrics']['roc_auc'],
-                'PR-AUC': results['validation_metrics']['pr_auc']
+                'MAE': results['validation_metrics']['mae'],
+                'MSE': results['validation_metrics']['mse'],
+                'R2': results['validation_metrics']['r2'],
+                'RMSE': results['validation_metrics']['rmse']
+
+
             })
         
         metrics_df = pd.DataFrame(metrics_data)
         metrics_df_melted = metrics_df.melt(id_vars='Model', var_name='Metric', value_name='Score')
         
-        sns.barplot(data=metrics_df_melted, x='Model', y='Score', hue='Metric', ax=axes[0])
-        axes[0].set_title('Model Comparison: AUC Metrics')
-        axes[0].set_ylim(0, 1)
-        axes[0].legend(title='Metric')
-        
-        # Plot 2: Confusion matrices
-        n_models = len(self.results)
-        confusion_fig, confusion_axes = plt.subplots(1, n_models, figsize=(5*n_models, 4))
-        
-        if n_models == 1:
-            confusion_axes = [confusion_axes]
-        
-        for idx, (name, results) in enumerate(self.results.items()):
-            cm = results['validation_metrics']['confusion_matrix']
-            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=confusion_axes[idx])
-            confusion_axes[idx].set_title(f'{name}\nConfusion Matrix')
-            confusion_axes[idx].set_ylabel('True Label')
-            confusion_axes[idx].set_xlabel('Predicted Label')
+        ax = sns.barplot(data=metrics_df_melted, x='Model', y='Score', hue='Metric',legend= True)
+        h, l = ax.get_legend_handles_labels()
+        print(h,l)
+        ax.legend()
+        ax.set_title('Model Comparison: Metrics')
+        ax.set_ylim(0, 1)
+        ax.legend(title='Metric')
         
         plt.tight_layout()
         #plt.show()

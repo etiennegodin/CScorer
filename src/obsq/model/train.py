@@ -35,9 +35,9 @@ def train_model(context:PipelineContext):
 
     scorer.fit_and_evaluate(X_train, X_val, X_test, y_train, y_val, y_test)
     scorer.plot_comparison()
+    scorer.evaluate_test_set(X_test, y_test, model_name='Linear Regression')
     scorer.evaluate_test_set(X_test, y_test, model_name='Random Forest')
-
-
+    scorer.evaluate_test_set(X_test, y_test, model_name='XGBoost')
 
 train_model_module = Module('train', [train_model])
 
