@@ -15,9 +15,9 @@ features_obsv_transformed = Transformer('observer', table_id = 'recordedBy',tran
                                                                                  'obsv_avg_obs_time'],
                                                                      'log' : ['obsv_species_diversity',
                                                                               'obsv_obs_count',
-                                                                              'obsv_avg_media_count'
+                                                                              'obsv_avg_media_count',
                                                                               'obsv_avg_descr_len'
                                                                               ]
 })
 
-transform_features_module = Module('transform_features', [features_obv_inat_stats])
+transform_features_module = Module('transform_features', [features_obv_inat_stats, features_obsv_transformed])
