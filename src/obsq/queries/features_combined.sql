@@ -1,7 +1,6 @@
 CREATE OR REPLACE TABLE features.combined AS
 
 SELECT g.gbifID,
-    s.* EXCLUDE (s."gbifID"),
     o.* EXCLUDE(o."recordedBy"),
     oi.* EXCLUDE(oi."recordedBy"),
     i.* EXCLUDE(i."identifiedBy"),
@@ -17,8 +16,6 @@ SELECT g.gbifID,
     r.range
 
 FROM preprocessed.gbif_citizen g
-INNER JOIN score.main s
-    on g."gbifID" = s."gbifID"
 INNER JOIN encoded.observer o
     ON o."recordedBy" = g."recordedBy"
 INNER JOIN encoded.observer_inat oi

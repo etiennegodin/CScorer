@@ -20,20 +20,15 @@ e3857 AS(
 
 -- main label rules 
 SELECT c.gbifID,
-
-CASE 
-    WHEN  <= 1000 THEN 1.0
-    WHEN ST_Distance(e.geom, c.geom) <= 5000 THEN 0.8
-    WHEN ST_Distance(e.geom, c.geom) <= 10000 THEN 0.5
-    ELSE 0.3
-END AS spatial_match
+ST_Distance(e.geom, c.geom) as dist,
+1 / (1 + EXP(0.5 * (ST_Distance(e.geom, c.geom) - 10))) AS spatial_score
 
 FROM e3857 e
 JOIN c3857 c
     ON ST_DWithin(
         (SELECT geom FROM preprocessed.gbif_expert WHERE gbifID = e.gbifID),  -- spatial index hit
         (SELECT geom FROM preprocessed.gbif_citizen WHERE gbifID = c.gbifID),  -- spatial index hit
-        0.1
+        .1
     )
 WHERE e.species = c.species --same species  
 
