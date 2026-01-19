@@ -2,7 +2,10 @@ from ...pipeline import PipelineContext, ClassStep
 from sklearn.decomposition import PCA
 import numpy as np
 import pandas as pd
-from typing import Union
+from typing import Union, Literal, Dict
+
+TRANSFORMER_TYPES = Literal["linear", "log"]
+
 
 
 class Encoder(ClassStep):
@@ -15,7 +18,7 @@ class Encoder(ClassStep):
         """
         self.features_name = name
         self.table_id = table_id
-        self.input_table_name = f"features.{name}"
+        self.input_table_name = f"transformed.{name}"
         self.output_table_name = f"encoded.{name}"
         self.pca_variance_threshold = pca_variance_threshold
         self.factorize_rare_threshold = factorize_rare_threshold
@@ -27,7 +30,16 @@ class Encoder(ClassStep):
         df_pca = None
 
         #Load df
-        df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
+        try:
+            df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
+        except Exception as e:
+            self.logger.info(f"Error loading features from {self.input_table_name}. Trying with default features")
+            self.input_table_name = f'features.{self.features_name}'
+            try:
+                df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
+            except Exception as e:
+                self.logger.error(f"Couldnt load data from {self.input_table_name} : \n{e}")
+
         df_out = pd.DataFrame(df[self.table_id])
         
         # Find highligh correlated features 
@@ -122,8 +134,29 @@ class Encoder(ClassStep):
             columns_rename[i] = f"{self.features_name}_pca{i}"
         return columns_rename
     
+class Transformer(ClassStep):
+    def __init__(self, name, transform_dict:Dict[TRANSFORMER_TYPES,list[str]], table_id = 'gbifID', **kwargs):
+        self.features_name = name
+        self.transform_dict = transform_dict
+        self.table_id = table_id
+        self.input_table_name = f"features.{name}"
+        self.output_table_name = f"transformed.{name}"
+        super().__init__(name, **kwargs)
 
+    def _execute(self, context):
+        df = context.con.execute(f"SELECT * FROM {self.input_table_name}").df()
+        for type, cols in self.transform_dict.items():
+            if cols == '*':
+                cols = df.columns.to_list()
+                cols.remove(self.table_id)
+            if type == 'linear':
+                df[cols] = (df[cols] - df[cols].min()) / (df[cols].max() - df[cols].min())
+            if type == 'log':
+                df[cols] = np.log1p(df[cols])
+
+        context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df")
+        return super()._execute(context)
+    
+    
+    
         
-
-
-# Core for pca 

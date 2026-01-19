@@ -1,5 +1,5 @@
 from ...pipeline import Module, SubModule, step, PipelineContext
-from .encoder import Encoder
+from .core import Encoder
 import pandas as pd
 import numpy as np
 
