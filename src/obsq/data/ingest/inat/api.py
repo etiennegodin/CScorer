@@ -2,6 +2,7 @@ import asyncio, aiohttp
 from aiolimiter import AsyncLimiter
 from asyncio import Queue
 from pprint import pprint
+from typing import Union
 import json
 import requests
 from concurrent.futures import ThreadPoolExecutor
@@ -9,6 +10,70 @@ from ....pipeline import *
 from ....db import DataBaseLoader
 from ....utils.core import _ask_yes_no
 from ....utils.duckdb import get_all_tables
+
+
+class inatObservationApi:
+    def __init__(self, name, ids:Union[str,list],**kwargs):
+
+        if isinstance(ids,list):
+            self.ids = self._list_to_string(ids)
+        elif isinstance(ids, int):
+            self.ids = str(ids)
+        elif isinstance(ids, str):
+            self.ids = ids
+
+
+        fields = ['quality_grade',
+                  'observed_on_string'
+                  'description',
+                  'positional_accuracy',
+                  {'identifications': ['user']},
+                  {'annotations' : ['user_id','controlled_attribute_id','controlled_value_id' ]},
+                    'observed_on_details',
+                    'num_identification_agreements',
+                    'identification_disagreements_count',
+                    {'taxon':['id','rank']},
+                    'uri',
+                    'location',
+                    'user',
+                    'identifications',
+                    'photos',
+                    'community_taxon',
+                    'outlinks',
+
+
+        ]
+
+        self.params = {'id' : self.ids, 'fields': fields_to_string_v2(fields)}
+        print(self.params)
+
+        self.base_url = "https://api.inaturalist.org/v2/observations/"
+
+
+    async def request(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.base_url, params=self.params, timeout=10) as r:
+                                print(r.url)
+                                r.raise_for_status()
+                                data = await r.json()    
+                                if data and "results" in data:
+                                    #print(data)
+                                    with open('data.json', 'w') as json_file:
+                                        json.dump(data, json_file, indent=4) 
+                                    return data['results']
+
+    
+    def _list_to_string(self, ids:list)->str:
+        output = ""
+        max = len(ids)
+        for e, i in enumerate(ids):
+            if e + 1 == max :
+                output += i
+                break
+            output += f"{i},"
+
+        return output
+
 
 
 class inatApiRequest(ClassStep):
@@ -318,4 +383,16 @@ def fields_to_string(fields_dict, level=0):
             parts.append(f"{key}:({nested})")
         elif value is True:
             parts.append(f"{key}:!t")
+    return ','.join(parts)
+
+# Convert to the special syntax
+def fields_to_string_v2(fields_list:list, level=0):
+    parts = []
+    for field in fields_list:
+        if isinstance(field, str):
+            parts.append(field)
+        elif isinstance(field, dict):
+            for field_key, field_items in field.items():
+                for i in field_items:
+                    parts.append(f'{field_key}.{i}')
     return ','.join(parts)
