@@ -20,4 +20,17 @@ features_obsv_transformed = Transformer('observer', table_id = 'recordedBy',tran
                                                                               ]
 })
 
-transform_features_module = Module('transform_features', [features_obv_inat_stats, features_obsv_transformed])
+features_id_transformed = Transformer('identifiers', table_id = 'identifiedBy',transform_dict= { 'linear': ['id_count',
+                                                                                 'id_species_entropy'
+                                                                                 ],
+                                                                     'log' : ['obsv_avg_id_time',
+                                                                              'id_avg_monthly_obs',
+                                                                              'id_avg_yearly_obs',
+                                                                              ]
+})
+
+
+
+
+
+transform_features_module = Module('transform_features', [features_obv_inat_stats, features_obsv_transformed, features_id_transformed])

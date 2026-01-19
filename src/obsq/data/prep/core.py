@@ -153,7 +153,7 @@ class Transformer(ClassStep):
             if type == 'linear':
                 df[cols] = (df[cols] - df[cols].min()) / (df[cols].max() - df[cols].min())
             if type == 'log':
-                df[cols] = np.log1p(df[cols])
+                df[cols] = np.log1p(df[cols]) / np.log1p(df[cols]).max()
 
         context.con.execute(f"CREATE OR REPLACE TABLE {self.output_table_name} AS SELECT * FROM df")
         return super()._execute(context)
@@ -175,7 +175,6 @@ class Combine(ClassStep):
             id_string += ','
 
         df_out = context.con.execute(f"SELECT {id_string} FROM {init_table} ").df()
-        print(df_out)
         for (feature,key, how) in self.combine_dict:
             for schema in schema_list:
                 table_name = f"{schema}.{feature}"
@@ -186,7 +185,6 @@ class Combine(ClassStep):
                     self.logger.warning(f"Error loading features from {table_name}. Trying with next set of features")
 
             df_out = pd.merge(df_out, df, on = key, how = how)
-        print(df_out)
         df_out.drop(columns=id_cols[1:], inplace=True)
         context.con.execute(f"CREATE OR REPLACE TABLE {'features.combined_p'} AS SELECT * FROM df_out")
 
