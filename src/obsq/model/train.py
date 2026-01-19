@@ -7,9 +7,9 @@ def train_model(context:PipelineContext):
     # Get data
     con = context.con
     df = con.execute(f"""SELECT* FROM score.main""" ).df()
-    df = df.set_index('gbifID')
+    #df = df.set_index('gbifID')
     target = 'score'
-    X = df.drop(columns=[target])
+    X = df.drop(columns=[target, 'gbifID'])
     y = df.pop(target)
     X.head()
 

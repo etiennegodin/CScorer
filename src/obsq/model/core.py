@@ -5,13 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
-from sklearn.metrics import (
-    classification_report, 
-    confusion_matrix, 
-    roc_auc_score,
-    precision_recall_curve,
-    auc,
-    f1_score
+from sklearn.metrics import (auc, mean_squared_error, mean_absolute_error, r2_score
+
+    
 )
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
@@ -118,9 +114,7 @@ class ObservationQualityScorer:
             stratify=stratification_var,
             random_state=self.random_state
         )
-
-        
-        
+    
         # Get stratification var for temp set
         strat_temp = stratification_var.loc[X_temp.index]
         # Second split: separate train and validation
@@ -137,9 +131,9 @@ class ObservationQualityScorer:
         print(f"  Validation: {len(X_val)} samples ({len(X_val)/len(X)*100:.1f}%)")
         print(f"  Test: {len(X_test)} samples ({len(X_test)/len(X)*100:.1f}%)")
         print(f"\nClass distribution:")
-        print(f"  Train: {y_train.mean():.3f} positive")
-        print(f"  Val: {y_val.mean():.3f} positive")
-        print(f"  Test: {y_test.mean():.3f} positive")
+        print(f"  Train: {y_train.mean():.3f} mean score")
+        print(f"  Val: {y_val.mean():.3f} mean score")
+        print(f"  Test: {y_test.mean():.3f} mean score")
         
         return X_train, X_val, X_test, y_train, y_val, y_test
     
@@ -164,27 +158,22 @@ class ObservationQualityScorer:
             X_val_scaled = X_val
             X_test_scaled = X_test
         
-        # Calculate class weights for imbalanced data
-        n_samples = len(y_train)
-        n_pos = y_train.sum()
-        n_neg = n_samples - n_pos
-        scale_pos_weight = n_neg / n_pos
+        # Calculate class weights for imbalanced dat
         
         # Define models with balanced class weights
         models = { 'Linear Regression' : LinearRegression(),
             'Random Forest': RandomForestRegressor(
-        n_estimators=500,
-        max_depth=None,
-        min_samples_split=5,
-        min_samples_leaf=2,
-        max_features='sqrt',
-        random_state=42,
-        n_jobs=-1
+                n_estimators=500,
+                max_depth=None,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                max_features='sqrt',
+                random_state=42,
+                n_jobs=-1
             ),
             'XGBoost': XGBRegressor(
                 n_estimators=100,
                 max_depth=6,
-                scale_pos_weight=scale_pos_weight,
                 learning_rate=0.1,
                 random_state=self.random_state,
                 eval_metric='logloss'
@@ -201,41 +190,32 @@ class ObservationQualityScorer:
             if name == 'Linear Regression':
                 model.fit(X_train_scaled, y_train)
                 y_val_pred = model.predict(X_val_scaled)
-                y_val_proba = model.predict_proba(X_val_scaled)[:, 1]
             else:
                 model.fit(X_train, y_train)
                 y_val_pred = model.predict(X_val)
-                y_val_proba = model.predict_proba(X_val)[:, 1]
             
             # Calculate metrics
-            val_metrics = self._calculate_metrics(y_val, y_val_pred, y_val_proba)
+            val_metrics = self._calculate_metrics(y_val, y_val_pred)
             
             # Store model and results
             self.models[name] = model
             self.results[name] = {
-                'validation_metrics': val_metrics,
+                'score': model.score(),
                 'y_val_pred': y_val_pred,
-                'y_val_proba': y_val_proba
             }
             
             # Print results
             print(f"\nValidation Results:")
-            print(f"  ROC-AUC: {val_metrics['roc_auc']:.4f}")
-            print(f"  PR-AUC: {val_metrics['pr_auc']:.4f}")
             print(f"  F1 Score: {val_metrics['f1']:.4f}")
-            print(f"\nClassification Report:")
-            print(val_metrics['classification_report'])
     
-    def _calculate_metrics(self, y_true, y_pred, y_proba):
+    def _calculate_metrics(self, y_true, y_pred):
         """Calculate comprehensive metrics for imbalanced classification"""
-        precision, recall, _ = precision_recall_curve(y_true, y_proba)
-        
+        mse = mean_squared_error(y_true, y_pred)
         return {
-            'roc_auc': roc_auc_score(y_true, y_proba),
-            'pr_auc': auc(recall, precision),
-            'f1': f1_score(y_true, y_pred),
-            'classification_report': classification_report(y_true, y_pred),
-            'confusion_matrix': confusion_matrix(y_true, y_pred)
+            'mae': mean_absolute_error(y_true, y_pred),
+            'mse' : mse,
+            'r2' : r2_score(y_true, y_pred),
+            'rmse' : np.sqrt(mse)
         }
     
     def evaluate_test_set(self, X_test, y_test, model_name, scale_features=True):
