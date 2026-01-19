@@ -1,4 +1,5 @@
 from typing import Union, Literal
+import joblib
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -15,7 +16,7 @@ import seaborn as sns
 
 model_types = Literal['Linear Regression', 'Random Forest', 'XGBoost']
 
-class ObservationQualityScorer:
+class ModelPipeline:
     """
     Pipeline for building observation quality scorer with multi-feature stratification
     """
@@ -40,7 +41,6 @@ class ObservationQualityScorer:
         self.results = {}
     
 
-    
     def create_stratification_bins(self, df, spatial_col, species_col, time_col, 
                                    n_spatial_bins=10, n_time_bins=12):
         """
@@ -288,3 +288,13 @@ class ObservationQualityScorer:
         plt.tight_layout()
         #plt.show()
         plt.savefig('save.png')
+
+    def export_model(self, model_name:model_types):
+        
+        model = self.models[model_name]
+        joblib.dump(model, 'model.joblib')
+        print(f"Exported {model_name} model to 'model.joblib' ")
+
+    
+
+
