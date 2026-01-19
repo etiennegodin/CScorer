@@ -33,7 +33,7 @@ class SpatialClustering(ClassStep):
             df = self._db_scan(df_init)
         elif self.type == 'kmeans':
             df = self._kmeans(df_init)
-        
+        df.drop(columns=['decimalLatitude', 'decimalLongitude'], inplace=True)
         con.execute(f"CREATE OR REPLACE TABLE {self.table_name} AS SELECT * FROM df" )
 
     def _db_scan(self,df:pd.DataFrame)->pd.DataFrame:

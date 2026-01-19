@@ -10,9 +10,7 @@ score_spatial = SqlQuery('score_spatial')
 score_identifier = SqlQuery('score_identifier')
 score_observer = SqlQuery('score_observer')
 score_phenology = SqlQuery('score_phenology')
-
-
-score_total = SqlQuery('score_sum')
+score_total = SqlQuery('score_total')
 
 
 score_obs_module = Module('score_observations',[score_spatial, score_identifier, score_observer, score_phenology, score_total])
