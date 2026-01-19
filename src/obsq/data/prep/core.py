@@ -2,10 +2,11 @@ from ...pipeline import PipelineContext, ClassStep
 from sklearn.decomposition import PCA
 import numpy as np
 import pandas as pd
-from typing import Union, Literal, Dict
+from typing import Union, Literal, Dict, get_args
 
 TRANSFORMER_TYPES = Literal["linear", "log"]
-COMBINE_TYPE = Literal['left', 'right', 'outer', 'inner', 'cross']
+COMBINE_TYPE = Literal['inner','left', 'right', 'outer', 'cross']
+ID_COLS = Literal['gbifID', 'recordedBy', 'taxonID', 'identifiedBy']
 
 
 class Encoder(ClassStep):
@@ -159,7 +160,7 @@ class Transformer(ClassStep):
     
     
 class Combine(ClassStep):
-    def __init__(self, name, combine_dict:Dict[str,tuple[str,COMBINE_TYPE]],  **kwargs):
+    def __init__(self, name, combine_dict:list[tuple[str,ID_COLS,COMBINE_TYPE]],  **kwargs):
         self.combine_dict = combine_dict
         super().__init__(name, **kwargs)
 
@@ -167,8 +168,7 @@ class Combine(ClassStep):
         schema_list = ['encoded', 'transformed', 'features']
         #Load df
         init_table = "preprocessed.gbif_citizen"
-        id_cols = ['gbifID', 'recordedBy', 'taxonID', 'identifiedBy']
-
+        id_cols = list(get_args(ID_COLS))
         id_string = ""
         for id in id_cols:
             id_string += id
@@ -176,14 +176,14 @@ class Combine(ClassStep):
 
         df_out = context.con.execute(f"SELECT {id_string} FROM {init_table} ").df()
         print(df_out)
-        for feature, (key, how) in self.combine_dict.items():
+        for (feature,key, how) in self.combine_dict:
             for schema in schema_list:
                 table_name = f"{schema}.{feature}"
                 try:
                     df = context.con.execute(f"SELECT * FROM {table_name}").df()
                     break
                 except Exception as e:
-                    self.logger.warning(f"Error loading features from {self.input_table_name}. Trying with default features")
+                    self.logger.warning(f"Error loading features from {table_name}. Trying with next set of features")
 
             df_out = pd.merge(df_out, df, on = key, how = how)
         print(df_out)
