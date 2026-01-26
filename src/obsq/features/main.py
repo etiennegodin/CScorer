@@ -22,7 +22,7 @@ def run(root_folder:Path, work_folder:Path, args):
     # Create folder structure
     config["paths"] = create_folders(root_folder, work_folder)
     
-    pipeline = Pipeline('data_prep', [db_init,
+    pipeline = Pipeline('features', [db_init,
                                       extract_features_module,
                                       transform_features_module,
                                       encode_features_module,
