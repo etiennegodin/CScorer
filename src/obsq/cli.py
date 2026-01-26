@@ -4,7 +4,7 @@ import os
 import importlib.util
 import logging
 from .utils.debug import launch_debugger
-from . import data, model, test, scorer
+from . import data, features, models, test, scorer
 
 WORK_FOLDER = Path(os.getcwd())
 ROOT_FOLDER = Path(__file__).resolve().parents[0] 
@@ -63,11 +63,11 @@ def train():
 
 
         if args.step == "data_ingest":
-            to_run = data.ingest.run
+            to_run = data.fetchers.run
         elif args.step == "data_prep":
-            to_run = data.prep.run
+            to_run = features.run
         elif args.step == "model":
-            to_run = model.run
+            to_run = models.run
         elif args.step == "test":
             to_run = test.run
         to_run(ROOT_FOLDER, WORK_FOLDER, args)

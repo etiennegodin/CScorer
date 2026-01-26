@@ -1,4 +1,4 @@
-from ...pipeline import PipelineContext, ClassStep
+from ..pipeline import PipelineContext, ClassStep
 from sklearn.decomposition import PCA
 import numpy as np
 import pandas as pd

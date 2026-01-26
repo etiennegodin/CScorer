@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.cluster import DBSCAN, KMeans
-from ...pipeline import ClassStep, PipelineContext
+from ..pipeline import ClassStep, PipelineContext
 from typing import Literal
 
 _cluster_algo = Literal["dbscan", 'kmeans' ]

@@ -2,7 +2,7 @@ from ..utils import *
 from ..pipeline import *
 from ..db import * 
 from pathlib import Path
-from ..data.ingest.gee.main import gee_features_module
+from ..data.fetchers.gee.main import gee_features_module
 
 
 def run(root_folder:Path, work_folder:Path, args):

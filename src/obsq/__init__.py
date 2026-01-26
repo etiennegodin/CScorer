@@ -1,2 +1,2 @@
-from . import data, model, pipeline, scorer
+from . import data, models, pipeline, scorer
 

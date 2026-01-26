@@ -1,5 +1,5 @@
-from ...pipeline import * 
-from ...db import *
+from ..pipeline import * 
+from ..db import *
 
 # Set target variable 
 # Label citizen obs 

@@ -1,4 +1,4 @@
-from ...pipeline import Module, SubModule, step, PipelineContext
+from ..pipeline import Module, SubModule, step, PipelineContext
 from .core import Encoder
 import pandas as pd
 import numpy as np
