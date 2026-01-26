@@ -5,3 +5,5 @@
 *.vscode/
 *.duckdb
 !src/obsq/data/
+*.joblib
+*.csv

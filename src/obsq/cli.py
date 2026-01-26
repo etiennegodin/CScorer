@@ -4,7 +4,11 @@ import os
 import importlib.util
 import logging
 from .utils.debug import launch_debugger
-from .utils.core import read_config
+from . import data, model, test, scorer
+
+WORK_FOLDER = Path(os.getcwd())
+ROOT_FOLDER = Path(__file__).resolve().parents[0] 
+
 def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, global_parser):
     raise NotImplementedError("dynamic_pipe_argparse not implemented")
 
@@ -25,16 +29,15 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
         for sub_name, description in submodules.items():
             submodule_parser = module_subparser.add_parser(sub_name, help = description, parents=[global_parser])
 
-def main():
-    
+def train():
+    modules = ['data_ingest','data_prep','model', 'test', 'score']
     global_parser = argparse.ArgumentParser(add_help = False)
-    global_parser.add_argument("config", help = 'Config File')
+    global_parser.add_argument("step", choices= modules,help = 'Pipeline step')
     global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
     global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
     global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
     global_parser.add_argument("--skip_modules","-s", help = "Skip these modules (list of module names)")
     global_parser.add_argument("--force", action= 'store_true', help = "Ignore last checkpoint")
-    global_parser.add_argument("--debug", action= 'store_true', help = 'Run debugger')
 
     parser = argparse.ArgumentParser(
                     prog='obsq',
@@ -43,10 +46,6 @@ def main():
                     parents=[global_parser]
     )
     
-    
-    file = global_parser.parse_args().config
-    work_folder = Path(file).resolve().parents[0] 
-    ROOT_FOLDER = Path(__file__).resolve().parents[0] 
 
     """
     pipe_config = read_config(work_folder / "pipe_config.yaml")
@@ -57,21 +56,49 @@ def main():
     """
     
     args = parser.parse_args()
-    
-    # Debugger
-    if args.debug:
-        launch_debugger()
-    ROOT_FOLDER  
+
+
     # Run main of current pipeline    
-    if "main.py" in os.listdir(work_folder):
-        spec=importlib.util.spec_from_file_location("pipe_main",f"{work_folder}/main.py")
+    if "config.yaml" in os.listdir(WORK_FOLDER):
+
+
+        if args.step == "data_ingest":
+            to_run = data.ingest.run
+        elif args.step == "data_prep":
+            to_run = data.prep.run
+        elif args.step == "model":
+            to_run = model.run
+        elif args.step == "test":
+            to_run = test.run
+        to_run(ROOT_FOLDER, WORK_FOLDER, args)
         
-        # creates a new module based on spec
-        pipe_main = importlib.util.module_from_spec(spec)
-        # executes the module in its own namespace
-        # when a module is imported or reloaded.
-        spec.loader.exec_module(pipe_main)
-        
-        pipe_main.main(ROOT_FOLDER, work_folder, args)
     else:
-        logging.error(f" No 'main.py' found in {work_folder}")
+        logging.error(f" No 'config file found in {WORK_FOLDER}")
+
+def score():
+
+    modules = ['id']
+    global_parser = argparse.ArgumentParser(add_help = False)
+    global_parser.add_argument("step", choices= modules,help = 'Pipeline step')
+    global_parser.add_argument("--ids",help = 'Ids to score')
+    global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
+    global_parser.add_argument("--to_module", "-t", help = "Stop at this module (inclusive)" )
+    global_parser.add_argument("--only_modules", "-o", help = "Run only these modules (list of module names)")
+    global_parser.add_argument("--skip_modules","-s", help = "Skip these modules (list of module names)")
+    global_parser.add_argument("--force", action= 'store_true', help = "Ignore last checkpoint")
+
+    parser = argparse.ArgumentParser(
+                    prog='obsq',
+                    description='Citizen Science Observation Quality Scorer',
+                    epilog='Text at the bottom of help',
+                    parents=[global_parser]
+    )
+    args = parser.parse_args()
+
+    if args.step == "id":
+        if args.ids:
+            scorer.ObservationScorer().score_observation(args.ids)
+    
+    pass
+if __name__ == "__main__":
+    train()

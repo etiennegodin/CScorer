@@ -1,0 +1,51 @@
+{
+    "total_results": 1,
+    "page": 1,
+    "per_page": 30,
+    "results": [
+        {
+            "uuid": "722e0e89-1300-4352-b3e8-7ba2c94399c5",
+            "quality_grade": "research",
+            "identifications": [
+                {
+                    "id": 666334021
+                },
+                {
+                    "id": 739800751
+                }
+            ],
+            "annotations": [
+                {
+                    "uuid": "3f2de313-db1f-4c85-9228-d8417e280fca",
+                    "user_id": 3402082,
+                    "controlled_attribute_id": 12,
+                    "controlled_value_id": 13
+                }
+            ],
+            "observed_on_details": {
+                "date": "2025-07-16",
+                "day": 16,
+                "hour": 11,
+                "month": 7,
+                "week": 29,
+                "year": 2025
+            },
+            "num_identification_agreements": 1,
+            "taxon": {
+                "id": 57283,
+                "rank": "species"
+            },
+            "uri": "https://www.inaturalist.org/observations/298621336",
+            "location": "45.981375,10.93785",
+            "user": {
+                "id": 4415467
+            },
+            "photos": [
+                {
+                    "id": 537921192
+                }
+            ],
+            "outlinks": []
+        }
+    ]
+}
