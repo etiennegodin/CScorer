@@ -29,8 +29,8 @@ def dynamic_pipe_argparse(subparsers:argparse.ArgumentParser, struct:dict, globa
         for sub_name, description in submodules.items():
             submodule_parser = module_subparser.add_parser(sub_name, help = description, parents=[global_parser])
 
-def train():
-    modules = ['data_ingest','data_prep','model', 'test', 'score']
+def main():
+    modules = ['ingest','features','train', 'test', 'score']
     global_parser = argparse.ArgumentParser(add_help = False)
     global_parser.add_argument("step", choices= modules,help = 'Pipeline step')
     global_parser.add_argument("--from_module", "-f", help = "Start from this module (inclusive)")
@@ -62,11 +62,11 @@ def train():
     if "config.yaml" in os.listdir(WORK_FOLDER):
 
 
-        if args.step == "data_ingest":
+        if args.step == "ingest":
             to_run = data.fetchers.run
-        elif args.step == "data_prep":
+        elif args.step == "features":
             to_run = features.run
-        elif args.step == "model":
+        elif args.step == "train":
             to_run = models.run
         elif args.step == "test":
             to_run = test.run

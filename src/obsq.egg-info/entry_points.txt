@@ -1,3 +1,2 @@
 [console_scripts]
-obsq_score = obsq.cli:score
-obsq_train = obsq.cli:train
+obsq = obsq.cli:main

@@ -15,6 +15,5 @@ authors = [{ name="Etienne Godin", email="etiennegodin@duck.com" }]
 dev = ["pytest", "black", "ipykernel", "python-dotenv", "rich", "pre-commit"]
 
 [project.scripts]   # <-- entry point CLI
-obsq_train = "obsq.cli:train"
-obsq_score = "obsq.cli:score"
+obsq = "obsq.cli:main"
 

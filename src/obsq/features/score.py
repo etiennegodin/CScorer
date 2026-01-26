@@ -5,7 +5,6 @@ from ..db import *
 # Label citizen obs 
 
 label_citizen_data = SqlQuery('label_citizen_data')
-
 score_spatial = SqlQuery('score_spatial')
 score_identifier = SqlQuery('score_identifier')
 score_observer = SqlQuery('score_observer')
