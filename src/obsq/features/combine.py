@@ -19,9 +19,6 @@ combined_features_p = Combine('combined_features_p', combine_dict = [('observer'
                                                                      ('gee','gbifID','inner'),
                                                                      ('ranges','gbifID','inner'),
                                                                      ('phenology', 'gbifID','left')])
-                                                    
-        
-    
 
 
 combine_features_module = Module('combine_features', [combined_features, combined_features_p])

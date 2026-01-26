@@ -3,11 +3,10 @@ from ..db import *
 from .spatial_cluster import SpatialClustering 
 
 observer_feature = SqlQuery('observers_features', "features_observers")
+features_taxon_obv_id = SqlQuery('features_taxon_obv_id', "features_taxon_obv_id")
+features_taxon_obv_obs = SqlQuery('features_taxon_obv_obs', "features_taxon_obv_obs")
+
 features_identifiers = SqlQuery('features_identifiers', "features_identifiers")
-features_obv_inat_stats = SqlQuery('features_obv_inat', "features_obv_inat")
-
-features_taxon_observers = SqlQuery('features_taxon_observers', "features_taxon_observers")
-
 
 community_validation_features = SqlQuery('community_validation_features', "features_community_validation")
 metadata_features = SqlQuery('metadata_features', "features_metadata")
@@ -27,9 +26,9 @@ spatial_clustering = SpatialClustering('spatial_clustering', type= 'kmeans', k= 
 
 
 extract_features_module = Module('extract_features', [observer_feature,
+                                                      features_taxon_obv_id,
+                                                      features_taxon_obv_obs,
                                                    features_identifiers,
-                                                   features_obv_inat_stats,
-                                                   features_taxon_observers,
                                                    community_validation_features,
                                                    metadata_features,
                                                    taxonomic_features,

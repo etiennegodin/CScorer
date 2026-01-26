@@ -70,6 +70,7 @@ ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obv_log_z_score FLOAT;
 ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS sp_log_z_score FLOAT;
 ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obs_p_rank FLOAT;
 ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS sp_p_rank FLOAT;
+ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS experience FLOAT;
 
 
 WITH obsv_count AS(
@@ -104,6 +105,7 @@ stats AS(
 
 SELECT
     o."recordedBy",
+    LOG(1 + o.obsv_obs_count) / 10 as experience,
     (LOG(1 + o.obsv_obs_count) - p.obv_mean_log)
         / NULLIF(p.obv_std_log, 0) AS obv_log_z_score,
 
@@ -122,7 +124,8 @@ UPDATE features.observer o
 SET obv_log_z_score = s.obv_log_z_score,
 sp_log_z_score = s.sp_log_z_score,
 obs_p_rank = s.obs_p_rank,
-sp_p_rank = s.sp_p_rank
+sp_p_rank = s.sp_p_rank,
+experience = s.experience
 
 FROM stats s
 WHERE o."recordedBy" = s."recordedBy";
