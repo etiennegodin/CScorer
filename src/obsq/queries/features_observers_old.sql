@@ -10,13 +10,15 @@ FROM preprocessed.gbif_citizen
 GROUP BY recordedBy, year
 ),
 
-obsv_count AS(
+monthly_observations AS(
 
-    SELECT "recordedBy",
-    COUNT(DISTINCT g.gbifID) AS obsv_obs_count, 
-    FROM preprocessed.gbif_citizen g
-    GROUP BY g.recordedBy,
-
+SELECT 
+COUNT(*) AS monthly_observations,
+"recordedBy",
+year,
+month
+FROM preprocessed.gbif_citizen
+GROUP BY recordedBy, year, month
 ),
 
 species_count AS(
@@ -46,86 +48,41 @@ SELECT g.recordedBy,
 p.species_entropy AS obsv_species_diversity,
 --counts
 COUNT(DISTINCT g.gbifID) AS obsv_obs_count, 
-
+-- ids
+ROUND(COUNT(DISTINCT g.gbifID) FILTER (WHERE g.identifiedByID IS NOT NULL) /
+ obsv_obs_count, 3) AS obsv_expert_ids_pct,
 --time
 COUNT(DISTINCT g."year") AS obsv_unique_year_count, 
 COUNT(DISTINCT CAST (g.eventDate AS DATE)) AS obsv_unique_dates,
 obsv_obs_count / obsv_unique_year_count AS obs_per_year,
+ROUND(AVG(m.monthly_observations),2) AS obsv_avg_monthly_obs,
 ROUND(AVG(y.yearly_observations),2) AS obsv_avg_yearly_obs,
+
+-- pct obs with high uncer
+ROUND(COUNT(DISTINCT g.coordinateUncertaintyInMeters ) FILTER (WHERE g.coordinateUncertaintyInMeters > 1000 ) /
+ obsv_obs_count, 3) AS obsv_high_cood_un_pct,
+
+ROUND(AVG(g.coordinateUncertaintyInMeters),3) AS obsv_avg_coord_un,
+ROUND(AVG(g.media_count),2) AS obsv_avg_media_count,
+ROUND(COUNT(DISTINCT g.pheno_sex ) FILTER ( WHERE g.pheno_sex IS NOT NULL )/obsv_obs_count, 3) AS obsv_sex_meta_pct,
+ROUND(COUNT(DISTINCT g.pheno_repro) FILTER ( WHERE g.pheno_repro IS NOT NULL )/obsv_obs_count, 3) AS obsv_repro_cond_meta_pct,
+ROUND(COUNT(DISTINCT g.pheno_leaves) FILTER ( WHERE g.pheno_leaves IS NOT NULL )/obsv_obs_count, 3) AS obsv_annot_meta_pct,
+CASE
+    WHEN ROUND(AVG(LENGTH("occurrenceRemarks"))) IS NULL THEN 0
+    ELSE ROUND(AVG(LENGTH("occurrenceRemarks"))) 
+END AS obsv_avg_descr_len
 
 FROM preprocessed.gbif_citizen g
 JOIN yearly_observation y ON g.recordedBy = y.recordedBy
+JOIN monthly_observations m ON g.recordedBy = m.recordedBy
 JOIN species_entropy p ON g."recordedBy" = p."recordedBy"
-
 
 GROUP BY g.recordedBy,
 p.species_entropy
 ORDER BY g.recordedBy
-
-
 ;
 
 
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obv_log_z_score FLOAT;
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS sp_log_z_score FLOAT;
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS obs_p_rank FLOAT;
-ALTER TABLE features.observer ADD COLUMN IF NOT EXISTS sp_p_rank FLOAT;
-
-
-WITH obsv_count AS(
-
-    SELECT "recordedBy",
-    COUNT(DISTINCT g.gbifID) AS obsv_obs_count, 
-    FROM preprocessed.gbif_citizen g
-    GROUP BY g.recordedBy,
-
-),
-
-species_count AS(
-
-    SELECT "recordedBy", species, COUNT(*) AS count
-    FROM preprocessed.gbif_citizen
-    GROUP BY "recordedBy", species
-),
-
-pre_stats AS (
-    SELECT
-        AVG(LOG(1 + o.obsv_obs_count)) AS obv_mean_log,
-        STDDEV_POP(LOG(1 + o.obsv_obs_count)) AS obv_std_log,
-
-        AVG(LOG(1 + s.count)) AS sp_mean_log,
-        STDDEV_POP(LOG(1 + count)) AS sp_std_log,
-
-    FROM obsv_count o 
-    JOIN species_count s ON o."recordedBy" = s."recordedBy"
-),
-
-stats AS(
-
-SELECT
-    o."recordedBy",
-    (LOG(1 + o.obsv_obs_count) - p.obv_mean_log)
-        / NULLIF(p.obv_std_log, 0) AS obv_log_z_score,
-
-    (LOG(1 + s.count) - p.sp_mean_log)
-        / NULLIF(p.sp_std_log, 0) AS sp_log_z_score,
-
-    ROUND(PERCENT_RANK() OVER (ORDER BY o.obsv_obs_count),3) AS obs_p_rank,
-    ROUND(PERCENT_RANK() OVER (ORDER BY s.count),3) AS sp_p_rank,
-
-    FROM obsv_count o
-    JOIN species_count s ON o."recordedBy" = s."recordedBy"
-    CROSS JOIN pre_stats p
-)
-
-UPDATE features.observer o
-SET obv_log_z_score = s.obv_log_z_score,
-sp_log_z_score = s.sp_log_z_score,
-obs_p_rank = s.obs_p_rank,
-sp_p_rank = s.sp_p_rank
-
-FROM stats s
-WHERE o."recordedBy" = s."recordedBy";
 
 
 -- time between observations
